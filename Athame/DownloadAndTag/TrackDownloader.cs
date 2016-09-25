@@ -96,7 +96,7 @@ namespace Athame.DownloadAndTag
             {
                 CurrentProgress = args,
                 CurrentItem = currentTrack,
-                TotalItems = tracks.Count - 1,
+                TotalItems = tracks.Count,
                 DestinationPath = currentDestination,
                 Stage = stage,
                 CoverArtPath = coverArtPath

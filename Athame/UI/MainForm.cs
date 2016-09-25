@@ -54,7 +54,7 @@ namespace Athame.UI
         {
             // Put leading zero in front of track number
             var fmt = String.Format("[{0}/{1}] {2:D2}: {3} - {4} - {5}",
-                                  current + 1, count + 1, track.TrackNumber, track.Title, track.Artist, track.Album.Title);
+                                  current + 1, count, track.TrackNumber, track.Title, track.Artist, track.Album.Title);
             currTrackLabel.Text = fmt;
             logger.Info(fmt);
         }
@@ -118,7 +118,7 @@ namespace Athame.UI
                             ApplicationSettings.Default.TrackFilenameFormat);
                         var downloader = new TrackDownloader(service, album.Tracks, absPathFormat);
                         totalProgressBar.Value = 0;
-                        PrepareForNextTrack(album.Tracks[0], 0, album.Tracks.Count - 1);
+                        PrepareForNextTrack(album.Tracks[0], 0, album.Tracks.Count);
                         downloader.ItemProgressChanged += (o, args) =>
                         {
                             switch (args.Stage)
@@ -144,13 +144,14 @@ namespace Athame.UI
                             tagger.Write(args.DestinationPath, album.Tracks[args.CurrentItem], args.CoverArtPath);
                             logger.Info("Tagged track");
                             var nextIndex = args.CurrentItem + 1;
-                            if (nextIndex <= args.TotalItems)
+                            if (nextIndex < args.TotalItems)
                             {
                                 PrepareForNextTrack(album.Tracks[nextIndex], nextIndex, args.TotalItems);
                             }
                         };
                         await downloader.DownloadAsync();
                         currTrackLabel.Text = GetCompletionMessage();
+                        totalProgressStatus.Text = "Downloaded album successfully";
                         logger.Info("Downloaded album successfully");
                         
                     }
