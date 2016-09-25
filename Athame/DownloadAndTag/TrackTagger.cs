@@ -5,7 +5,7 @@ namespace Athame.DownloadAndTag
 {
     public class TrackTagger
     {
-        private const string CopyrightText = "Respect the artists! Pay for music when you can! Downloaded with GPMDL";
+        private const string CopyrightText = "Respect the artists! Pay for music when you can! Downloaded with Athame";
 
         public void Write(string path, Track track, string albumArtPath)
         {

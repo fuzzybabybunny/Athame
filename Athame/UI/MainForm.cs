@@ -10,6 +10,8 @@ using Track = Athame.CommonModel.Track;
 
 namespace Athame.UI
 {
+    
+
     public partial class MainForm : Form
     {
         private readonly Logger logger;
@@ -68,7 +70,7 @@ namespace Athame.UI
             if (service == null)
             {
                 logger.Error(url.Host + ": No service found for host.");
-                MessageBox.Show("GPMDL cannot download this URL.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Athame cannot download this URL.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             logger.Info("Using service " + service.Name);
