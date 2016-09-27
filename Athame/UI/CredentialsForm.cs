@@ -38,7 +38,7 @@ namespace Athame.UI
 
         private async void okButton_Click(object sender, EventArgs e)
         {
-            using (var waitForm = new WaitForm(String.Format("Signing into {0}...", svc.Name)))
+            using (var waitForm = new WaitForm(this, String.Format("Signing into {0}...", svc.Name)))
             {
                 waitForm.Show(this);
                 Result = await svc.LoginAsync(emailTextBox.Text, passwordTextBox.Text);

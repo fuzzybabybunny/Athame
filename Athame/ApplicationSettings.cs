@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Athame.CommonModel;
 using Newtonsoft.Json;
 
@@ -10,15 +11,14 @@ namespace Athame
     {
         private const string SettingsFilename = "settings.json";
 
-        private static readonly string SettingsPath = Path.Combine(
+        private static readonly string SettingsDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "Athame");
 
-        private static readonly string FullPath = Path.Combine(SettingsPath, SettingsFilename);
+        public static readonly string SettingsPath = Path.Combine(SettingsDirectory, SettingsFilename);
 
-        // Need this so service settings will deserialise correctly
+        // Need this so service settings can be deserialised across services and assemblies
         private static readonly JsonSerializerSettings SerializerSettings;
-
         static ApplicationSettings()
         {
             SerializerSettings = new JsonSerializerSettings
@@ -28,6 +28,9 @@ namespace Athame
             };
         }
 
+        private bool ignoreSave;
+        private string settingsPath;
+
         private static ApplicationSettings _default;
 
         public static ApplicationSettings Default
@@ -36,15 +39,17 @@ namespace Athame
             {
                 if (_default == null)
                 {
-                    Directory.CreateDirectory(SettingsPath);
-                    if (!File.Exists(FullPath))
+                    Directory.CreateDirectory(SettingsDirectory);
+                    if (!File.Exists(SettingsPath))
                     {
-                        _default = new ApplicationSettings();
+                        _default = new ApplicationSettings(SettingsPath);
                         _default.Save();
                     }
                     else
                     {
-                        _default = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(FullPath), SerializerSettings);
+                        // Assign settings path to deserialised settings instance
+                        _default = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(SettingsPath), SerializerSettings);
+                        _default.settingsPath = SettingsPath;
                     }
                 }
                 return _default;
@@ -53,11 +58,19 @@ namespace Athame
 
         public void Save()
         {
-            File.WriteAllText(FullPath, JsonConvert.SerializeObject(this, SerializerSettings));
+            if (ignoreSave) return;
+            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(this, SerializerSettings));
         }
 
-        public ApplicationSettings()
+        public void Clear()
         {
+            ignoreSave = true;
+            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(new ApplicationSettings(null), SerializerSettings));
+        }
+
+        public ApplicationSettings(string settingsPath)
+        {
+            this.settingsPath = settingsPath;
             ServiceSettings = new Dictionary<string, StoredSettings>();
             SaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             TrackFilenameFormat = @"{Album.Artist} - {Album.Title}\{TrackNumber} {Title}";

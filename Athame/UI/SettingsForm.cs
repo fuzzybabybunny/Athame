@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using Athame.CommonModel;
 using Athame.Properties;
@@ -53,6 +55,15 @@ namespace Athame.UI
         private void pathFormatTextBox_TextChanged(object sender, EventArgs e)
         {
             ApplicationSettings.Default.TrackFilenameFormat = pathFormatTextBox.Text;
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            var dr = MessageBox.Show("Do you want to reset all settings?", "Reset settings", MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+            if (dr != DialogResult.Yes) return;
+            ApplicationSettings.Default.Clear();
+            Application.Restart();
         }
     }
 }

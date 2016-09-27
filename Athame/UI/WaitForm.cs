@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.Windows.Forms;
 
 namespace Athame.UI
 {
@@ -46,6 +47,29 @@ namespace Athame.UI
         {
             InitializeComponent();
             Message = message;
+        }
+
+        public WaitForm(Form parentForm)
+        {
+            InitializeComponent();
+            CenterInForm(parentForm);
+        }
+
+        public WaitForm(Form parentForm, string message)
+        {
+            InitializeComponent();
+            CenterInForm(parentForm);
+            Message = message;
+        }
+
+        private void CenterInForm(Form parentForm)
+        {
+            var tlCenterPoint = new Point
+            {
+                X = (parentForm.Left + (parentForm.Width / 2)) - (Width / 2),
+                Y = (parentForm.Top + (parentForm.Height / 2)) - (Height / 2)
+            };
+            Location = tlCenterPoint;
         }
 
         public string Message { get { return messageLabel.Text; } set { messageLabel.Text = value; } }

@@ -196,14 +196,14 @@ namespace Athame.UI
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
-            Visible = false;
-            foreach (var service in ServiceCollection.Default)
+            using (var waitForm = new WaitForm(this))
             {
-                if (service.Settings.Response == null) return;
-                var result = false;
-                using (var waitForm = new WaitForm(String.Format("Signing into {0}...", service.Name)))
+                waitForm.Show(this);
+                foreach (var service in ServiceCollection.Default)
                 {
-                    waitForm.Show(this);
+                    if (service.Settings.Response == null) return;
+                    var result = false;
+                    waitForm.Message = String.Format("Signing into {0}...", service.Name);
                     try
                     {
 
@@ -224,10 +224,12 @@ namespace Athame.UI
                             logger.Error(service.Name + ": Failed to sign in");
                         }
                     }
+
                 }
             }
-            Visible = true;
+            Focus();
         }
+            
 
         private class FormsLogger : Logger
         {
