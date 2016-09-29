@@ -160,5 +160,27 @@ namespace Athame.PlayMusicApi
             }
             set { settings = (PlayMusicServiceSettings)value ?? new PlayMusicServiceSettings(); }
         }
+
+        public override AuthenticationMethod AuthenticationMethod
+        {
+            get { return AuthenticationMethod.UsernameAndPassword;}
+        }
+
+        public override AuthenticationFlow Flow
+        {
+            get
+            {
+                return new AuthenticationFlow
+                {
+                    SignInInformation =
+                        "Enter your Google account email and password. If you use two-factor authentication, you must set an app password:",
+                    LinksToDisplay = new Dictionary<string, string>
+                    {
+                        {"Set an app password", "https://security.google.com/settings/security/apppasswords"},
+                        {"Forgot your password?", "https://accounts.google.com/signin/recovery"}
+                    }
+                };
+            }
+        }
     }
 }

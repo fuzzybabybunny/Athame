@@ -75,6 +75,16 @@ namespace Athame.CommonModel
         public abstract bool IsAuthenticated { get; }
 
         /// <summary>
+        /// The method the service uses to authenticate a user.
+        /// </summary>
+        public abstract AuthenticationMethod AuthenticationMethod { get; }
+
+        /// <summary>
+        /// How the service should present information to the user.
+        /// </summary>
+        public abstract AuthenticationFlow Flow { get; }
+
+        /// <summary>
         /// Returns a settings control to display in the settings form. Do not cache this in your implementation, as it is always disposed
         /// when the settings form closes.
         /// </summary>

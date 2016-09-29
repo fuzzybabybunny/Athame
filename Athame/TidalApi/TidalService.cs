@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -220,6 +221,29 @@ namespace Athame.TidalApi
         public override bool IsAuthenticated
         {
             get { return session != null; }
+        }
+
+        public override AuthenticationMethod AuthenticationMethod
+        {
+            get
+            {
+                return AuthenticationMethod.UsernameAndPassword;
+            }
+        }
+
+        public override AuthenticationFlow Flow
+        {
+            get
+            {
+                return new AuthenticationFlow
+                {
+                    SignInInformation = "Enter your Tidal username and password:",
+                    LinksToDisplay = new Dictionary<string, string>
+                    {
+                        {"Forgot password?", "https://listen.tidal.com/"}
+                    }
+                };
+            }
         }
 
         public override Control GetSettingsControl()

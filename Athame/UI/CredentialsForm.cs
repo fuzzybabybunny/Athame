@@ -11,30 +11,34 @@ namespace Athame.UI
     {
         private readonly Service svc;
 
-        private const string TidalMessage =
-            "Enter your Tidal account credentials below.";
-
-        private const string AppPasswordUrl =
-            "https://security.google.com/settings/security/apppasswords";
-
         public CredentialsForm(Service service)
         {
             InitializeComponent();
             svc = service;
-            if (svc is TidalService)
+            FillInInfo();
+        }
+
+        private void FillInInfo()
+        {
+            Text = String.Format(Text, svc.Name);
+            if (svc.Flow == null) return;
+            helpLabel.Text = svc.Flow.SignInInformation ?? String.Format(helpLabel.Text, svc.Name);
+            foreach (var linkPair in svc.Flow.LinksToDisplay)
             {
-                helpLabel.Text = TidalMessage;
-                apLinkLabel.Visible = false;
-                emailLabel.Text = "Username:";
+                var button = new Button
+                {
+                    Text = linkPair.Key,
+                    AutoSize = true,
+                    AutoSizeMode = AutoSizeMode.GrowAndShrink
+                };
+                // "This will work" - Joe, 28/09/16
+                // ReSharper disable once AccessToForEachVariableInClosure
+                button.Click += (sender, args) => Process.Start(linkPair.Value);
+                linksPanel.Controls.Add(button);
             }
         }
 
         public AuthenticationResponse Result;
-
-        private void apLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start(AppPasswordUrl);
-        }
 
         private async void okButton_Click(object sender, EventArgs e)
         {
