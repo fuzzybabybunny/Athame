@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,6 +47,7 @@ namespace Athame.UI
             td.Opened += (sender, args) =>
             {
                 td.Icon = TaskDialogStandardIcon.Error;
+                SystemSounds.Hand.Play();
             };
             return td;
         }

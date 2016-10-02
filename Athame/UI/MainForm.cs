@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Media;
 using System.Text;
 using System.Threading;
@@ -19,17 +20,23 @@ namespace Athame.UI
 {
     public partial class MainForm : Form
     {
-        private readonly Logger logger;
-        private UrlParseResult mResult;
-        private Service mService;
+        // Constants
+        private const string GroupHeaderFormat = "{0}: {1} ({2})";
 
+        // Read-only instance vars
+        private readonly Logger logger;
         private readonly List<DownloadableMediaCollection> mDownloadItems = new List<DownloadableMediaCollection>();
         private readonly TaskbarManager mTaskbarManager = TaskbarManager.Instance;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
 
+        // Instance vars
         private Tuple<int, int> mSelectedItem;
-        
+        private UrlParseResult mResult;
+        private Service mService;
+        // shitty hack
+        private int currentCollection;
+
         public MainForm()
         {
             InitializeComponent();
@@ -42,8 +49,7 @@ namespace Athame.UI
             queueImageList.Images.Add("error", Resources.error);
         }
 
-        private const string GroupHeaderFormat = "{0}: {1} ({2})";
-
+        #region Download queue manipulation
         private void AddToQueue(DownloadableMediaCollection item)
         {
             mDownloadItems.Add(item);
@@ -64,6 +70,12 @@ namespace Athame.UI
                     lvItem.BackColor = SystemColors.Control;
                     lvItem.ForeColor = SystemColors.GrayText;
                     lvItem.ImageKey = "error";
+                }
+                if (File.Exists(t.Path))
+                {
+                    t.WillDownload = false;
+                    lvItem.Checked = false;
+                    lvItem.ImageKey = "warning";
                 }
                 lvItem.SubItems.Add(t.CommonTrack.TrackNumber + "/" + t.CommonTrack.DiscNumber);
                 lvItem.SubItems.Add(t.CommonTrack.Title);
@@ -99,18 +111,30 @@ namespace Athame.UI
             return null;
         }
 
+        private int GetListViewIndexOfCollectionAndTrack(Tuple<int, int> indices)
+        {
+            return mGroupAndQueueIndices[indices.Item1][indices.Item2];
+        }
+#endregion
+
         private void LockUi()
         {
-            queueListView.Enabled = false;
+            queueTab.Enabled = false;
             idTextBox.Enabled = false;
+            dlButton.Enabled = false;
             settingsButton.Enabled = false;
+            pasteButton.Enabled = false;
+            clearButton.Enabled = false;
         }
 
         private void UnlockUi()
         {
-            queueListView.Enabled = true;
+            queueTab.Enabled = true;
             idTextBox.Enabled = true;
+            dlButton.Enabled = true;
             settingsButton.Enabled = true;
+            pasteButton.Enabled = true;
+            clearButton.Enabled = true;
         }
 
         private void PrepareForNextTrack(Track track, int current, int count)
@@ -147,15 +171,43 @@ namespace Athame.UI
             }
         }
 
+        private void PresentException(Exception ex)
+        {
+            logger.Error(ex.ToString());
+            SetGlobalProgressState(ProgressBarState.Error);
+            CommonTaskDialogs.Error(ex, "An error occurred").Show();
+        }
+
         private async Task DownloadQueue()
         {
-            currTrackLabel.Text = "Warming up...";
-            var downloadQueue = new Queue<DownloadableMediaCollection>(mDownloadItems);
-            while (downloadQueue.Count > 0)
+#if !DEBUG
+            try
             {
-                var item = downloadQueue.Dequeue();
-                await DownloadTracks(item.Service, item.Tracks);
+#endif  
+                LockUi();
+                currTrackLabel.Text = "Warming up...";
+                currentCollection = 0;
+                var downloadQueue = new Queue<DownloadableMediaCollection>(mDownloadItems);
+                while (downloadQueue.Count > 0)
+                {
+                    var item = downloadQueue.Dequeue();
+                    await DownloadTracks(item.Service, (from track in item.Tracks where track.WillDownload select track).ToList());
+                    currentCollection++;
+                }
+#if !DEBUG
             }
+            catch (Exception ex)
+            {
+                PresentException(ex);
+            }
+            finally
+            {
+#endif
+                UnlockUi();
+#if !DEBUG
+            }
+#endif
+
         }
 
         private async Task DownloadTracks(Service svc, List<DownloadableTrack> tracks)
@@ -308,10 +360,7 @@ namespace Athame.UI
             }
             catch (Exception ex)
             {
-                logger.Error(ex.ToString());
-                SetGlobalProgressState(ProgressBarState.Error);
-                CommonTaskDialogs.Error(ex, "An error occurred").Show();
-
+                PresentException(ex);
             }
             finally
             {
@@ -339,8 +388,6 @@ namespace Athame.UI
         }
 
         #endregion
-
-
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -524,7 +571,8 @@ namespace Athame.UI
 
         private void queueListView_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            if (queueListView.SelectedIndices.Count == 0) return;
+            GetIndicesOfCollectionAndTrack(queueListView.SelectedIndices[0]);
         }
     }
 }
