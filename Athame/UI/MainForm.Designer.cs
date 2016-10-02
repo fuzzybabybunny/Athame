@@ -51,9 +51,6 @@ namespace Athame.UI
             this.totalProgressBar = new System.Windows.Forms.ProgressBar();
             this.settingsButton = new System.Windows.Forms.Button();
             this.queueMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.trackPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.collectionPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.removeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -158,6 +155,7 @@ namespace Athame.UI
             this.queueListView.UseCompatibleStateImageBehavior = false;
             this.queueListView.View = System.Windows.Forms.View.Details;
             this.queueListView.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.queueListView_ItemCheck);
+            this.queueListView.SelectedIndexChanged += new System.EventHandler(this.queueListView_SelectedIndexChanged);
             this.queueListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.queueListView_MouseClick);
             // 
             // checkCol
@@ -258,48 +256,30 @@ namespace Athame.UI
             // queueMenu
             // 
             this.queueMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.trackPropertiesToolStripMenuItem,
-            this.collectionPropertiesToolStripMenuItem,
-            this.toolStripSeparator1,
             this.removeGroupToolStripMenuItem,
             this.toolStripSeparator2,
             this.showInExplorerToolStripMenuItem});
             this.queueMenu.Name = "queueMenu";
-            this.queueMenu.Size = new System.Drawing.Size(185, 126);
-            // 
-            // trackPropertiesToolStripMenuItem
-            // 
-            this.trackPropertiesToolStripMenuItem.Name = "trackPropertiesToolStripMenuItem";
-            this.trackPropertiesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.trackPropertiesToolStripMenuItem.Text = "Track properties";
-            // 
-            // collectionPropertiesToolStripMenuItem
-            // 
-            this.collectionPropertiesToolStripMenuItem.Name = "collectionPropertiesToolStripMenuItem";
-            this.collectionPropertiesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.collectionPropertiesToolStripMenuItem.Text = "Collection properties";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(167, 6);
+            this.queueMenu.Size = new System.Drawing.Size(171, 76);
             // 
             // removeGroupToolStripMenuItem
             // 
             this.removeGroupToolStripMenuItem.Name = "removeGroupToolStripMenuItem";
-            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.removeGroupToolStripMenuItem.Text = "Remove group";
+            this.removeGroupToolStripMenuItem.Click += new System.EventHandler(this.removeGroupToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
             // 
             // showInExplorerToolStripMenuItem
             // 
             this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.showInExplorerToolStripMenuItem.Text = "Show in Explorer...";
+            this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
             // 
             // clearButton
             // 
@@ -402,10 +382,7 @@ namespace Athame.UI
         private System.Windows.Forms.ContextMenuStrip queueMenu;
         private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
         private System.Windows.Forms.LinkLabel clearButton;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem trackPropertiesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem collectionPropertiesToolStripMenuItem;
         private System.Windows.Forms.LinkLabel pasteButton;
         private System.Windows.Forms.LinkLabel urlValidStateLabel;
         private System.Windows.Forms.Button startDownloadButton;

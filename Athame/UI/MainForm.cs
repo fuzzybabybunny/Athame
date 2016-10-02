@@ -28,7 +28,7 @@ namespace Athame.UI
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
 
-        private const string PropertiesMenuItemFormat = "{0} \"{1}\" properties...";
+        private Tuple<int, int> mSelectedItem;
         
         public MainForm()
         {
@@ -91,9 +91,11 @@ namespace Athame.UI
                 int itemIndex;
                 if ((itemIndex = index.Value.IndexOf(listViewIndex)) > -1)
                 {
-                    return new Tuple<int, int>(index.Key, itemIndex);
+                    mSelectedItem = new Tuple<int, int>(index.Key, itemIndex);
+                    return mSelectedItem;
                 }
             }
+            mSelectedItem = null;
             return null;
         }
 
@@ -502,15 +504,27 @@ namespace Athame.UI
             if (e.Button != MouseButtons.Right) return;
             if (!queueListView.FocusedItem.Bounds.Contains(e.Location)) return;
 
-            var indices = GetIndicesOfCollectionAndTrack(queueListView.SelectedIndices[0]);
+            var indices = GetIndicesOfCollectionAndTrack(queueListView.Items.IndexOf(queueListView.FocusedItem));
             if (indices == null) return;
             var collection = mDownloadItems[indices.Item1];
             var track = collection.Tracks[indices.Item2];
-
-            trackPropertiesToolStripMenuItem.Text = String.Format(PropertiesMenuItemFormat, "Track", track.CommonTrack.Title);
-            collectionPropertiesToolStripMenuItem.Text = String.Format(PropertiesMenuItemFormat, collection.CollectionType, collection.Name);
             
             queueMenu.Show(Cursor.Position);
+        }
+
+        private void removeGroupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void queueListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
