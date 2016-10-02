@@ -4,22 +4,15 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Athame.CommonModel;
+using Athame.InternalModel;
 
 namespace Athame.DownloadAndTag
 {
-    public enum ProgressStage
-    {
-        Artwork,
-        DownloadUrl,
-        Track
-    }
-
     public class DownloadProgressEventArgs : EventArgs
     {
-        public ProgressStage Stage { get; set; }
-        public int CurrentItem { get; internal set; }
+        public int CurrentItemIndex { get; internal set; }
+        public DownloadableTrack CurrentTrack { get; set; }
         public int TotalItems { get; internal set; }
-        public string DestinationPath { get; internal set; }
         public int OverallCompletionPercentage
         {
             get 
@@ -27,29 +20,23 @@ namespace Athame.DownloadAndTag
                 var currentPercent = CurrentProgress != null ? 
                     CurrentProgress.ProgressPercentage : 
                     100;
-                var overallPercentage = (int)(((double)CurrentItem / (double)TotalItems) * (double)100) + currentPercent / TotalItems;
+                var overallPercentage = (int)(((double)CurrentItemIndex / (double)TotalItems) * (double)100) + currentPercent / TotalItems;
                 return overallPercentage > 100 ? 100 : overallPercentage;
             }
         }
-
-        public string CoverArtPath { get; internal set; }
         public DownloadProgressChangedEventArgs CurrentProgress { get; internal set; }
     }
 
     public class TrackDownloader : IDisposable
     {
-        private const string ArtworkName = "cover.jpg";
-
         private readonly WebClient mClient = new WebClient();
-        private readonly List<Track> tracks;
+        private readonly List<DownloadableTrack> tracks;
         private readonly string pathFormat;
         private readonly Service service;
 
         private int currentTrack;
-        private string currentDestination;
-        private ProgressStage stage;
         
-        public TrackDownloader(Service service, List<Track> tracks, string pathFormat)
+        public TrackDownloader(Service service, List<DownloadableTrack> tracks, string pathFormat)
         {
             this.tracks = tracks;
             this.pathFormat = pathFormat;
@@ -91,54 +78,44 @@ namespace Athame.DownloadAndTag
 
         private DownloadProgressEventArgs CreateArgs(DownloadProgressChangedEventArgs args)
         {
-            var coverArtPath = Path.Combine(Path.GetDirectoryName(currentDestination) ?? "", ArtworkName);
+            
             return new DownloadProgressEventArgs
             {
                 CurrentProgress = args,
-                CurrentItem = currentTrack,
-                TotalItems = tracks.Count,
-                DestinationPath = currentDestination,
-                Stage = stage,
-                CoverArtPath = coverArtPath
+                CurrentItemIndex = currentTrack,
+                CurrentTrack = tracks[currentTrack],
+                TotalItems = tracks.Count
             };
-        }
-
-        private string PathFormat(Track track)
-        {
-            return StringObjectFormatter.Format(pathFormat, track, o => PathHelpers.CleanFilename(o.ToString()));
         }
 
         public async Task DownloadAsync()
         {
             currentTrack = 0;
-            currentDestination = String.Empty;
-            stage = ProgressStage.Track;
 
             foreach (var track in tracks)
             {
-                currentDestination = PathFormat(track) + track.FileExtension;
+                track.SetPathFromFormat(pathFormat);
 
                 // Ensure directory structure exists
-                var parentDirectory = Path.GetDirectoryName(currentDestination) ?? "";
+                var parentDirectory = Path.GetDirectoryName(track.Path) ?? "";
                 Directory.CreateDirectory(parentDirectory);
 
-                var artworkLoc = Path.Combine(parentDirectory, ArtworkName);
                 // Download artwork if it doesn't exist
-                if (!File.Exists(artworkLoc))
+                if (!File.Exists(track.ArtworkPath))
                 {
-                    stage = ProgressStage.Artwork;
-                    await mClient.DownloadFileTaskAsync(track.Album.CoverUri, artworkLoc);
+                    track.State = TrackState.DownloadingArtwork;
+                    await mClient.DownloadFileTaskAsync(track.CommonTrack.Album.CoverUri, track.ArtworkPath);
                 }
 
                 // Get stream URL
-                stage = ProgressStage.DownloadUrl;
-                var streamUrl = await service.GetTrackStreamUriAsync(track.Id);
+                track.State = TrackState.DownloadingTrack;
+                var streamUrl = await service.GetTrackStreamUriAsync(track.CommonTrack.Id);
                 
                 // Download completely
-                stage = ProgressStage.Track;
-                await mClient.DownloadFileTaskAsync(streamUrl, currentDestination);
+                await mClient.DownloadFileTaskAsync(streamUrl, track.Path);
 
                 // Done!
+                track.State = TrackState.Complete;
                 OnItemDownloadCompleted(CreateArgs(null));
                 currentTrack++;
             }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Media;
 using System.Windows.Forms;
 using Athame.CommonModel;
 using Athame.TidalApi;
@@ -29,7 +31,8 @@ namespace Athame.UI
                 {
                     Text = linkPair.Key,
                     AutoSize = true,
-                    AutoSizeMode = AutoSizeMode.GrowAndShrink
+                    AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                    UseVisualStyleBackColor = true
                 };
                 // "This will work" - Joe, 28/09/16
                 // ReSharper disable once AccessToForEachVariableInClosure
@@ -50,11 +53,13 @@ namespace Athame.UI
                 if (Result != null)
                 {
                     svc.Settings.Response = Result;
+                    ApplicationSettings.Default.Save();
                     DialogResult = DialogResult.OK;
                 }
                 else
                 {
                     errorLabel.Text = "An error occurred while signing in. Please check your credentials and try again.";
+                    SystemSounds.Hand.Play();
                 }
             }
         }

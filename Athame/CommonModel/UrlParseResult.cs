@@ -2,7 +2,7 @@
 
 namespace Athame.CommonModel
 {
-    public enum UrlContentType
+    public enum MediaType
     {
         Unknown,
         Album,
@@ -21,7 +21,8 @@ namespace Athame.CommonModel
 
     public class UrlParseResult
     {
-        public UrlContentType Type { get; set; }
+        public Uri OriginalUri { get; set; }
+        public MediaType Type { get; set; }
         public string Id { get; set; }
     }
 }

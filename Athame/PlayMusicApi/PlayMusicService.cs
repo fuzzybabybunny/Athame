@@ -108,25 +108,25 @@ namespace Athame.PlayMusicApi
             var hashParts = url.Fragment.Split('/');
             var type = hashParts[1];
             var id = hashParts[2];
-            var result = new UrlParseResult {Id = id, Type = UrlContentType.Unknown};
+            var result = new UrlParseResult {Id = id, Type = MediaType.Unknown, OriginalUri = url};
             switch (type)
             {
                 case "album":
-                    result.Type = UrlContentType.Album;
+                    result.Type = MediaType.Album;
                     break;
                 
                 case "artist":
-                    result.Type = UrlContentType.Artist;
+                    result.Type = MediaType.Artist;
                     break;
 
                     // Will auto-playlists actually be interchangeable with user-generated playlists?
                 case "pl":
                 case "ap":
-                    result.Type = UrlContentType.Playlist;
+                    result.Type = MediaType.Playlist;
                     break;
 
                 default:
-                    result.Type = UrlContentType.Unknown;
+                    result.Type = MediaType.Unknown;
                     break;
             }
             return result;

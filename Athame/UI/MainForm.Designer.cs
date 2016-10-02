@@ -30,6 +30,7 @@ namespace Athame.UI
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.idTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dlButton = new System.Windows.Forms.Button();
@@ -48,28 +49,41 @@ namespace Athame.UI
             this.totalProgressStatus = new System.Windows.Forms.Label();
             this.totalProgressBar = new System.Windows.Forms.ProgressBar();
             this.settingsButton = new System.Windows.Forms.Button();
+            this.queueMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearButton = new System.Windows.Forms.LinkLabel();
+            this.pasteButton = new System.Windows.Forms.LinkLabel();
+            this.urlValidStateLabel = new System.Windows.Forms.LinkLabel();
+            this.startDownloadButton = new System.Windows.Forms.Button();
+            this.queueImageList = new System.Windows.Forms.ImageList(this.components);
+            this.removeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.queueTab.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.queueMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // idTextBox
             // 
             this.idTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.idTextBox.Location = new System.Drawing.Point(48, 69);
+            this.idTextBox.Location = new System.Drawing.Point(56, 59);
             this.idTextBox.Name = "idTextBox";
-            this.idTextBox.Size = new System.Drawing.Size(551, 22);
+            this.idTextBox.Size = new System.Drawing.Size(642, 23);
             this.idTextBox.TabIndex = 2;
             this.idTextBox.TextChanged += new System.EventHandler(this.idTextBox_TextChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 72);
+            this.label1.Location = new System.Drawing.Point(14, 62);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(30, 13);
+            this.label1.Size = new System.Drawing.Size(31, 15);
             this.label1.TabIndex = 3;
             this.label1.Text = "URL:";
             // 
@@ -77,11 +91,11 @@ namespace Athame.UI
             // 
             this.dlButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.dlButton.Enabled = false;
-            this.dlButton.Location = new System.Drawing.Point(605, 68);
+            this.dlButton.Location = new System.Drawing.Point(708, 59);
             this.dlButton.Name = "dlButton";
-            this.dlButton.Size = new System.Drawing.Size(75, 23);
+            this.dlButton.Size = new System.Drawing.Size(87, 23);
             this.dlButton.TabIndex = 4;
-            this.dlButton.Text = "Download";
+            this.dlButton.Text = "Add";
             this.dlButton.UseVisualStyleBackColor = true;
             this.dlButton.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -94,7 +108,7 @@ namespace Athame.UI
             this.logTextBox.Name = "logTextBox";
             this.logTextBox.ReadOnly = true;
             this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTextBox.Size = new System.Drawing.Size(654, 360);
+            this.logTextBox.Size = new System.Drawing.Size(765, 473);
             this.logTextBox.TabIndex = 5;
             // 
             // tabControl1
@@ -105,25 +119,28 @@ namespace Athame.UI
             this.tabControl1.Controls.Add(this.queueTab);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.HotTrack = true;
-            this.tabControl1.Location = new System.Drawing.Point(12, 307);
+            this.tabControl1.Location = new System.Drawing.Point(14, 300);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(668, 392);
+            this.tabControl1.Size = new System.Drawing.Size(779, 507);
             this.tabControl1.TabIndex = 6;
             // 
             // queueTab
             // 
             this.queueTab.Controls.Add(this.queueListView);
-            this.queueTab.Location = new System.Drawing.Point(4, 22);
+            this.queueTab.Location = new System.Drawing.Point(4, 24);
             this.queueTab.Name = "queueTab";
             this.queueTab.Padding = new System.Windows.Forms.Padding(3);
-            this.queueTab.Size = new System.Drawing.Size(660, 366);
+            this.queueTab.Size = new System.Drawing.Size(771, 479);
             this.queueTab.TabIndex = 0;
             this.queueTab.Text = "Queue";
             this.queueTab.UseVisualStyleBackColor = true;
             // 
             // queueListView
             // 
+            this.queueListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.queueListView.CheckBoxes = true;
             this.queueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader6,
@@ -131,15 +148,16 @@ namespace Athame.UI
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.queueListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.queueListView.FullRowSelect = true;
             this.queueListView.GridLines = true;
-            this.queueListView.Location = new System.Drawing.Point(3, 3);
+            this.queueListView.Location = new System.Drawing.Point(3, 7);
             this.queueListView.Name = "queueListView";
-            this.queueListView.Size = new System.Drawing.Size(654, 360);
+            this.queueListView.Size = new System.Drawing.Size(762, 464);
             this.queueListView.TabIndex = 7;
             this.queueListView.UseCompatibleStateImageBehavior = false;
             this.queueListView.View = System.Windows.Forms.View.Details;
+            this.queueListView.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.queueListView_ItemCheck);
+            this.queueListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.queueListView_MouseClick);
             // 
             // columnHeader6
             // 
@@ -168,10 +186,10 @@ namespace Athame.UI
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.logTextBox);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(660, 366);
+            this.tabPage2.Size = new System.Drawing.Size(771, 479);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Log";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -183,9 +201,9 @@ namespace Athame.UI
             this.groupBox2.Controls.Add(this.currTrackLabel);
             this.groupBox2.Controls.Add(this.totalProgressStatus);
             this.groupBox2.Controls.Add(this.totalProgressBar);
-            this.groupBox2.Location = new System.Drawing.Point(12, 127);
+            this.groupBox2.Location = new System.Drawing.Point(14, 127);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(668, 127);
+            this.groupBox2.Size = new System.Drawing.Size(779, 147);
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Status";
@@ -193,18 +211,18 @@ namespace Athame.UI
             // currTrackLabel
             // 
             this.currTrackLabel.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.currTrackLabel.Location = new System.Drawing.Point(6, 23);
+            this.currTrackLabel.Location = new System.Drawing.Point(7, 27);
             this.currTrackLabel.Name = "currTrackLabel";
-            this.currTrackLabel.Size = new System.Drawing.Size(655, 35);
+            this.currTrackLabel.Size = new System.Drawing.Size(764, 40);
             this.currTrackLabel.TabIndex = 2;
             this.currTrackLabel.Text = "Ready";
             // 
             // totalProgressStatus
             // 
             this.totalProgressStatus.AutoSize = true;
-            this.totalProgressStatus.Location = new System.Drawing.Point(6, 65);
+            this.totalProgressStatus.Location = new System.Drawing.Point(7, 75);
             this.totalProgressStatus.Name = "totalProgressStatus";
-            this.totalProgressStatus.Size = new System.Drawing.Size(88, 13);
+            this.totalProgressStatus.Size = new System.Drawing.Size(89, 15);
             this.totalProgressStatus.TabIndex = 1;
             this.totalProgressStatus.Text = "Ready to begin.";
             // 
@@ -212,35 +230,136 @@ namespace Athame.UI
             // 
             this.totalProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.totalProgressBar.Location = new System.Drawing.Point(6, 98);
+            this.totalProgressBar.Location = new System.Drawing.Point(7, 113);
             this.totalProgressBar.Name = "totalProgressBar";
-            this.totalProgressBar.Size = new System.Drawing.Size(654, 23);
+            this.totalProgressBar.Size = new System.Drawing.Size(763, 27);
             this.totalProgressBar.TabIndex = 0;
             // 
             // settingsButton
             // 
-            this.settingsButton.Location = new System.Drawing.Point(12, 12);
+            this.settingsButton.Location = new System.Drawing.Point(14, 14);
             this.settingsButton.Name = "settingsButton";
-            this.settingsButton.Size = new System.Drawing.Size(75, 23);
+            this.settingsButton.Size = new System.Drawing.Size(87, 23);
             this.settingsButton.TabIndex = 7;
             this.settingsButton.Text = "Settings";
             this.settingsButton.UseVisualStyleBackColor = true;
             this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
+            // queueMenu
+            // 
+            this.queueMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem5,
+            this.propertiesToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.removeGroupToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.showInExplorerToolStripMenuItem});
+            this.queueMenu.Name = "queueMenu";
+            this.queueMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.queueMenu.Size = new System.Drawing.Size(171, 104);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(170, 22);
+            this.toolStripMenuItem5.Text = "\"{0}\" properties...";
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.propertiesToolStripMenuItem.Text = "\"{0}\" properties...";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(167, 6);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
+            // 
+            // showInExplorerToolStripMenuItem
+            // 
+            this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
+            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.showInExplorerToolStripMenuItem.Text = "Show in Explorer...";
+            // 
+            // clearButton
+            // 
+            this.clearButton.AutoSize = true;
+            this.clearButton.Location = new System.Drawing.Point(660, 88);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(34, 15);
+            this.clearButton.TabIndex = 9;
+            this.clearButton.TabStop = true;
+            this.clearButton.Text = "Clear";
+            this.clearButton.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.clearButton_LinkClicked);
+            // 
+            // pasteButton
+            // 
+            this.pasteButton.AutoSize = true;
+            this.pasteButton.Location = new System.Drawing.Point(614, 88);
+            this.pasteButton.Name = "pasteButton";
+            this.pasteButton.Size = new System.Drawing.Size(35, 15);
+            this.pasteButton.TabIndex = 10;
+            this.pasteButton.TabStop = true;
+            this.pasteButton.Text = "Paste";
+            this.pasteButton.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.pasteButton_LinkClicked);
+            // 
+            // urlValidStateLabel
+            // 
+            this.urlValidStateLabel.Image = global::Athame.Properties.Resources.error;
+            this.urlValidStateLabel.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.urlValidStateLabel.Location = new System.Drawing.Point(52, 88);
+            this.urlValidStateLabel.Name = "urlValidStateLabel";
+            this.urlValidStateLabel.Padding = new System.Windows.Forms.Padding(23, 5, 0, 0);
+            this.urlValidStateLabel.Size = new System.Drawing.Size(554, 36);
+            this.urlValidStateLabel.TabIndex = 11;
+            this.urlValidStateLabel.Visible = false;
+            this.urlValidStateLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.urlValidStateLabel_LinkClicked);
+            // 
+            // startDownloadButton
+            // 
+            this.startDownloadButton.Location = new System.Drawing.Point(720, 295);
+            this.startDownloadButton.Name = "startDownloadButton";
+            this.startDownloadButton.Size = new System.Drawing.Size(75, 23);
+            this.startDownloadButton.TabIndex = 12;
+            this.startDownloadButton.Text = "Start";
+            this.startDownloadButton.UseVisualStyleBackColor = true;
+            this.startDownloadButton.Click += new System.EventHandler(this.startDownloadButton_Click);
+            // 
+            // queueImageList
+            // 
+            this.queueImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.queueImageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.queueImageList.TransparentColor = System.Drawing.Color.Transparent;
+            // 
+            // removeGroupToolStripMenuItem
+            // 
+            this.removeGroupToolStripMenuItem.Name = "removeGroupToolStripMenuItem";
+            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.removeGroupToolStripMenuItem.Text = "Remove group";
+            // 
             // MainForm
             // 
-            this.Icon = Athame.Properties.Resources.AthameIcon;
             this.AcceptButton = this.dlButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(692, 711);
+            this.ClientSize = new System.Drawing.Size(807, 820);
+            this.Controls.Add(this.startDownloadButton);
+            this.Controls.Add(this.urlValidStateLabel);
+            this.Controls.Add(this.pasteButton);
+            this.Controls.Add(this.clearButton);
             this.Controls.Add(this.settingsButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.dlButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.idTextBox);
-            this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = global::Athame.Properties.Resources.AthameIcon;
             this.Name = "MainForm";
             this.Text = "Athame";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -251,6 +370,7 @@ namespace Athame.UI
             this.tabPage2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.queueMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -276,6 +396,18 @@ namespace Athame.UI
         private System.Windows.Forms.Label currTrackLabel;
         private System.Windows.Forms.ColumnHeader columnHeader6;
         private System.Windows.Forms.Button settingsButton;
+        private System.Windows.Forms.ContextMenuStrip queueMenu;
+        private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel clearButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.LinkLabel pasteButton;
+        private System.Windows.Forms.LinkLabel urlValidStateLabel;
+        private System.Windows.Forms.Button startDownloadButton;
+        private System.Windows.Forms.ImageList queueImageList;
+        private System.Windows.Forms.ToolStripMenuItem removeGroupToolStripMenuItem;
 
     }
 }

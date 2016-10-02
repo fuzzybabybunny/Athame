@@ -11,6 +11,8 @@
         public string Genre { get; set; }
         public string Composer { get; set; }
         public int Year { get; set; }
+
+        public bool IsDownloadable { get; set; }
         public string FileExtension { get; set; }
     }
 }

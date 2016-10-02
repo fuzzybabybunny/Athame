@@ -182,27 +182,27 @@ namespace Athame.TidalApi
             var pathParts = url.LocalPath.Split('/');
             var ctype = pathParts[1];
             var id = pathParts[2];
-            var result = new UrlParseResult {Id = id, Type = UrlContentType.Unknown};
+            var result = new UrlParseResult {Id = id, Type = MediaType.Unknown, OriginalUri = url};
             switch (ctype)
             {
                 case "album":
-                    result.Type = UrlContentType.Album;
+                    result.Type = MediaType.Album;
                     break;
 
                 case "track":
-                    result.Type = UrlContentType.Track;
+                    result.Type = MediaType.Track;
                     break;
 
                 case "artist":
-                    result.Type = UrlContentType.Artist;
+                    result.Type = MediaType.Artist;
                     break;
 
                 case "playlist":
-                    result.Type = UrlContentType.Playlist;
+                    result.Type = MediaType.Playlist;
                     break;
 
                 default:
-                    result.Type = UrlContentType.Unknown;
+                    result.Type = MediaType.Unknown;
                     break;
             }
             return result;

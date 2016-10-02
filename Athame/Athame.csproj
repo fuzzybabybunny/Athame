@@ -39,6 +39,12 @@
     <Reference Include="GoogleMusicApi">
       <HintPath>..\packages\GoogleMusicApi.1.0.33\lib\net452\GoogleMusicApi.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\packages\WindowsAPICodePack-Core.1.1.1\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
+      <HintPath>..\packages\WindowsAPICodePack-Shell.1.1.1\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -83,6 +89,8 @@
     <Compile Include="CommonModel\Track.cs" />
     <Compile Include="CommonModel\UrlParseResult.cs" />
     <Compile Include="DownloadAndTag\TrackDownloader.cs" />
+    <Compile Include="InternalModel\DownloadableMediaCollection.cs" />
+    <Compile Include="InternalModel\DownloadableTrack.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="PlayMusicApi\PlayMusicService.cs" />
     <Compile Include="PlayMusicApi\PlayMusicServiceSettings.cs" />
@@ -118,6 +126,7 @@
     <Compile Include="PathHelpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\ProgressBarExtensions.cs" />
     <Compile Include="UI\RadioButtonEnumMapper.cs" />
     <Compile Include="UI\ServiceSettingsView.cs">
       <SubType>UserControl</SubType>
@@ -138,6 +147,7 @@
     <Compile Include="UI\WaitForm.Designer.cs">
       <DependentUpon>WaitForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\CommonTaskDialogs.cs" />
     <EmbeddedResource Include="PlayMusicApi\PlayMusicSettingsControl.resx">
       <DependentUpon>PlayMusicSettingsControl.cs</DependentUpon>
     </EmbeddedResource>
@@ -185,6 +195,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AthameIcon.ico" />
+    <None Include="Resources\information-white.png" />
+    <None Include="Resources\bin.png" />
+    <None Include="Resources\arrow-270.png" />
+    <None Include="Resources\warning.png" />
+    <None Include="Resources\tick.png" />
+    <None Include="Resources\control-stop-square.png" />
+    <None Include="Resources\control.png" />
+    <None Include="Resources\exclamation-red.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
