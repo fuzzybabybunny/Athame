@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,6 +27,8 @@ namespace Athame.UI
         private readonly TaskbarManager mTaskbarManager = TaskbarManager.Instance;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
+
+        private const string PropertiesMenuItemFormat = "{0} \"{1}\" properties...";
         
         public MainForm()
         {
@@ -51,6 +55,16 @@ namespace Athame.UI
             foreach (var t in item.Tracks)
             {
                 var lvItem = new ListViewItem { Group = group };
+                if (t.CommonTrack.IsDownloadable)
+                {
+                    lvItem.Checked = true;
+                }
+                else
+                {
+                    lvItem.BackColor = SystemColors.Control;
+                    lvItem.ForeColor = SystemColors.GrayText;
+                    lvItem.ImageKey = "error";
+                }
                 lvItem.SubItems.Add(t.CommonTrack.TrackNumber + "/" + t.CommonTrack.DiscNumber);
                 lvItem.SubItems.Add(t.CommonTrack.Title);
                 lvItem.SubItems.Add(t.CommonTrack.Artist);
@@ -70,7 +84,18 @@ namespace Athame.UI
             queueListView.Groups.RemoveAt(itemIndex);
         }
 
-        
+        private Tuple<int, int> GetIndicesOfCollectionAndTrack(int listViewIndex)
+        {
+            foreach (var index in mGroupAndQueueIndices)
+            {
+                int itemIndex;
+                if ((itemIndex = index.Value.IndexOf(listViewIndex)) > -1)
+                {
+                    return new Tuple<int, int>(index.Key, itemIndex);
+                }
+            }
+            return null;
+        }
 
         private void LockUi()
         {
@@ -458,16 +483,34 @@ namespace Athame.UI
 
         private void queueListView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            
+            var indices = GetIndicesOfCollectionAndTrack(e.Index);
+            if (indices == null) return;
+            var item = mDownloadItems[indices.Item1].Tracks[indices.Item2];
+            if (!item.CommonTrack.IsDownloadable)
+            {
+                e.NewValue = CheckState.Unchecked;
+                SystemSounds.Beep.Play();
+            }
+            else
+            {
+                item.WillDownload = e.NewValue == CheckState.Checked;
+            }
         }
 
         private void queueListView_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Right) return;
-            if (queueListView.FocusedItem.Bounds.Contains(e.Location))
-            {
-                queueMenu.Show(Cursor.Position);
-            }
+            if (!queueListView.FocusedItem.Bounds.Contains(e.Location)) return;
+
+            var indices = GetIndicesOfCollectionAndTrack(queueListView.SelectedIndices[0]);
+            if (indices == null) return;
+            var collection = mDownloadItems[indices.Item1];
+            var track = collection.Tracks[indices.Item2];
+
+            trackPropertiesToolStripMenuItem.Text = String.Format(PropertiesMenuItemFormat, "Track", track.CommonTrack.Title);
+            collectionPropertiesToolStripMenuItem.Text = String.Format(PropertiesMenuItemFormat, collection.CollectionType, collection.Name);
+            
+            queueMenu.Show(Cursor.Position);
         }
     }
 }

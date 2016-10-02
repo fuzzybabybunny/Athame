@@ -44,13 +44,11 @@ namespace Athame.TidalApi
         }
 
         /// <summary>
-        /// This method is not implemented and will always throw a <see cref="NotImplementedException"/>. Use <see cref="RestoreSession"/>.
+        /// Sets the session to be used in future request.
         /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
-#pragma warning disable 1998
+        /// <param name="response">A login response obtained from <see cref="LoginAsync"/>.</param>
+        /// <returns>True if it succeeded, otherwise false.</returns>
         public override async Task<bool> RestoreSessionAsync(AuthenticationResponse response)
-#pragma warning restore 1998
         {
             try
             {
@@ -62,17 +60,14 @@ namespace Athame.TidalApi
             }
             return session != null;
         }
-
         /// <summary>
-        /// Sets the session to be used in future request.
+        /// This method is not implemented and will always throw a <see cref="NotImplementedException"/>. Use <see cref="RestoreSession"/>.
         /// </summary>
-        /// <param name="response">A login response obtained from <see cref="LoginAsync"/>.</param>
-        /// <returns>Always true.</returns>
+        /// <param name="response"></param>
+        /// <returns></returns>
         public override bool RestoreSession(AuthenticationResponse response)
         {
             throw new NotImplementedException();
-            session = new OpenTidlSession(client, new LoginModel());
-            return true;
         }
 
         public override void ClearSession()
@@ -93,6 +88,7 @@ namespace Athame.TidalApi
                     where artist.Type == EnglishArtistNameJoiner.ArtistMain
                     select artist.Name).ToArray()),
                 Id = tidalTrack.Id.ToString(),
+                IsDownloadable = tidalTrack.AllowStreaming,
                 FileExtension = settings.StreamQuality == SoundQuality.LOSSLESS || 
                                     settings.StreamQuality == SoundQuality.LOSSLESS_HD
                                     ? ".flac"

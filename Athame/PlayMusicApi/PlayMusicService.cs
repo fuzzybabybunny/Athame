@@ -53,6 +53,8 @@ namespace Athame.PlayMusicApi
                 Year = gpmTrack.Year,
                 TrackNumber = gpmTrack.TrackNumber,
                 Id = gpmTrack.StoreId,
+                // AFAIK tracks returned will always be downloadable or else the server will give a 404/403/400
+                IsDownloadable = true,
                 FileExtension = ".mp3"
             };
         }

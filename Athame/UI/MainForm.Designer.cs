@@ -38,11 +38,12 @@ namespace Athame.UI
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.queueTab = new System.Windows.Forms.TabPage();
             this.queueListView = new System.Windows.Forms.ListView();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.checkCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.trackNumberCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.titleCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.artistCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.albumCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.queueImageList = new System.Windows.Forms.ImageList(this.components);
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.currTrackLabel = new System.Windows.Forms.Label();
@@ -50,17 +51,16 @@ namespace Athame.UI
             this.totalProgressBar = new System.Windows.Forms.ProgressBar();
             this.settingsButton = new System.Windows.Forms.Button();
             this.queueMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.trackPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.collectionPropertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.removeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.showInExplorerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearButton = new System.Windows.Forms.LinkLabel();
             this.pasteButton = new System.Windows.Forms.LinkLabel();
             this.urlValidStateLabel = new System.Windows.Forms.LinkLabel();
             this.startDownloadButton = new System.Windows.Forms.Button();
-            this.queueImageList = new System.Windows.Forms.ImageList(this.components);
-            this.removeGroupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.queueTab.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -143,45 +143,53 @@ namespace Athame.UI
             | System.Windows.Forms.AnchorStyles.Right)));
             this.queueListView.CheckBoxes = true;
             this.queueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader6,
-            this.columnHeader4,
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
+            this.checkCol,
+            this.trackNumberCol,
+            this.titleCol,
+            this.artistCol,
+            this.albumCol});
             this.queueListView.FullRowSelect = true;
             this.queueListView.GridLines = true;
             this.queueListView.Location = new System.Drawing.Point(3, 7);
             this.queueListView.Name = "queueListView";
             this.queueListView.Size = new System.Drawing.Size(762, 464);
+            this.queueListView.SmallImageList = this.queueImageList;
             this.queueListView.TabIndex = 7;
             this.queueListView.UseCompatibleStateImageBehavior = false;
             this.queueListView.View = System.Windows.Forms.View.Details;
             this.queueListView.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.queueListView_ItemCheck);
             this.queueListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.queueListView_MouseClick);
             // 
-            // columnHeader6
+            // checkCol
             // 
-            this.columnHeader6.Text = "✔";
-            this.columnHeader6.Width = 28;
+            this.checkCol.Text = "✔";
+            this.checkCol.Width = 48;
             // 
-            // columnHeader4
+            // trackNumberCol
             // 
-            this.columnHeader4.Text = "#";
+            this.trackNumberCol.Text = "Track/Disc";
+            this.trackNumberCol.Width = 80;
             // 
-            // columnHeader1
+            // titleCol
             // 
-            this.columnHeader1.Text = "Title";
-            this.columnHeader1.Width = 240;
+            this.titleCol.Text = "Title";
+            this.titleCol.Width = 240;
             // 
-            // columnHeader2
+            // artistCol
             // 
-            this.columnHeader2.Text = "Artist";
-            this.columnHeader2.Width = 181;
+            this.artistCol.Text = "Artist";
+            this.artistCol.Width = 181;
             // 
-            // columnHeader3
+            // albumCol
             // 
-            this.columnHeader3.Text = "Album";
-            this.columnHeader3.Width = 152;
+            this.albumCol.Text = "Album";
+            this.albumCol.Width = 152;
+            // 
+            // queueImageList
+            // 
+            this.queueImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.queueImageList.ImageSize = new System.Drawing.Size(16, 16);
+            this.queueImageList.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // tabPage2
             // 
@@ -216,6 +224,7 @@ namespace Athame.UI
             this.currTrackLabel.Size = new System.Drawing.Size(764, 40);
             this.currTrackLabel.TabIndex = 2;
             this.currTrackLabel.Text = "Ready";
+            this.currTrackLabel.UseMnemonic = false;
             // 
             // totalProgressStatus
             // 
@@ -225,6 +234,7 @@ namespace Athame.UI
             this.totalProgressStatus.Size = new System.Drawing.Size(89, 15);
             this.totalProgressStatus.TabIndex = 1;
             this.totalProgressStatus.Text = "Ready to begin.";
+            this.totalProgressStatus.UseMnemonic = false;
             // 
             // totalProgressBar
             // 
@@ -248,32 +258,37 @@ namespace Athame.UI
             // queueMenu
             // 
             this.queueMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem5,
-            this.propertiesToolStripMenuItem,
+            this.trackPropertiesToolStripMenuItem,
+            this.collectionPropertiesToolStripMenuItem,
             this.toolStripSeparator1,
             this.removeGroupToolStripMenuItem,
             this.toolStripSeparator2,
             this.showInExplorerToolStripMenuItem});
             this.queueMenu.Name = "queueMenu";
-            this.queueMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.queueMenu.Size = new System.Drawing.Size(171, 104);
+            this.queueMenu.Size = new System.Drawing.Size(185, 126);
             // 
-            // toolStripMenuItem5
+            // trackPropertiesToolStripMenuItem
             // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(170, 22);
-            this.toolStripMenuItem5.Text = "\"{0}\" properties...";
+            this.trackPropertiesToolStripMenuItem.Name = "trackPropertiesToolStripMenuItem";
+            this.trackPropertiesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.trackPropertiesToolStripMenuItem.Text = "Track properties";
             // 
-            // propertiesToolStripMenuItem
+            // collectionPropertiesToolStripMenuItem
             // 
-            this.propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            this.propertiesToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.propertiesToolStripMenuItem.Text = "\"{0}\" properties...";
+            this.collectionPropertiesToolStripMenuItem.Name = "collectionPropertiesToolStripMenuItem";
+            this.collectionPropertiesToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.collectionPropertiesToolStripMenuItem.Text = "Collection properties";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(167, 6);
+            // 
+            // removeGroupToolStripMenuItem
+            // 
+            this.removeGroupToolStripMenuItem.Name = "removeGroupToolStripMenuItem";
+            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.removeGroupToolStripMenuItem.Text = "Remove group";
             // 
             // toolStripSeparator2
             // 
@@ -330,18 +345,6 @@ namespace Athame.UI
             this.startDownloadButton.UseVisualStyleBackColor = true;
             this.startDownloadButton.Click += new System.EventHandler(this.startDownloadButton_Click);
             // 
-            // queueImageList
-            // 
-            this.queueImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.queueImageList.ImageSize = new System.Drawing.Size(16, 16);
-            this.queueImageList.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // removeGroupToolStripMenuItem
-            // 
-            this.removeGroupToolStripMenuItem.Name = "removeGroupToolStripMenuItem";
-            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.removeGroupToolStripMenuItem.Text = "Remove group";
-            // 
             // MainForm
             // 
             this.AcceptButton = this.dlButton;
@@ -386,23 +389,23 @@ namespace Athame.UI
         private System.Windows.Forms.TabPage queueTab;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView queueListView;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader titleCol;
+        private System.Windows.Forms.ColumnHeader artistCol;
+        private System.Windows.Forms.ColumnHeader albumCol;
+        private System.Windows.Forms.ColumnHeader trackNumberCol;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ProgressBar totalProgressBar;
         private System.Windows.Forms.Label totalProgressStatus;
         private System.Windows.Forms.Label currTrackLabel;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader checkCol;
         private System.Windows.Forms.Button settingsButton;
         private System.Windows.Forms.ContextMenuStrip queueMenu;
         private System.Windows.Forms.ToolStripMenuItem showInExplorerToolStripMenuItem;
         private System.Windows.Forms.LinkLabel clearButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem propertiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem trackPropertiesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem collectionPropertiesToolStripMenuItem;
         private System.Windows.Forms.LinkLabel pasteButton;
         private System.Windows.Forms.LinkLabel urlValidStateLabel;
         private System.Windows.Forms.Button startDownloadButton;
