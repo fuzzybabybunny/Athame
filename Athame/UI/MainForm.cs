@@ -125,6 +125,7 @@ namespace Athame.UI
             settingsButton.Enabled = false;
             pasteButton.Enabled = false;
             clearButton.Enabled = false;
+            startDownloadButton.Enabled = false;
         }
 
         private void UnlockUi()
@@ -135,6 +136,7 @@ namespace Athame.UI
             settingsButton.Enabled = true;
             pasteButton.Enabled = true;
             clearButton.Enabled = true;
+            startDownloadButton.Enabled = true;
         }
 
         private void PrepareForNextTrack(Track track, int current, int count)
@@ -579,6 +581,11 @@ namespace Athame.UI
         {
             if (queueListView.SelectedIndices.Count == 0) return;
             GetIndicesOfCollectionAndTrack(queueListView.SelectedIndices[0]);
+        }
+
+        private void queueListView_MouseHover(object sender, EventArgs e)
+        {
+
         }
     }
 }
