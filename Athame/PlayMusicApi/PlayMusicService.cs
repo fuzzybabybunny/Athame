@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Athame.CommonModel;
@@ -90,24 +91,43 @@ namespace Athame.PlayMusicApi
 
         public override async Task<Album> GetAlbumWithTracksAsync(string albumId)
         {
-            // Album should always have tracks
-            var album = await client.GetAlbumAsync(albumId, includeDescription: false);
-            return CreateAlbum(album);
+            GoogleMusicApi.Structure.Album album;
+            try
+            {
+                // Album should always have tracks
+                album = await client.GetAlbumAsync(albumId, includeDescription: false);
+                return CreateAlbum(album);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Just uhhhh
+                throw new ResourceNotFoundException(ex.Message);
+            }
         }
 
         public override async Task<Uri> GetTrackStreamUriAsync(string trackId)
         {
             // Only property we need to set is Track.StoreId (see Google.Music/GoogleMusicApi.UWP/Requests/Data/StreamUrlGetRequest.cs:32)
-            return await client.GetStreamUrlAsync(new GoogleMusicApi.Structure.Track {StoreId = trackId});
+            var streamUrl = await client.GetStreamUrlAsync(new GoogleMusicApi.Structure.Track {StoreId = trackId});
+            if (streamUrl == null)
+            {
+                throw new InvalidSessionException("Play Music: Stream URL unavailable. Check your subscription is active then try again.");
+            }
+            return streamUrl;
         }
 
         public override UrlParseResult ParseUrl(Uri url)
         {
             if (url.Host != GooglePlayHost)
             {
-                throw new InvalidServiceUrlException("Not a Google Play Music URL.");
+                return null;
             }
             var hashParts = url.Fragment.Split('/');
+            
+            if (hashParts.Length <= 2)
+            {
+                return null;
+            }
             var type = hashParts[1];
             var id = hashParts[2];
             var result = new UrlParseResult {Id = id, Type = MediaType.Unknown, OriginalUri = url};

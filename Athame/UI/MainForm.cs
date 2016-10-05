@@ -175,7 +175,16 @@ namespace Athame.UI
         {
             logger.Error(ex.ToString());
             SetGlobalProgressState(ProgressBarState.Error);
-            CommonTaskDialogs.Error(ex, "An error occurred").Show();
+            var th = "An error occurred";
+            if (ex is ResourceNotFoundException)
+            {
+                th = "Resource not found";
+            }
+            else if (ex is InvalidSessionException)
+            {
+                th = "Invalid session/subscription expired";
+            }
+            CommonTaskDialogs.Error(ex, th).Show();
         }
 
         private async Task DownloadQueue()
@@ -261,6 +270,7 @@ namespace Athame.UI
         {
             urlValidStateLabel.ResetText();
             urlValidStateLabel.Links.Clear();
+            urlValidStateLabel.Image = Resources.error;
             dlButton.Enabled = false;
 
             // Hide on empty
@@ -294,12 +304,8 @@ namespace Athame.UI
                 return false;
             }
             // URL doesn't point to media
-            UrlParseResult result;
-            try
-            {
-                result = service.ParseUrl(url);
-            }
-            catch (InvalidServiceUrlException)
+            var result = service.ParseUrl(url);
+            if (result == null)
             {
                 urlValidStateLabel.Text = UrlNotParseable;
                 return false;

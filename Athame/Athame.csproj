@@ -83,6 +83,8 @@
     <Compile Include="CommonModel\Album.cs" />
     <Compile Include="CommonModel\AuthenticationFlow.cs" />
     <Compile Include="CommonModel\AuthenticationResponse.cs" />
+    <Compile Include="CommonModel\InvalidSessionException.cs" />
+    <Compile Include="CommonModel\ResourceNotFoundException.cs" />
     <Compile Include="CommonModel\Service.cs" />
     <Compile Include="CommonModel\ServiceCollection.cs" />
     <Compile Include="CommonModel\StoredSettings.cs" />

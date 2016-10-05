@@ -11,14 +11,6 @@ namespace Athame.CommonModel
         Artist
     }
 
-    public class InvalidServiceUrlException : Exception
-    {
-        public InvalidServiceUrlException(string message) : base(message)
-        {
-            
-        }
-    }
-
     public class UrlParseResult
     {
         public Uri OriginalUri { get; set; }

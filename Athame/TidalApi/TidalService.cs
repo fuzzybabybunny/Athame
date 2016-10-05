@@ -149,19 +149,30 @@ namespace Athame.TidalApi
 
         public override async Task<Album> GetAlbumWithTracksAsync(string albumId)
         {
-            var tidalAlbum = await client.GetAlbum(Int32.Parse(albumId));
-            var tidalTracks = await client.GetAlbumTracks(Int32.Parse(albumId));
-            var cmAlbum = CreateAlbum(tidalAlbum);
-            var cmTracks = new List<Track>();
-            foreach (var track in tidalTracks.Items)
+            try
             {
-                var cmTrack = CreateTrack(track);
-                cmTrack.Album = cmAlbum;
-                if (tidalAlbum.ReleaseDate != null) cmTrack.Year = tidalAlbum.ReleaseDate.Value.Year;
-                cmTracks.Add(cmTrack);
+                var tidalAlbum = await client.GetAlbum(Int32.Parse(albumId));
+                var tidalTracks = await client.GetAlbumTracks(Int32.Parse(albumId));
+                var cmAlbum = CreateAlbum(tidalAlbum);
+                var cmTracks = new List<Track>();
+                foreach (var track in tidalTracks.Items)
+                {
+                    var cmTrack = CreateTrack(track);
+                    cmTrack.Album = cmAlbum;
+                    if (tidalAlbum.ReleaseDate != null) cmTrack.Year = tidalAlbum.ReleaseDate.Value.Year;
+                    cmTracks.Add(cmTrack);
+                }
+                cmAlbum.Tracks = cmTracks;
+                return cmAlbum;
             }
-            cmAlbum.Tracks = cmTracks;
-            return cmAlbum;
+            catch (OpenTidlException ex)
+            {
+                if (ex.OpenTidlError.Status == 404)
+                {
+                    throw new ResourceNotFoundException(String.Format("The album {0} was not found on Tidal.", albumId));
+                }
+                throw;
+            }
         }
 
         public override async Task<Uri> GetTrackStreamUriAsync(string trackId)
@@ -173,9 +184,10 @@ namespace Athame.TidalApi
         {
             if (url.Host != TidalWebDomain)
             {
-                throw new InvalidServiceUrlException("Not a Tidal URL.");
+                return null;
             }
             var pathParts = url.LocalPath.Split('/');
+            if (pathParts.Length <= 2) return null;
             var ctype = pathParts[1];
             var id = pathParts[2];
             var result = new UrlParseResult {Id = id, Type = MediaType.Unknown, OriginalUri = url};
