@@ -52,11 +52,18 @@ namespace Athame.CommonModel
         public abstract Task<Uri> GetTrackStreamUriAsync(string trackId);
 
         /// <summary>
+        /// Retrieves a playlist. Note that it is up to the implementation to differentiate
+        /// between different playlist types, if the music service specifies them.
+        /// </summary>
+        /// <param name="playlistId">The playlist ID to retrieve.</param>
+        /// <returns>A playlist on success, null otherwise.</returns>
+        public abstract Task<Playlist> GetPlaylistAsync(string playlistId);
+
+        /// <summary>
         /// Parses a public-facing URL of a service, and returns the media type referenced and the identifier.
         /// </summary>
         /// <param name="url">A URL to parse.</param>
         /// <returns>A <see cref="UrlParseResult"/> containing a media type and ID.</returns>
-        /// <exception cref="InvalidServiceUrlException">When the URI's host doesn't match the service's <see cref="WebHost"/> property.</exception>
         public abstract UrlParseResult ParseUrl(Uri url);
 
         /// <summary>

@@ -22,6 +22,7 @@ namespace Athame.DownloadAndTag
                 file.Tag.DiscCount = (uint) track.Album.GetTotalDiscs();
                 file.Tag.Year = (uint) track.Year;
                 file.Tag.Copyright = CopyrightText;
+                file.Tag.Comment = CopyrightText;
                 // ReSharper disable once CoVariantArrayConversion
                 file.Tag.Pictures = new[]{new Picture(albumArtPath)};
                 file.Save();
