@@ -496,7 +496,8 @@ namespace Athame.UI
 
         private void settingsButton_Click(object sender, EventArgs e)
         {
-            new SettingsForm().ShowDialog();
+            var absLoc = settingsButton.PointToScreen(new Point(0, settingsButton.Height));
+            mMenu.Show(absLoc);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -585,6 +586,16 @@ namespace Athame.UI
         private void queueListView_MouseHover(object sender, EventArgs e)
         {
 
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutForm().ShowDialog(this);
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new SettingsForm().ShowDialog(this);
         }
     }
 }

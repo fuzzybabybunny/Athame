@@ -58,11 +58,17 @@ namespace Athame.UI
             this.pasteButton = new System.Windows.Forms.LinkLabel();
             this.urlValidStateLabel = new System.Windows.Forms.LinkLabel();
             this.startDownloadButton = new System.Windows.Forms.Button();
+            this.mMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1.SuspendLayout();
             this.queueTab.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.queueMenu.SuspendLayout();
+            this.mMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // idTextBox
@@ -246,11 +252,13 @@ namespace Athame.UI
             // 
             // settingsButton
             // 
+            this.settingsButton.Image = global::Athame.Properties.Resources.menu_arrow;
+            this.settingsButton.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.settingsButton.Location = new System.Drawing.Point(14, 14);
             this.settingsButton.Name = "settingsButton";
             this.settingsButton.Size = new System.Drawing.Size(87, 23);
             this.settingsButton.TabIndex = 7;
-            this.settingsButton.Text = "Settings";
+            this.settingsButton.Text = "Menu";
             this.settingsButton.UseVisualStyleBackColor = true;
             this.settingsButton.Click += new System.EventHandler(this.settingsButton_Click);
             // 
@@ -326,6 +334,41 @@ namespace Athame.UI
             this.startDownloadButton.UseVisualStyleBackColor = true;
             this.startDownloadButton.Click += new System.EventHandler(this.startDownloadButton_Click);
             // 
+            // mMenu
+            // 
+            this.mMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.settingsToolStripMenuItem,
+            this.logToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.aboutToolStripMenuItem});
+            this.mMenu.Name = "mMenu";
+            this.mMenu.Size = new System.Drawing.Size(153, 98);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.settingsToolStripMenuItem.Text = "Settings...";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // logToolStripMenuItem
+            // 
+            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
+            this.logToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.logToolStripMenuItem.Text = "Log...";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(122, 6);
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AcceptButton = this.dlButton;
@@ -355,6 +398,7 @@ namespace Athame.UI
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.queueMenu.ResumeLayout(false);
+            this.mMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -389,6 +433,11 @@ namespace Athame.UI
         private System.Windows.Forms.Button startDownloadButton;
         private System.Windows.Forms.ImageList queueImageList;
         private System.Windows.Forms.ToolStripMenuItem removeGroupToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip mMenu;
+        private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
 
     }
 }

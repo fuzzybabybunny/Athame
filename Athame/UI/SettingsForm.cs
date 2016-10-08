@@ -11,8 +11,6 @@ namespace Athame.UI
         public SettingsForm()
         {
             InitializeComponent();
-            pictureBox1.Image = new Icon(Resources.AthameIcon, 128, 128).ToBitmap();
-            label2.Text = String.Format(label2.Text, Application.ProductVersion);
 
             saveLocLabel.Text = ApplicationSettings.Default.SaveLocation;
             pathFormatTextBox.Text = ApplicationSettings.Default.TrackFilenameFormat;
@@ -26,8 +24,9 @@ namespace Athame.UI
             {
                 var tab = new TabPage(service.Name);
                 tab.Controls.Add(new ServiceSettingsView(service));
-                // insert before about tab
-                tabControl1.TabPages.Insert(tabControl1.TabCount - 1, tab);
+                // insert after general tab - this is here only so tabs can be offset
+                // in the case of a new static tab being added in designer
+                tabControl1.TabPages.Insert(tabControl1.TabCount, tab);
             }
         }
 

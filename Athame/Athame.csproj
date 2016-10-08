@@ -115,6 +115,12 @@
     </Compile>
     <Compile Include="TidalApi\TidalService.cs" />
     <Compile Include="TidalApi\TidalServiceSettings.cs" />
+    <Compile Include="UI\AboutForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\AboutForm.Designer.cs">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\CredentialsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -158,6 +164,9 @@
     <EmbeddedResource Include="TidalApi\TidalSettingsControl.resx">
       <DependentUpon>TidalSettingsControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UI\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UI\CredentialsForm.resx">
       <DependentUpon>CredentialsForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -199,6 +208,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AthameIcon.ico" />
+    <None Include="Resources\control-270-small.png" />
     <None Include="Resources\information-white.png" />
     <None Include="Resources\bin.png" />
     <None Include="Resources\arrow-270.png" />
