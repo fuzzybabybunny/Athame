@@ -31,8 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTab = new System.Windows.Forms.TabPage();
-            this.label4 = new System.Windows.Forms.Label();
-            this.resetButton = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.pathFormatTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -69,8 +67,6 @@
             // 
             // generalTab
             // 
-            this.generalTab.Controls.Add(this.label4);
-            this.generalTab.Controls.Add(this.resetButton);
             this.generalTab.Controls.Add(this.label6);
             this.generalTab.Controls.Add(this.pathFormatTextBox);
             this.generalTab.Controls.Add(this.label5);
@@ -84,25 +80,6 @@
             this.generalTab.TabIndex = 0;
             this.generalTab.Text = "General";
             this.generalTab.UseVisualStyleBackColor = true;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(101, 317);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(223, 15);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Click if you are having trouble signing in.";
-            // 
-            // resetButton
-            // 
-            this.resetButton.Location = new System.Drawing.Point(7, 312);
-            this.resetButton.Name = "resetButton";
-            this.resetButton.Size = new System.Drawing.Size(87, 27);
-            this.resetButton.TabIndex = 12;
-            this.resetButton.Text = "Reset";
-            this.resetButton.UseVisualStyleBackColor = true;
-            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
             // 
             // label6
             // 
@@ -169,10 +146,10 @@
             this.aboutTab.Controls.Add(this.label1);
             this.aboutTab.Controls.Add(this.pictureBox1);
             this.aboutTab.Controls.Add(this.groupBox1);
-            this.aboutTab.Location = new System.Drawing.Point(4, 22);
+            this.aboutTab.Location = new System.Drawing.Point(4, 24);
             this.aboutTab.Name = "aboutTab";
             this.aboutTab.Padding = new System.Windows.Forms.Padding(3);
-            this.aboutTab.Size = new System.Drawing.Size(708, 349);
+            this.aboutTab.Size = new System.Drawing.Size(708, 347);
             this.aboutTab.TabIndex = 1;
             this.aboutTab.Text = "About";
             this.aboutTab.UseVisualStyleBackColor = true;
@@ -308,7 +285,5 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button resetButton;
-        private System.Windows.Forms.Label label4;
     }
 }
