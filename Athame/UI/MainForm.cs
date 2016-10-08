@@ -427,59 +427,6 @@ namespace Athame.UI
             }
         }
 
-        #region Logger
-        private class FormsLogger : Logger
-        {
-            private readonly TextBox textBox;
-            private readonly Label infoLabel;
-
-            public FormsLogger(TextBox textBox, Label infoLabel)
-            {
-                this.textBox = textBox;
-                this.infoLabel = infoLabel;
-            }
-
-            public override void Write(MessageLevel level, string line)
-            {
-                var sb = new StringBuilder();
-                switch (level)
-                {
-                    case MessageLevel.Info:
-                        sb.Append("[Info] ");
-                        break;
-                    case MessageLevel.Debug:
-                        sb.Append("[Debug] ");
-                        break;
-                    case MessageLevel.Warning:
-                        sb.Append("[Warning] ");
-                        break;
-                    case MessageLevel.Error:
-                        sb.Append("[Error] ");
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException("level", level, null);
-                }
-                sb.Append(line);
-                sb.Append(Environment.NewLine);
-                if (textBox.InvokeRequired)
-                {
-                    textBox.BeginInvoke(new Action(() =>
-                    {
-                        textBox.Text += (sb);
-                        textBox.SelectionStart = textBox.TextLength;
-                        textBox.ScrollToCaret();
-                    }));
-                }
-                else
-                {
-                    textBox.Text += (sb);
-                    textBox.SelectionStart = textBox.TextLength;
-                    textBox.ScrollToCaret();
-                }
-            }
-        }
-        #endregion
-
         private void settingsButton_Click(object sender, EventArgs e)
         {
             var absLoc = settingsButton.PointToScreen(new Point(0, settingsButton.Height));

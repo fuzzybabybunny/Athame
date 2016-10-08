@@ -95,7 +95,6 @@
     <Compile Include="DownloadAndTag\TrackDownloader.cs" />
     <Compile Include="InternalModel\DownloadableMediaCollection.cs" />
     <Compile Include="InternalModel\DownloadableTrack.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="PlayMusicApi\PlayMusicService.cs" />
     <Compile Include="PlayMusicApi\PlayMusicServiceSettings.cs" />
     <Compile Include="DownloadAndTag\TrackTagger.cs" />
