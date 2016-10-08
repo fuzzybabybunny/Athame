@@ -116,6 +116,11 @@ namespace Athame.PlayMusicApi
             return streamUrl;
         }
 
+        public override async Task<Playlist> GetPlaylistAsync(string playlistId)
+        {
+            throw new NotImplementedException();
+        }
+
         public override UrlParseResult ParseUrl(Uri url)
         {
             if (url.Host != GooglePlayHost)

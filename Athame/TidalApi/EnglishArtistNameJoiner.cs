@@ -79,7 +79,5 @@ namespace Athame.TidalApi
             return JoinArtistNames(mainArtists.ToArray()) + " " + JoinFeaturingArtists(featuringArtists.ToArray());
             
         }
-
-
     }
 }

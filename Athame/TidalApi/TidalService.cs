@@ -180,6 +180,17 @@ namespace Athame.TidalApi
             return new Uri((await session.GetTrackOfflineUrl(Int32.Parse(trackId), settings.StreamQuality)).Url);
         }
 
+        public override async Task<Playlist> GetPlaylistAsync(string playlistId)
+        {
+            var playlist = await session.GetPlaylist(playlistId);
+            var tracks = await session.GetPlaylistTracks(playlistId);
+            return new Playlist
+            {
+                Title = playlist.Title,
+                Tracks = (from t in tracks.Items select CreateTrack(t)).ToList()
+            };
+        }
+
         public override UrlParseResult ParseUrl(Uri url)
         {
             if (url.Host != TidalWebDomain)
