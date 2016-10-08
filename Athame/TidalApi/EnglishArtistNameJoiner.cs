@@ -9,7 +9,7 @@ namespace Athame.TidalApi
     internal class EnglishArtistNameJoiner
     {
         private const string LastTwoItemsJoin = " & ";
-        private const string Joiner = " , ";
+        private const string Joiner = ", ";
         private const string FeaturingWord = "feat.";
 
         public const string ArtistMain = "MAIN";
@@ -30,7 +30,7 @@ namespace Athame.TidalApi
             for (var i = 0; i < artistNames.Length; i++)
             {
                 var last = artistNames.Length - 1;
-                var isLast = last == -i;
+                var isLast = last == i;
                 var isSecondToLast = last - 1 == i;
                 sb.Append(artistNames[i]);
                 if (!isLast)
