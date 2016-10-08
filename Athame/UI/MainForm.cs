@@ -345,6 +345,20 @@ namespace Athame.UI
                         });
                         break;
 
+                    case MediaType.Playlist:
+                        LockUi();
+                        // Get playlist and display it in listview
+                        currTrackLabel.Text = "Getting playlist...";
+                        var playlist = await mService.GetPlaylistAsync(mResult.Id);
+                        AddToQueue(new DownloadableMediaCollection(mPathFormat, playlist.Tracks)
+                        {
+                            Service = mService,
+                            Id = mResult.Id,
+                            CollectionType = mResult.Type,
+                            Name = playlist.Title
+                        });
+                        break;
+
                     default:
                         MessageBox.Show(String.Format("{0}s are not supported yet.", mResult.Type), "URL Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);

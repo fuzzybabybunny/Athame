@@ -12,6 +12,18 @@
         public string Composer { get; set; }
         public int Year { get; set; }
 
+        public string AlbumArtistOrArtist
+        {
+            get
+            {
+                if (Album != null && Album.Artist != null)
+                {
+                    return Album.Artist;
+                }
+                return Artist;
+            }
+        }
+
         public bool IsDownloadable { get; set; }
         public string FileExtension { get; set; }
     }

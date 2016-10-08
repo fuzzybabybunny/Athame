@@ -105,10 +105,7 @@ namespace Athame.TidalApi
                     t.Title += " " + EnglishArtistNameJoiner.JoinFeaturingArtists(nonMainArtists);
                 }
             }
-            if (tidalTrack.Album != null && tidalTrack.Album.Artists != null)
-            {
-                t.Album = CreateAlbum(tidalTrack.Album);
-            }
+            t.Album = CreateAlbum(tidalTrack.Album);
             return t;
         }
 
@@ -134,16 +131,22 @@ namespace Athame.TidalApi
         private Album CreateAlbum(AlbumModel album)
         {
             var coverUrl = String.Format(AlbumArtUrlFormat, album.Cover.Replace('-', '/'), AlbumArtSize);
-            return new Album
+            var cmAlbum = new Album
             {
-                // Need only main artists
-                Artist = EnglishArtistNameJoiner.JoinArtistNames((from artist in album.Artists
-                                                                  where artist.Type == EnglishArtistNameJoiner.ArtistMain
-                                                                  select artist.Name).ToArray()),
                 Id = album.Id.ToString(),
                 Title = album.Title,
                 CoverUri = new Uri(coverUrl)
             };
+            // On most calls the Album returned is a "lite" version, with only the properties above
+            // available.
+            if (album.Artist != null)
+            {
+                // Need only main artists
+                cmAlbum.Artist = EnglishArtistNameJoiner.JoinArtistNames((from artist in album.Artists
+                    where artist.Type == EnglishArtistNameJoiner.ArtistMain
+                    select artist.Name).ToArray());
+            }
+            return cmAlbum;
         }
 
         public override async Task<Album> GetAlbumWithTracksAsync(string albumId)

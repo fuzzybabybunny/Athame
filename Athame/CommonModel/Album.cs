@@ -12,15 +12,17 @@ namespace Athame.CommonModel
         public Uri CoverUri { get; set; }
         public List<Track> Tracks { get; set; }
 
-        public int GetNumberOfTracksOnDisc(int disc)
+        public int? GetNumberOfTracksOnDisc(int disc)
         {
+            if (Tracks == null) return null;
             return (from t in Tracks
                     where t.DiscNumber == disc
                     select t).Count();
         }
 
-        public int GetTotalDiscs()
+        public int? GetTotalDiscs()
         {
+            if (Tracks == null) return null;
             var totalDiscs = 0;
             foreach (var track in Tracks)
             {

@@ -13,13 +13,16 @@ namespace Athame.DownloadAndTag
             {
                 file.Tag.Title = track.Title;
                 file.Tag.Performers = new[] {track.Artist};
-                file.Tag.AlbumArtists = new[] {track.Album.Artist};
+                if (track.Album.Artist != null)
+                {
+                    file.Tag.AlbumArtists = new[] {track.Album.Artist};
+                }
                 file.Tag.Genres = new[] {track.Genre};
                 file.Tag.Album = track.Album.Title;
                 file.Tag.Track = (uint) track.TrackNumber;
-                file.Tag.TrackCount = (uint) track.Album.GetNumberOfTracksOnDisc(track.DiscNumber);
+                file.Tag.TrackCount = (uint) (track.Album.GetNumberOfTracksOnDisc(track.DiscNumber) ?? 0);
                 file.Tag.Disc = (uint) track.DiscNumber;
-                file.Tag.DiscCount = (uint) track.Album.GetTotalDiscs();
+                file.Tag.DiscCount = (uint) (track.Album.GetTotalDiscs() ?? 0 );
                 file.Tag.Year = (uint) track.Year;
                 file.Tag.Copyright = CopyrightText;
                 file.Tag.Comment = CopyrightText;

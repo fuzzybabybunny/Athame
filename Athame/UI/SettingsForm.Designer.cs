@@ -30,6 +30,8 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.generalTab = new System.Windows.Forms.TabPage();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.saveLocBrowseButton = new System.Windows.Forms.Button();
             this.pathFormatTextBox = new System.Windows.Forms.TextBox();
@@ -39,8 +41,6 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.mFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.generalTab.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -71,6 +71,28 @@
             this.generalTab.TabIndex = 0;
             this.generalTab.Text = "General";
             this.generalTab.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(221, 85);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(447, 75);
+            this.label2.TabIndex = 11;
+            this.label2.Text = "Track artist\r\nTrack title\r\nTrack number relative to disc\r\nWill use the track\'s ar" +
+    "tist if the album artist isn\'t available, otherwise the album artist\r\nAlbum titl" +
+    "e";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(88, 85);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(127, 75);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "{Artist}\r\n{Title}\r\n{TrackNumber}\r\n{AlbumArtistOrArtist}\r\n{Album.Title}";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // label5
             // 
@@ -152,27 +174,6 @@
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(88, 85);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 75);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "{Artist}\r\n{Title}\r\n{TrackNumber}\r\n{Album.Artist}\r\n{Album.Title}";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(186, 85);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(160, 75);
-            this.label2.TabIndex = 11;
-            this.label2.Text = "Track artist\r\nTrack title\r\nTrack number relative to disc\r\nAlbum artist\r\nAlbum tit" +
-    "le";
             // 
             // SettingsForm
             // 
