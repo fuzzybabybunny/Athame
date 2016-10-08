@@ -156,7 +156,7 @@ namespace Athame.UI
                     mTaskbarManager.SetProgressState(TaskbarProgressBarState.Normal);
                     break;
                 case ProgressBarState.Error:
-                    mTaskbarManager.SetProgressState(TaskbarProgressBarState.Normal);
+                    mTaskbarManager.SetProgressState(TaskbarProgressBarState.Error);
                     break;
                 case ProgressBarState.Warning:
                     mTaskbarManager.SetProgressState(TaskbarProgressBarState.Paused);
