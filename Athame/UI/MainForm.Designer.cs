@@ -34,9 +34,6 @@ namespace Athame.UI
             this.idTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dlButton = new System.Windows.Forms.Button();
-            this.logTextBox = new System.Windows.Forms.TextBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.queueTab = new System.Windows.Forms.TabPage();
             this.queueListView = new System.Windows.Forms.ListView();
             this.checkCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.trackNumberCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -44,7 +41,6 @@ namespace Athame.UI
             this.artistCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.albumCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.queueImageList = new System.Windows.Forms.ImageList(this.components);
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.currTrackLabel = new System.Windows.Forms.Label();
             this.totalProgressStatus = new System.Windows.Forms.Label();
@@ -60,12 +56,8 @@ namespace Athame.UI
             this.startDownloadButton = new System.Windows.Forms.Button();
             this.mMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.logToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabControl1.SuspendLayout();
-            this.queueTab.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.queueMenu.SuspendLayout();
             this.mMenu.SuspendLayout();
@@ -102,43 +94,6 @@ namespace Athame.UI
             this.dlButton.UseVisualStyleBackColor = true;
             this.dlButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // logTextBox
-            // 
-            this.logTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logTextBox.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.logTextBox.Location = new System.Drawing.Point(3, 3);
-            this.logTextBox.Multiline = true;
-            this.logTextBox.Name = "logTextBox";
-            this.logTextBox.ReadOnly = true;
-            this.logTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTextBox.Size = new System.Drawing.Size(765, 473);
-            this.logTextBox.TabIndex = 5;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.queueTab);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.HotTrack = true;
-            this.tabControl1.Location = new System.Drawing.Point(14, 300);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(779, 507);
-            this.tabControl1.TabIndex = 6;
-            // 
-            // queueTab
-            // 
-            this.queueTab.Controls.Add(this.queueListView);
-            this.queueTab.Location = new System.Drawing.Point(4, 24);
-            this.queueTab.Name = "queueTab";
-            this.queueTab.Padding = new System.Windows.Forms.Padding(3);
-            this.queueTab.Size = new System.Drawing.Size(771, 479);
-            this.queueTab.TabIndex = 0;
-            this.queueTab.Text = "Queue";
-            this.queueTab.UseVisualStyleBackColor = true;
-            // 
             // queueListView
             // 
             this.queueListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -153,9 +108,9 @@ namespace Athame.UI
             this.albumCol});
             this.queueListView.FullRowSelect = true;
             this.queueListView.GridLines = true;
-            this.queueListView.Location = new System.Drawing.Point(3, 7);
+            this.queueListView.Location = new System.Drawing.Point(12, 324);
             this.queueListView.Name = "queueListView";
-            this.queueListView.Size = new System.Drawing.Size(762, 464);
+            this.queueListView.Size = new System.Drawing.Size(783, 484);
             this.queueListView.SmallImageList = this.queueImageList;
             this.queueListView.TabIndex = 7;
             this.queueListView.UseCompatibleStateImageBehavior = false;
@@ -195,17 +150,6 @@ namespace Athame.UI
             this.queueImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.queueImageList.ImageSize = new System.Drawing.Size(16, 16);
             this.queueImageList.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.logTextBox);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(771, 479);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Log";
-            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
@@ -338,34 +282,27 @@ namespace Athame.UI
             // 
             this.mMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
-            this.logToolStripMenuItem,
             this.toolStripSeparator1,
             this.aboutToolStripMenuItem});
             this.mMenu.Name = "mMenu";
-            this.mMenu.Size = new System.Drawing.Size(153, 98);
+            this.mMenu.Size = new System.Drawing.Size(126, 54);
             // 
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings...";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
-            // 
-            // logToolStripMenuItem
-            // 
-            this.logToolStripMenuItem.Name = "logToolStripMenuItem";
-            this.logToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
-            this.logToolStripMenuItem.Text = "Log...";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(122, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -375,13 +312,13 @@ namespace Athame.UI
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(807, 820);
+            this.Controls.Add(this.queueListView);
             this.Controls.Add(this.startDownloadButton);
             this.Controls.Add(this.urlValidStateLabel);
             this.Controls.Add(this.pasteButton);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.settingsButton);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.dlButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.idTextBox);
@@ -391,10 +328,6 @@ namespace Athame.UI
             this.Text = "Athame";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
-            this.tabControl1.ResumeLayout(false);
-            this.queueTab.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.queueMenu.ResumeLayout(false);
@@ -409,10 +342,6 @@ namespace Athame.UI
         private System.Windows.Forms.TextBox idTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button dlButton;
-        private System.Windows.Forms.TextBox logTextBox;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage queueTab;
-        private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.ListView queueListView;
         private System.Windows.Forms.ColumnHeader titleCol;
         private System.Windows.Forms.ColumnHeader artistCol;
@@ -437,7 +366,6 @@ namespace Athame.UI
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem logToolStripMenuItem;
 
     }
 }

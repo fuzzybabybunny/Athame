@@ -23,7 +23,6 @@ namespace Athame.UI
         private const string GroupHeaderFormat = "{0}: {1} ({2})";
 
         // Read-only instance vars
-        private readonly Logger logger;
         private readonly List<DownloadableMediaCollection> mDownloadItems = new List<DownloadableMediaCollection>();
         private readonly TaskbarManager mTaskbarManager = TaskbarManager.Instance;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
@@ -42,8 +41,6 @@ namespace Athame.UI
             mPathFormat = Path.Combine(
                             ApplicationSettings.Default.SaveLocation,
                             ApplicationSettings.Default.TrackFilenameFormat);
-            logger = new FormsLogger(logTextBox, totalProgressStatus);
-            logger.Info("Ready");
             queueImageList.Images.Add("warning", Resources.warning);
             queueImageList.Images.Add("error", Resources.error);
         }
@@ -118,7 +115,6 @@ namespace Athame.UI
 
         private void LockUi()
         {
-            queueTab.Enabled = false;
             idTextBox.Enabled = false;
             dlButton.Enabled = false;
             settingsButton.Enabled = false;
@@ -129,7 +125,6 @@ namespace Athame.UI
 
         private void UnlockUi()
         {
-            queueTab.Enabled = true;
             idTextBox.Enabled = true;
             dlButton.Enabled = true;
             settingsButton.Enabled = true;
@@ -144,7 +139,6 @@ namespace Athame.UI
             var fmt = String.Format("[{0}/{1}] {2:D2}: {3} - {4} - {5}",
                                   current + 1, count, track.TrackNumber, track.Title, track.Artist, track.Album.Title);
             currTrackLabel.Text = fmt;
-            logger.Info(fmt);
         }
 
         private void SetGlobalProgress(int value)
@@ -174,7 +168,6 @@ namespace Athame.UI
 
         private void PresentException(Exception ex)
         {
-            logger.Error(ex.ToString());
             SetGlobalProgressState(ProgressBarState.Error);
             var th = "An error occurred";
             if (ex is ResourceNotFoundException)
@@ -243,10 +236,8 @@ namespace Athame.UI
             };
             downloader.ItemDownloadCompleted += (o, args) =>
             {
-                logger.Info("Download complete");
                 totalProgressStatus.Text = "Tagging...";
                 tagger.Write(args.CurrentTrack.Path, tracks[args.CurrentItemIndex].CommonTrack, args.CurrentTrack.ArtworkPath);
-                logger.Info("Tagged track");
                 var nextIndex = args.CurrentItemIndex + 1;
                 if (nextIndex < args.TotalItems)
                 {
@@ -256,7 +247,6 @@ namespace Athame.UI
             await downloader.DownloadAsync();
             currTrackLabel.Text = GetCompletionMessage();
             totalProgressStatus.Text = "Downloaded album successfully";
-            logger.Info("Downloaded album successfully");
         }
 
         #region Validation for URL
@@ -325,7 +315,6 @@ namespace Athame.UI
         {
             SetGlobalProgress(0);
             SetGlobalProgressState(ProgressBarState.Normal);
-            logger.Debug("Id = " + mResult.Id + ", Method = " + mResult.Type);
 #if !DEBUG
             try
             {
@@ -344,7 +333,6 @@ namespace Athame.UI
                 {
                     case MediaType.Album:
                         LockUi();
-                        logger.Info("Getting album info...");
                         // Get album and display it in listview
                         currTrackLabel.Text = "Getting album...";
                         var album = await mService.GetAlbumWithTracksAsync(mResult.Id);
@@ -422,11 +410,9 @@ namespace Athame.UI
                         {
                             if (result)
                             {
-                                logger.Info(service.Name + ": Signed in successfully");
                             }
                             else
                             {
-                                logger.Error(service.Name + ": Failed to sign in");
                                 MessageBox.Show(String.Format("Failed to sign in to {0}", service.Name), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
