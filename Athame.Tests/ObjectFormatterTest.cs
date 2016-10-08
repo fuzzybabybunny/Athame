@@ -1,7 +1,4 @@
-﻿using System;
-using System.Runtime.Remoting.Messaging;
-using Athame;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Athame.Tests
 {

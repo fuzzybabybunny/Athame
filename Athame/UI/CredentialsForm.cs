@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
 using Athame.CommonModel;
-using Athame.TidalApi;
 
 namespace Athame.UI
 {
