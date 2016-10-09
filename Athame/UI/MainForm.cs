@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Athame.UI
         private Tuple<int, int> mSelectedItem;
         private UrlParseResult mResult;
         private Service mService;
+
         // shitty hack
         private int currentCollection;
 
@@ -43,6 +45,7 @@ namespace Athame.UI
                             ApplicationSettings.Default.TrackFilenameFormat);
             queueImageList.Images.Add("warning", Resources.warning);
             queueImageList.Images.Add("error", Resources.error);
+            queueImageList.Images.Add("done", Resources.done);
         }
 
         #region Download queue manipulation
@@ -70,6 +73,8 @@ namespace Athame.UI
                 if (File.Exists(t.Path))
                 {
                     t.WillDownload = false;
+                    // We are assuming it is already downloaded
+                    t.State = TrackState.Complete;
                     lvItem.Checked = false;
                     lvItem.ImageKey = "warning";
                 }
@@ -87,8 +92,8 @@ namespace Athame.UI
         {
             if (queueListView.SelectedIndices.Count < 1) return;
             var gIndex = mSelectedItem.Item1;
-            // TODO: replace with mDownloadItems[gIndex] = null
             var groupItemCount = mDownloadItems[gIndex].Tracks.Count;
+            // TODO: replace with mDownloadItems[gIndex] = null
             mDownloadItems.RemoveAt(gIndex);
             // Remove all listview items
             var offset = mGroupAndQueueIndices[gIndex][0] - 1;
@@ -121,6 +126,7 @@ namespace Athame.UI
             pasteButton.Enabled = false;
             clearButton.Enabled = false;
             startDownloadButton.Enabled = false;
+            queueListView.Enabled = false;
         }
 
         private void UnlockUi()
@@ -131,6 +137,7 @@ namespace Athame.UI
             pasteButton.Enabled = true;
             clearButton.Enabled = true;
             startDownloadButton.Enabled = true;
+            queueListView.Enabled = true;
         }
 
         private void PrepareForNextTrack(Track track, int current, int count)
@@ -179,6 +186,13 @@ namespace Athame.UI
                 th = "Invalid session/subscription expired";
             }
             CommonTaskDialogs.Error(ex, th).Show();
+        }
+
+        private void OpenInExplorerAndSelect(string file)
+        {
+            const string explorer = "explorer";
+            var args = String.Format("/select, \"{0}\"", file);
+            Process.Start(explorer, args);
         }
 
         private async Task DownloadQueue()
@@ -238,6 +252,10 @@ namespace Athame.UI
             {
                 totalProgressStatus.Text = "Tagging...";
                 tagger.Write(args.CurrentTrack.Path, tracks[args.CurrentItemIndex].CommonTrack, args.CurrentTrack.ArtworkPath);
+                var lvItemIndex = mGroupAndQueueIndices[currentCollection][args.CurrentItemIndex];
+                var lvItem = queueListView.Items[lvItemIndex];
+                lvItem.Checked = false;
+                lvItem.ImageKey = "done";
                 var nextIndex = args.CurrentItemIndex + 1;
                 if (nextIndex < args.TotalItems)
                 {
@@ -498,6 +516,8 @@ namespace Athame.UI
             else
             {
                 item.WillDownload = e.NewValue == CheckState.Checked;
+                // If user checks a downloaded track for whatever reason
+                item.State = TrackState.Ready;
             }
         }
 
@@ -509,7 +529,8 @@ namespace Athame.UI
             if (indices == null) return;
             // Only show context menu on right click
             if (e.Button != MouseButtons.Right) return;
-            var track = mDownloadItems[indices.Item1].Tracks[indices.Item2];
+            var group = mDownloadItems[indices.Item1];
+            var track = group.Tracks[indices.Item2];
             showInExplorerToolStripMenuItem.Enabled = track.State == TrackState.Complete;
             queueMenu.Show(Cursor.Position);
         }
@@ -521,7 +542,8 @@ namespace Athame.UI
 
         private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            var path = mDownloadItems[mSelectedItem.Item1].Tracks[mSelectedItem.Item2].Path;
+            OpenInExplorerAndSelect(path);
         }
 
         private void queueListView_SelectedIndexChanged(object sender, EventArgs e)
