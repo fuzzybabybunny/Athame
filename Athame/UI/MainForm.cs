@@ -83,13 +83,20 @@ namespace Athame.UI
             }
         }
 
-        private void RemoveFromQueue(DownloadableMediaCollection item)
+        private void RemoveSelectedGroup()
         {
-            var itemIndex = mDownloadItems.IndexOf(item);
-            mDownloadItems.RemoveAt(itemIndex);
-            var containingGroup = queueListView.Groups[itemIndex];
-            containingGroup.Items.Clear();
-            queueListView.Groups.RemoveAt(itemIndex);
+            if (queueListView.SelectedIndices.Count < 1) return;
+            var gIndex = mSelectedItem.Item1;
+            // TODO: replace with mDownloadItems[gIndex] = null
+            var groupItemCount = mDownloadItems[gIndex].Tracks.Count;
+            mDownloadItems.RemoveAt(gIndex);
+            // Remove all listview items
+            var offset = mGroupAndQueueIndices[gIndex][0] - 1;
+            for (var i = groupItemCount + offset; i > offset; i--)
+            {
+                queueListView.Items.RemoveAt(i);
+            }
+            queueListView.Groups.RemoveAt(gIndex);
         }
 
         private Tuple<int, int> GetIndicesOfCollectionAndTrack(int listViewIndex)
@@ -97,19 +104,12 @@ namespace Athame.UI
             foreach (var index in mGroupAndQueueIndices)
             {
                 int itemIndex;
-                if ((itemIndex = index.Value.IndexOf(listViewIndex)) > -1)
-                {
-                    mSelectedItem = new Tuple<int, int>(index.Key, itemIndex);
-                    return mSelectedItem;
-                }
+                if ((itemIndex = index.Value.IndexOf(listViewIndex)) <= -1) continue;
+                mSelectedItem = new Tuple<int, int>(index.Key, itemIndex);
+                return mSelectedItem;
             }
             mSelectedItem = null;
             return null;
-        }
-
-        private int GetListViewIndexOfCollectionAndTrack(Tuple<int, int> indices)
-        {
-            return mGroupAndQueueIndices[indices.Item1][indices.Item2];
         }
 #endregion
 
@@ -503,20 +503,20 @@ namespace Athame.UI
 
         private void queueListView_MouseClick(object sender, MouseEventArgs e)
         {
-            if (e.Button != MouseButtons.Right) return;
             if (!queueListView.FocusedItem.Bounds.Contains(e.Location)) return;
 
             var indices = GetIndicesOfCollectionAndTrack(queueListView.Items.IndexOf(queueListView.FocusedItem));
             if (indices == null) return;
-            var collection = mDownloadItems[indices.Item1];
-            var track = collection.Tracks[indices.Item2];
-            
+            // Only show context menu on right click
+            if (e.Button != MouseButtons.Right) return;
+            var track = mDownloadItems[indices.Item1].Tracks[indices.Item2];
+            showInExplorerToolStripMenuItem.Enabled = track.State == TrackState.Complete;
             queueMenu.Show(Cursor.Position);
         }
 
         private void removeGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            RemoveSelectedGroup();
         }
 
         private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
