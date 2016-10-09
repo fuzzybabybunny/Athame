@@ -38,6 +38,7 @@
             // 
             // mLayout
             // 
+            this.mLayout.BackColor = System.Drawing.Color.White;
             this.mLayout.ColumnCount = 1;
             this.mLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.mLayout.Controls.Add(this.panel1, 0, 0);
