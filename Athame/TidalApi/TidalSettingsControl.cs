@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using Athame.UI;
 using OpenTidl.Enums;
 
@@ -11,7 +12,7 @@ namespace Athame.TidalApi
             InitializeComponent();
         }
 
-        private TidalServiceSettings settings;
+        private readonly TidalServiceSettings settings;
 
         public TidalSettingsControl(TidalServiceSettings settings)
         {
@@ -24,9 +25,23 @@ namespace Athame.TidalApi
             rbem.Assign(qLowRadioButton, (int)SoundQuality.LOW);
 
             rbem.Select((int)settings.StreamQuality);
+            appendVerCheckBox.Checked = settings.AppendVersionToTrackTitle;
+            unlessAlbumVersionCheckBox.Enabled = appendVerCheckBox.Checked;
+            unlessAlbumVersionCheckBox.Checked = settings.DontAppendAlbumVersion;
 
             rbem.ValueChanged += (sender, args) => settings.StreamQuality = (SoundQuality)rbem.Value;
 
+        }
+
+        private void appendVerCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.AppendVersionToTrackTitle = appendVerCheckBox.Checked;
+            unlessAlbumVersionCheckBox.Enabled = appendVerCheckBox.Checked;
+        }
+
+        private void unlessAlbumVersionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.DontAppendAlbumVersion = unlessAlbumVersionCheckBox.Checked;
         }
     }
 }

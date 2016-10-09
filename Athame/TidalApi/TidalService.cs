@@ -60,7 +60,7 @@ namespace Athame.TidalApi
             return session != null;
         }
         /// <summary>
-        /// This method is not implemented and will always throw a <see cref="NotImplementedException"/>. Use <see cref="RestoreSession"/>.
+        /// This method is not implemented and will always throw a <see cref="NotImplementedException"/>. Use <see cref="RestoreSessionAsync"/>.
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
@@ -77,6 +77,7 @@ namespace Athame.TidalApi
 
         private Track CreateTrack(TrackModel tidalTrack)
         {
+            const string albumVersion = "Album Version";
             // Always put main artists in the artist field
             var t = new Track
             {
@@ -94,6 +95,20 @@ namespace Athame.TidalApi
                                     : ".m4a"
 
             };
+            if (settings.AppendVersionToTrackTitle)
+            {
+                if (settings.DontAppendAlbumVersion)
+                {
+                    if (!tidalTrack.Version.Contains(albumVersion))
+                    {
+                        t.Title += " (" + tidalTrack.Version + ")";
+                    }
+                }
+                else
+                {
+                    t.Title += " (" + tidalTrack.Version + ")";
+                }
+            }
             // If the featured artists aren't already in the title, append them there
             if (!EnglishArtistNameJoiner.DoesTitleContainArtistString(tidalTrack))
             {
