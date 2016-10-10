@@ -118,16 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="licensesTextBox.Text" xml:space="preserve">
-    <value>TagLib#: 
+    <value>TagLib# (licensed under LGPL-2.1): 
 https://github.com/mono/taglib-sharp
 
 Google.Music: 
 https://github.com/coman3/Google.Music
 
-OpenTidl: 
+OpenTidl (licensed under AGPL-3.0):
 https://github.com/jackfagner/OpenTidl
 
-Json .NET: 
+Json .NET (licensed under MIT): 
 http://www.newtonsoft.com/json
 
 The Athame icon uses Knife by Antony Bayo from the Noun Project.

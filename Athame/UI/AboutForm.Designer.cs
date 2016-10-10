@@ -82,27 +82,26 @@
             this.licensesTextBox.BackColor = System.Drawing.Color.White;
             this.licensesTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.licensesTextBox.Font = new System.Drawing.Font("Calibri", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.licensesTextBox.Location = new System.Drawing.Point(12, 147);
+            this.licensesTextBox.Location = new System.Drawing.Point(12, 180);
             this.licensesTextBox.Name = "licensesTextBox";
             this.licensesTextBox.ReadOnly = true;
-            this.licensesTextBox.Size = new System.Drawing.Size(524, 195);
+            this.licensesTextBox.Size = new System.Drawing.Size(524, 259);
             this.licensesTextBox.TabIndex = 0;
             this.licensesTextBox.Text = resources.GetString("licensesTextBox.Text");
             this.licensesTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.licensesTextBox_LinkClicked);
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 117);
+            this.label3.Location = new System.Drawing.Point(9, 113);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(269, 15);
+            this.label3.Size = new System.Drawing.Size(527, 47);
             this.label3.TabIndex = 8;
-            this.label3.Text = "This project wouldn\'t have been possible without:";
+            this.label3.Text = "Copyright © 2016 svbnet\r\n\r\nThis project wouldn\'t have been possible without:";
             // 
             // okButton
             // 
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(461, 365);
+            this.okButton.Location = new System.Drawing.Point(461, 445);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 9;
@@ -115,7 +114,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(548, 400);
+            this.ClientSize = new System.Drawing.Size(548, 476);
             this.Controls.Add(this.okButton);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.licensesTextBox);
