@@ -213,24 +213,24 @@ namespace Athame.UI
             this.toolStripSeparator2,
             this.showInExplorerToolStripMenuItem});
             this.queueMenu.Name = "queueMenu";
-            this.queueMenu.Size = new System.Drawing.Size(171, 76);
+            this.queueMenu.Size = new System.Drawing.Size(171, 54);
             // 
             // removeGroupToolStripMenuItem
             // 
             this.removeGroupToolStripMenuItem.Name = "removeGroupToolStripMenuItem";
-            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.removeGroupToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.removeGroupToolStripMenuItem.Text = "Remove group";
             this.removeGroupToolStripMenuItem.Click += new System.EventHandler(this.removeGroupToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(202, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(167, 6);
             // 
             // showInExplorerToolStripMenuItem
             // 
             this.showInExplorerToolStripMenuItem.Name = "showInExplorerToolStripMenuItem";
-            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.showInExplorerToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.showInExplorerToolStripMenuItem.Text = "Show in Explorer...";
             this.showInExplorerToolStripMenuItem.Click += new System.EventHandler(this.showInExplorerToolStripMenuItem_Click);
             // 
