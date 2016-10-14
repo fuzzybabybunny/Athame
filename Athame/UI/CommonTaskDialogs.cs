@@ -32,11 +32,11 @@ namespace Athame.UI
                 Cancelable = true,
                 Icon = TaskDialogStandardIcon.Error,
                 Caption = "Something went wrong!",
-                InstructionText = errorText ?? "An unknown error occurred.",
-                Text = exception.GetType().Name + ": " + exception.Message,
+                InstructionText = errorText ?? "An unknown error occurred",
+                Text = "If you keep experiencing errors, you may need to sign in again. Click \"Show details\" for technical information.",
                 DetailsExpandedLabel = "Hide details",
                 DetailsCollapsedLabel = "Show details",
-                DetailsExpandedText = exception.StackTrace,
+                DetailsExpandedText = exception.GetType().Name + ": " + exception.Message + "\n" + exception.StackTrace,
                 ExpansionMode = TaskDialogExpandedDetailsLocation.ExpandFooter,
                 StandardButtons = TaskDialogStandardButtons.Ok
             };

@@ -95,18 +95,21 @@ namespace Athame.TidalApi
                                     : ".m4a"
 
             };
-            if (settings.AppendVersionToTrackTitle)
+            if (!String.IsNullOrEmpty(tidalTrack.Version))
             {
-                if (settings.DontAppendAlbumVersion)
+                if (settings.AppendVersionToTrackTitle)
                 {
-                    if (!tidalTrack.Version.Contains(albumVersion))
+                    if (settings.DontAppendAlbumVersion)
+                    {
+                        if (!tidalTrack.Version.Contains(albumVersion))
+                        {
+                            t.Title += " (" + tidalTrack.Version + ")";
+                        }
+                    }
+                    else
                     {
                         t.Title += " (" + tidalTrack.Version + ")";
                     }
-                }
-                else
-                {
-                    t.Title += " (" + tidalTrack.Version + ")";
                 }
             }
             // If the featured artists aren't already in the title, append them there
@@ -166,8 +169,8 @@ namespace Athame.TidalApi
 
         public override async Task<Album> GetAlbumWithTracksAsync(string albumId)
         {
-            try
-            {
+//            try
+//            {
                 var tidalAlbum = await client.GetAlbum(Int32.Parse(albumId));
                 var tidalTracks = await client.GetAlbumTracks(Int32.Parse(albumId));
                 var cmAlbum = CreateAlbum(tidalAlbum);
@@ -181,15 +184,15 @@ namespace Athame.TidalApi
                 }
                 cmAlbum.Tracks = cmTracks;
                 return cmAlbum;
-            }
-            catch (OpenTidlException ex)
-            {
-                if (ex.OpenTidlError.Status == 404)
-                {
-                    throw new ResourceNotFoundException(String.Format("The album {0} was not found on Tidal.", albumId));
-                }
-                throw;
-            }
+//            }
+//            catch (OpenTidlException ex)
+//            {
+//                if (ex.OpenTidlError.Status == 404)
+//                {
+//                    throw new ResourceNotFoundException(String.Format("The album {0} was not found on Tidal.", albumId));
+//                }
+//                throw;
+//            }
         }
 
         public override async Task<Uri> GetTrackStreamUriAsync(string trackId)

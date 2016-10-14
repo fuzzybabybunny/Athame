@@ -176,7 +176,7 @@ namespace Athame.UI
         private void PresentException(Exception ex)
         {
             SetGlobalProgressState(ProgressBarState.Error);
-            var th = "An error occurred";
+            var th = "An unknown error occurred";
             if (ex is ResourceNotFoundException)
             {
                 th = "Resource not found";
