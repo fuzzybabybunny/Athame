@@ -28,11 +28,13 @@ namespace Athame.UI
         private readonly TaskbarManager mTaskbarManager;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
+        private readonly bool isNotWindows = Environment.OSVersion.Platform != PlatformID.Win32NT;
 
         // Instance vars
         private Tuple<int, int> mSelectedItem;
         private UrlParseResult mResult;
         private Service mService;
+        private int mGroupCounter = -1;
 
         // shitty hack
         private int currentCollection;
@@ -54,8 +56,9 @@ namespace Athame.UI
         {
             mDownloadItems.Add(item);
             var header = String.Format(GroupHeaderFormat, item.CollectionType, item.Name, item.Service.Name);
-            var group = new ListViewGroup(header);
-            var groupIndex = queueListView.Groups.Add(group);
+
+            var group = isNotWindows ? null : new ListViewGroup(header);
+            var groupIndex = isNotWindows ? ++mGroupCounter : queueListView.Groups.Add(group);
             if (!mGroupAndQueueIndices.ContainsKey(groupIndex)) 
                 mGroupAndQueueIndices[groupIndex] = new List<int>(item.Tracks.Count);
             foreach (var t in item.Tracks)
@@ -83,7 +86,7 @@ namespace Athame.UI
                 lvItem.SubItems.Add(t.CommonTrack.Title);
                 lvItem.SubItems.Add(t.CommonTrack.Artist);
                 lvItem.SubItems.Add(t.CommonTrack.Album.Title);
-                group.Items.Add(lvItem);
+                if (!isNotWindows) group.Items.Add(lvItem);
                 var newItem = queueListView.Items.Add(lvItem);
                 mGroupAndQueueIndices[groupIndex].Add(newItem.Index);
             }
@@ -102,7 +105,8 @@ namespace Athame.UI
             {
                 queueListView.Items.RemoveAt(i);
             }
-            queueListView.Groups.RemoveAt(gIndex);
+            if (!isNotWindows) queueListView.Groups.RemoveAt(gIndex);
+            
         }
 
         private Tuple<int, int> GetIndicesOfCollectionAndTrack(int listViewIndex)

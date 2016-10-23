@@ -72,7 +72,7 @@ namespace Athame
             this.settingsPath = settingsPath;
             ServiceSettings = new Dictionary<string, StoredSettings>();
             SaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
-            TrackFilenameFormat = @"{AlbumArtistOrArtist} - {Album.Title}\{TrackNumber} {Title}";
+            TrackFilenameFormat = "{AlbumArtistOrArtist} - {Album.Title}/{TrackNumber} {Title}";
         }
 
         public Dictionary<string, StoredSettings> ServiceSettings { get; set; }
