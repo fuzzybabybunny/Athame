@@ -421,27 +421,27 @@ namespace Athame.UI
 
         #endregion
 
-        private async void MainForm_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
-            if (!TaskDialog.IsPlatformSupported)
-            {
-                await ShowStartupWaitDialog();
-            }
-            else
+            if (TaskDialog.IsPlatformSupported)
             {
                 ShowStartupTaskDialog();
             }
-
-
+            else
+            {
+                ShowStartupWaitDialog();
+            }
         }
 
         private async Task ShowStartupWaitDialog()
         {
-            using (var waitForm = new WaitForm(this))
-            {
-                waitForm.Show(this);
+
                 foreach (var service in ServiceCollection.Default)
                 {
+                    if (service.Settings.Response == null) continue;
+                    var waitForm = new WaitForm(this);
+                    waitForm.TopMost = true;
+                    waitForm.Show();
                     waitForm.Message = $"Signing into {service.Name}...";
                     var result = false;
                     try
@@ -454,11 +454,14 @@ namespace Athame.UI
                     }
                     if (!result)
                     {
-                        MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
                     }
+                    waitForm.Close();
+                    
                 }
-                waitForm.Close();
-            }
+                
+            
         }
 
         private void ShowStartupTaskDialog()

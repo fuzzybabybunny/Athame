@@ -28,3 +28,14 @@ TODO
 * Add an option to execute an external program (like `ffmpeg`) after each track or collection download.
 * Properly implement cancellation and stopping on sign in and download.
 * Implement search.
+
+Mono compatibility
+------------------
+For the most part, it appears to work on Mono on Linux (tested on Linux Mint 18). However, there are a few bugs you need to be aware of, namely:
+
+* Signing in via clicking the "Click here to sign in" link will crash for some reason.
+* You should avoid adding more than one set of media to the doiwnload queue as it will only download the first set then hang.
+* The UI will not be disabled when downloading, so try and avoid clicking on shit while it downloads.
+
+Linux/OS X compatibility isn't my top priority at the moment, but you are welcome to contribute if you like. I have been thinking about adding a CLI interface,
+but I think a WPF and GTK# UI would be more pertinent at the moment.
