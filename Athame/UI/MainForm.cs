@@ -25,7 +25,7 @@ namespace Athame.UI
 
         // Read-only instance vars
         private readonly List<DownloadableMediaCollection> mDownloadItems = new List<DownloadableMediaCollection>();
-        private readonly TaskbarManager mTaskbarManager = TaskbarManager.Instance;
+        private readonly TaskbarManager mTaskbarManager;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
 
@@ -40,6 +40,7 @@ namespace Athame.UI
         public MainForm()
         {
             InitializeComponent();
+            if (TaskbarManager.IsPlatformSupported) mTaskbarManager = TaskbarManager.Instance;
             mPathFormat = Path.Combine(
                             ApplicationSettings.Default.SaveLocation,
                             ApplicationSettings.Default.TrackFilenameFormat);
@@ -151,7 +152,7 @@ namespace Athame.UI
         private void SetGlobalProgress(int value)
         {
             totalProgressBar.Value = value;
-            mTaskbarManager.SetProgressValue(value, totalProgressBar.Maximum);
+            mTaskbarManager?.SetProgressValue(value, totalProgressBar.Maximum);
         }
 
         private void SetGlobalProgressState(ProgressBarState state)
@@ -160,13 +161,13 @@ namespace Athame.UI
             switch (state)
             {
                 case ProgressBarState.Normal:
-                    mTaskbarManager.SetProgressState(TaskbarProgressBarState.Normal);
+                    mTaskbarManager?.SetProgressState(TaskbarProgressBarState.Normal);
                     break;
                 case ProgressBarState.Error:
-                    mTaskbarManager.SetProgressState(TaskbarProgressBarState.Error);
+                    mTaskbarManager?.SetProgressState(TaskbarProgressBarState.Error);
                     break;
                 case ProgressBarState.Warning:
-                    mTaskbarManager.SetProgressState(TaskbarProgressBarState.Paused);
+                    mTaskbarManager?.SetProgressState(TaskbarProgressBarState.Paused);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("state", state, null);
@@ -416,7 +417,47 @@ namespace Athame.UI
 
         #endregion
 
-        private void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            if (!TaskDialog.IsPlatformSupported)
+            {
+                await ShowStartupWaitDialog();
+            }
+            else
+            {
+                ShowStartupTaskDialog();
+            }
+
+
+        }
+
+        private async Task ShowStartupWaitDialog()
+        {
+            using (var waitForm = new WaitForm(this))
+            {
+                waitForm.Show(this);
+                foreach (var service in ServiceCollection.Default)
+                {
+                    waitForm.Message = $"Signing into {service.Name}...";
+                    var result = false;
+                    try
+                    {
+                        result = await service.RestoreSessionAsync(service.Settings.Response);
+                    }
+                    catch (NotImplementedException)
+                    {
+                        result = service.RestoreSession(service.Settings.Response);
+                    }
+                    if (!result)
+                    {
+                        MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                waitForm.Close();
+            }
+        }
+
+        private void ShowStartupTaskDialog()
         {
             var td = CommonTaskDialogs.Wait(this, null);
             var openCt = new CancellationTokenSource();

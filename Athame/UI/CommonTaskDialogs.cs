@@ -7,7 +7,6 @@ namespace Athame.UI
 {
     public static class CommonTaskDialogs
     {
-
         public static TaskDialog Wait(IWin32Window owner, string message)
         {
             var dialog = new TaskDialog
@@ -16,10 +15,10 @@ namespace Athame.UI
                 Caption = "Please wait...",
                 InstructionText = message ?? "Please wait...",
                 StandardButtons = TaskDialogStandardButtons.Cancel,
-                OwnerWindowHandle = owner != null ? owner.Handle : IntPtr.Zero
+                OwnerWindowHandle = owner?.Handle ?? IntPtr.Zero
             };
 
-            var bar = new TaskDialogProgressBar {State = TaskDialogProgressBarState.Marquee};
+            var bar = new TaskDialogProgressBar { State = TaskDialogProgressBarState.Marquee };
             dialog.ProgressBar = bar;
             return dialog;
         }
