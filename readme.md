@@ -29,6 +29,10 @@ TODO
 * Properly implement cancellation and stopping on sign in and download.
 * Implement search.
 
+Building
+--------
+Slowly migrating to C# 6.0, therefore requires Visual Studio 2015.
+
 Mono compatibility
 ------------------
 For the most part, it appears to work on Mono on Linux (tested on Linux Mint 18). However, there are a few bugs you need to be aware of, namely:

@@ -16,5 +16,7 @@ namespace Athame
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
+
+        public static bool IsRunningOnWindows => Environment.OSVersion.Platform == PlatformID.Win32NT;
     }
 }

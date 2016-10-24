@@ -28,7 +28,7 @@ namespace Athame.UI
         private readonly TaskbarManager mTaskbarManager;
         private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
         private readonly string mPathFormat;
-        private readonly bool isNotWindows = Environment.OSVersion.Platform != PlatformID.Win32NT;
+        
 
         // Instance vars
         private Tuple<int, int> mSelectedItem;
@@ -57,8 +57,8 @@ namespace Athame.UI
             mDownloadItems.Add(item);
             var header = String.Format(GroupHeaderFormat, item.CollectionType, item.Name, item.Service.Name);
 
-            var group = isNotWindows ? null : new ListViewGroup(header);
-            var groupIndex = isNotWindows ? ++mGroupCounter : queueListView.Groups.Add(group);
+            var group = Program.IsRunningOnWindows ? new ListViewGroup(header) : null;
+            var groupIndex = Program.IsRunningOnWindows ? queueListView.Groups.Add(group) : ++mGroupCounter;
             if (!mGroupAndQueueIndices.ContainsKey(groupIndex)) 
                 mGroupAndQueueIndices[groupIndex] = new List<int>(item.Tracks.Count);
             foreach (var t in item.Tracks)
@@ -86,7 +86,7 @@ namespace Athame.UI
                 lvItem.SubItems.Add(t.CommonTrack.Title);
                 lvItem.SubItems.Add(t.CommonTrack.Artist);
                 lvItem.SubItems.Add(t.CommonTrack.Album.Title);
-                if (!isNotWindows) group.Items.Add(lvItem);
+                if (Program.IsRunningOnWindows) group.Items.Add(lvItem);
                 var newItem = queueListView.Items.Add(lvItem);
                 mGroupAndQueueIndices[groupIndex].Add(newItem.Index);
             }
@@ -105,7 +105,7 @@ namespace Athame.UI
             {
                 queueListView.Items.RemoveAt(i);
             }
-            if (!isNotWindows) queueListView.Groups.RemoveAt(gIndex);
+            if (Program.IsRunningOnWindows) queueListView.Groups.RemoveAt(gIndex);
             
         }
 
@@ -148,8 +148,8 @@ namespace Athame.UI
         private void PrepareForNextTrack(Track track, int current, int count)
         {
             // Put leading zero in front of track number
-            var fmt = String.Format("[{0}/{1}] {2:D2}: {3} - {4} - {5}",
-                                  current + 1, count, track.TrackNumber, track.Title, track.Artist, track.Album.Title);
+            var fmt =
+                $"[{current + 1}/{count}] {track.TrackNumber:D2}: {track.Title} - {track.Artist} - {track.Album.Title}";
             currTrackLabel.Text = fmt;
         }
 
@@ -174,7 +174,7 @@ namespace Athame.UI
                     mTaskbarManager?.SetProgressState(TaskbarProgressBarState.Paused);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("state", state, null);
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 
@@ -196,7 +196,7 @@ namespace Athame.UI
         private void OpenInExplorerAndSelect(string file)
         {
             const string explorer = "explorer";
-            var args = String.Format("/select, \"{0}\"", file);
+            var args = $"/select, \"{file}\"";
             Process.Start(explorer, args);
         }
 
@@ -383,7 +383,7 @@ namespace Athame.UI
                         break;
 
                     default:
-                        MessageBox.Show(String.Format("{0}s are not supported yet.", mResult.Type), "URL Error",
+                        MessageBox.Show($"{mResult.Type}s are not supported yet.", "URL Error",
                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                 }
@@ -472,7 +472,7 @@ namespace Athame.UI
                     {
                         if (service.Settings.Response == null) continue;
                         var result = false;
-                        td.InstructionText = String.Format("Signing into {0}...", service.Name);
+                        td.InstructionText = $"Signing into {service.Name}...";
                         try
                         {
                             openCt.Token.ThrowIfCancellationRequested();
@@ -489,7 +489,7 @@ namespace Athame.UI
                             }
                             else
                             {
-                                MessageBox.Show(String.Format("Failed to sign in to {0}", service.Name), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                     }
