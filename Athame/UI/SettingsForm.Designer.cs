@@ -41,14 +41,19 @@
             this.saveButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.mFolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.servicesListBox = new System.Windows.Forms.ListBox();
+            this.serviceUiPanel = new System.Windows.Forms.Panel();
             this.tabControl1.SuspendLayout();
             this.generalTab.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.generalTab);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Location = new System.Drawing.Point(14, 16);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -175,6 +180,36 @@
             this.cancelButton.UseVisualStyleBackColor = true;
             this.cancelButton.Click += new System.EventHandler(this.cancelButton_Click);
             // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.serviceUiPanel);
+            this.tabPage1.Controls.Add(this.servicesListBox);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(708, 347);
+            this.tabPage1.TabIndex = 1;
+            this.tabPage1.Text = "Services";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // servicesListBox
+            // 
+            this.servicesListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.servicesListBox.FormattingEnabled = true;
+            this.servicesListBox.ItemHeight = 15;
+            this.servicesListBox.Location = new System.Drawing.Point(6, 6);
+            this.servicesListBox.Name = "servicesListBox";
+            this.servicesListBox.Size = new System.Drawing.Size(173, 332);
+            this.servicesListBox.TabIndex = 0;
+            this.servicesListBox.SelectedIndexChanged += new System.EventHandler(this.servicesListBox_SelectedIndexChanged);
+            // 
+            // serviceUiPanel
+            // 
+            this.serviceUiPanel.Location = new System.Drawing.Point(185, 6);
+            this.serviceUiPanel.Name = "serviceUiPanel";
+            this.serviceUiPanel.Size = new System.Drawing.Size(517, 332);
+            this.serviceUiPanel.TabIndex = 1;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -194,6 +229,7 @@
             this.generalTab.ResumeLayout(false);
             this.generalTab.PerformLayout();
             this.flowLayoutPanel1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -214,5 +250,8 @@
         private System.Windows.Forms.FolderBrowserDialog mFolderBrowserDialog;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.ListBox servicesListBox;
+        private System.Windows.Forms.Panel serviceUiPanel;
     }
 }

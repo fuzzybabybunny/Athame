@@ -16,18 +16,11 @@ namespace Athame.UI
             pathFormatTextBox.Text = ApplicationSettings.Default.TrackFilenameFormat;
 
             var services = ServiceCollection.Default;
-            // this is why I should've used WPF in the first place lol
-            // http://stackoverflow.com/questions/1532301/visual-studio-tabcontrol-tabpages-insert-not-working
-            // ReSharper disable once UnusedVariable
-            var _ = tabControl1.Handle;
             foreach (var service in services)
             {
-                var tab = new TabPage(service.Name);
-                tab.Controls.Add(new ServiceSettingsView(service));
-                // insert after general tab - this is here only so tabs can be offset
-                // in the case of a new static tab being added in designer
-                tabControl1.TabPages.Insert(tabControl1.TabCount, tab);
+                servicesListBox.Items.Add(service.Name);
             }
+            if (servicesListBox.Items.Count > 0) servicesListBox.SelectedIndex = 0;
         }
 
         private void saveLocBrowseButton_Click(object sender, EventArgs e)
@@ -51,6 +44,13 @@ namespace Athame.UI
         private void pathFormatTextBox_TextChanged(object sender, EventArgs e)
         {
             ApplicationSettings.Default.TrackFilenameFormat = pathFormatTextBox.Text;
+        }
+
+        private void servicesListBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var ss = ServiceCollection.Default[servicesListBox.SelectedIndex];
+            serviceUiPanel.Controls.Clear();
+            serviceUiPanel.Controls.Add(ss.GetSettingsControl());
         }
     }
 }
