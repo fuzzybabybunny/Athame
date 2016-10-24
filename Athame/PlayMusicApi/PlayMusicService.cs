@@ -159,20 +159,27 @@ namespace Athame.PlayMusicApi
             return result;
         }
 
-        public override string Name
+        public override async Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve)
         {
-            get { return "Google Play Music"; }
+            throw new NotImplementedException();
+            
         }
 
-        public override string WebHost
+        public override Task<Album> GetAlbumAsync(string albumId, bool withTracks)
         {
-            get { return GooglePlayHost; }
+            throw new NotImplementedException();
         }
 
-        public override bool IsAuthenticated
+        public override Task<Track> GetTrackAsync(string trackId)
         {
-            get { return client.Session != null && client.Session.IsAuthenticated; }
+            throw new NotImplementedException();
         }
+
+        public override string Name => "Google Play Music";
+
+        public override string WebHost => GooglePlayHost;
+
+        public override bool IsAuthenticated => client.Session != null && client.Session.IsAuthenticated;
 
         public override Control GetSettingsControl()
         {
@@ -188,26 +195,17 @@ namespace Athame.PlayMusicApi
             set { settings = (PlayMusicServiceSettings)value ?? new PlayMusicServiceSettings(); }
         }
 
-        public override AuthenticationMethod AuthenticationMethod
-        {
-            get { return AuthenticationMethod.UsernameAndPassword;}
-        }
+        public override AuthenticationMethod AuthenticationMethod => AuthenticationMethod.UsernameAndPassword;
 
-        public override AuthenticationFlow Flow
+        public override AuthenticationFlow Flow => new AuthenticationFlow
         {
-            get
+            SignInInformation =
+                "Enter your Google account email and password. If you use two-factor authentication, you must set an app password:",
+            LinksToDisplay = new Dictionary<string, string>
             {
-                return new AuthenticationFlow
-                {
-                    SignInInformation =
-                        "Enter your Google account email and password. If you use two-factor authentication, you must set an app password:",
-                    LinksToDisplay = new Dictionary<string, string>
-                    {
-                        {"Set an app password", "https://security.google.com/settings/security/apppasswords"},
-                        {"Forgot your password?", "https://accounts.google.com/signin/recovery"}
-                    }
-                };
+                {"Set an app password", "https://security.google.com/settings/security/apppasswords"},
+                {"Forgot your password?", "https://accounts.google.com/signin/recovery"}
             }
-        }
+        };
     }
 }

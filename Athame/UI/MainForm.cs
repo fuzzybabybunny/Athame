@@ -435,33 +435,29 @@ namespace Athame.UI
 
         private async Task ShowStartupWaitDialog()
         {
-
-                foreach (var service in ServiceCollection.Default)
+            foreach (var service in ServiceCollection.Default)
+            {
+                if (service.Settings.Response == null) continue;
+                var waitForm = new WaitForm(this);
+                waitForm.TopMost = true;
+                waitForm.Show();
+                waitForm.Message = $"Signing into {service.Name}...";
+                var result = false;
+                try
                 {
-                    if (service.Settings.Response == null) continue;
-                    var waitForm = new WaitForm(this);
-                    waitForm.TopMost = true;
-                    waitForm.Show();
-                    waitForm.Message = $"Signing into {service.Name}...";
-                    var result = false;
-                    try
-                    {
-                        result = await service.RestoreSessionAsync(service.Settings.Response);
-                    }
-                    catch (NotImplementedException)
-                    {
-                        result = service.RestoreSession(service.Settings.Response);
-                    }
-                    if (!result)
-                    {
-                        MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-                    }
-                    waitForm.Close();
-                    
+                    result = await service.RestoreSessionAsync(service.Settings.Response);
                 }
-                
-            
+                catch (NotImplementedException)
+                {
+                    result = service.RestoreSession(service.Settings.Response);
+                }
+                if (!result)
+                {
+                    MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                waitForm.Close();
+            }
         }
 
         private void ShowStartupTaskDialog()

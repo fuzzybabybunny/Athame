@@ -96,9 +96,6 @@ namespace Athame.UI
             // 
             // queueListView
             // 
-            this.queueListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
             this.queueListView.CheckBoxes = true;
             this.queueListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.checkCol,
@@ -108,9 +105,9 @@ namespace Athame.UI
             this.albumCol});
             this.queueListView.FullRowSelect = true;
             this.queueListView.GridLines = true;
-            this.queueListView.Location = new System.Drawing.Point(12, 324);
+            this.queueListView.Location = new System.Drawing.Point(14, 309);
             this.queueListView.Name = "queueListView";
-            this.queueListView.Size = new System.Drawing.Size(783, 484);
+            this.queueListView.Size = new System.Drawing.Size(783, 499);
             this.queueListView.SmallImageList = this.queueImageList;
             this.queueListView.TabIndex = 7;
             this.queueListView.UseCompatibleStateImageBehavior = false;
@@ -270,7 +267,7 @@ namespace Athame.UI
             // 
             // startDownloadButton
             // 
-            this.startDownloadButton.Location = new System.Drawing.Point(720, 295);
+            this.startDownloadButton.Location = new System.Drawing.Point(720, 280);
             this.startDownloadButton.Name = "startDownloadButton";
             this.startDownloadButton.Size = new System.Drawing.Size(75, 23);
             this.startDownloadButton.TabIndex = 12;

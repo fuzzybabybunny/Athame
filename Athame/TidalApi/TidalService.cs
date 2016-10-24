@@ -247,6 +247,21 @@ namespace Athame.TidalApi
             return result;
         }
 
+        public override Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<Album> GetAlbumAsync(string albumId, bool withTracks)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<Track> GetTrackAsync(string trackId)
+        {
+            throw new NotImplementedException();
+        }
+
         public override string Name
         {
             get { return "Tidal"; }

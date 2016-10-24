@@ -67,6 +67,29 @@ namespace Athame.CommonModel
         public abstract UrlParseResult ParseUrl(Uri url);
 
         /// <summary>
+        /// Performs a text search and retrieves the results -- see <see cref="SearchResult"/> for what is returned.
+        /// </summary>
+        /// <param name="searchText">The text to search</param>
+        /// <param name="typesToRetrieve">Which media to search for. This can be ignored for services which return all types regardless.</param>
+        /// <returns>A <see cref="SearchResult"/> containing top tracks, albums, or playlists.</returns>
+        public abstract Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve);
+
+        /// <summary>
+        /// Retrieves an album.
+        /// </summary>
+        /// <param name="albumId">The album's identifier.</param>
+        /// <param name="withTracks">Whether to return tracks or not. On some services, this may involve an extra API call.</param>
+        /// <returns>An album, with or without tracks.</returns>
+        public abstract Task<Album> GetAlbumAsync(string albumId, bool withTracks);
+
+        /// <summary>
+        /// Retrieves the metadata for a single track.
+        /// </summary>
+        /// <param name="trackId">The track's identifier.</param>
+        /// <returns>A track.</returns>
+        public abstract Task<Track> GetTrackAsync(string trackId);
+
+        /// <summary>
         /// The service's name.
         /// </summary>
         public abstract string Name { get; }
