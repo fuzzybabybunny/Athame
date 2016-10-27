@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Athame.CommonModel;
+using Athame.PluginAPI.Service;
 using GoogleMusicApi.Common;
 
 namespace Athame.PlayMusicApi

@@ -1,4 +1,4 @@
-﻿using Athame.CommonModel;
+﻿using Athame.PluginAPI.Service;
 using SysIOPath = System.IO.Path;
 
 namespace Athame.InternalModel

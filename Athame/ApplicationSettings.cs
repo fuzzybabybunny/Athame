@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Athame.CommonModel;
+using Athame.PluginAPI.Service;
 using Newtonsoft.Json;
 
 namespace Athame

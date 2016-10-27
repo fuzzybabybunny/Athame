@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Media;
 using System.Windows.Forms;
-using Athame.CommonModel;
+using Athame.PluginAPI.Service;
 
 namespace Athame.UI
 {

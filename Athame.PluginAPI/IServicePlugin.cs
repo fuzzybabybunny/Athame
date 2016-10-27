@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Athame.PluginAPI
 {
-    public class Class1
+    public interface IServicePlugin : IPlugin
     {
+
     }
 }

@@ -80,19 +80,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
-    <Compile Include="CommonModel\Album.cs" />
-    <Compile Include="CommonModel\AuthenticationFlow.cs" />
-    <Compile Include="CommonModel\AuthenticationResponse.cs" />
-    <Compile Include="CommonModel\InvalidSessionException.cs" />
-    <Compile Include="CommonModel\MediaType.cs" />
-    <Compile Include="CommonModel\Playlist.cs" />
-    <Compile Include="CommonModel\ResourceNotFoundException.cs" />
-    <Compile Include="CommonModel\SearchResult.cs" />
-    <Compile Include="CommonModel\Service.cs" />
-    <Compile Include="CommonModel\ServiceCollection.cs" />
-    <Compile Include="CommonModel\StoredSettings.cs" />
-    <Compile Include="CommonModel\Track.cs" />
-    <Compile Include="CommonModel\UrlParseResult.cs" />
+    <Compile Include="ServiceCollection.cs" />
     <Compile Include="DownloadAndTag\TrackDownloader.cs" />
     <Compile Include="InternalModel\DownloadableMediaCollection.cs" />
     <Compile Include="InternalModel\DownloadableTrack.cs" />
@@ -226,6 +214,12 @@
     <None Include="Resources\control-stop-square.png" />
     <None Include="Resources\control.png" />
     <None Include="Resources\exclamation-red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Athame.PluginAPI\Athame.PluginAPI.csproj">
+      <Project>{e10cc6e7-7100-4616-84bc-413a91e668b8}</Project>
+      <Name>Athame.PluginAPI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />

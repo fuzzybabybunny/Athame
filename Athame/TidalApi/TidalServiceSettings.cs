@@ -1,4 +1,4 @@
-﻿using Athame.CommonModel;
+﻿using Athame.PluginAPI.Service;
 using OpenTidl.Enums;
 
 namespace Athame.TidalApi

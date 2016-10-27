@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Athame.CommonModel;
+using Athame.PluginAPI.Service;
 
 namespace Athame.InternalModel
 {

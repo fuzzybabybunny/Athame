@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Athame.CommonModel;
 using Athame.InternalModel;
+using Athame.PluginAPI.Service;
 
 namespace Athame.DownloadAndTag
 {

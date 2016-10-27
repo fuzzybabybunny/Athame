@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Athame.CommonModel;
+using Athame.PluginAPI.Service;
 using OpenTidl;
 using OpenTidl.Enums;
 using OpenTidl.Methods;

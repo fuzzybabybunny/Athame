@@ -1,4 +1,4 @@
-﻿using Athame.CommonModel;
+﻿using Athame.PluginAPI.Service;
 using GoogleMusicApi.Structure.Enums;
 
 namespace Athame.PlayMusicApi
