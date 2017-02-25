@@ -80,6 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="DownloadAndTag\MediaDownloadQueue.cs" />
+    <Compile Include="DownloadAndTag\EnqueuedTrack.cs" />
     <Compile Include="ServiceCollection.cs" />
     <Compile Include="DownloadAndTag\TrackDownloader.cs" />
     <Compile Include="InternalModel\DownloadableMediaCollection.cs" />
@@ -115,12 +117,19 @@
     <Compile Include="UI\AddForm.Designer.cs">
       <DependentUpon>AddForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\AlbumView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\AlbumView.Designer.cs">
+      <DependentUpon>AlbumView.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\CredentialsForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\CredentialsForm.Designer.cs">
       <DependentUpon>CredentialsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Win32\FormExtensions.cs" />
     <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,7 +139,8 @@
     <Compile Include="PathHelpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\ProgressBarExtensions.cs" />
+    <Compile Include="UI\Win32\Native.cs" />
+    <Compile Include="UI\Win32\ProgressBarExtensions.cs" />
     <Compile Include="UI\RadioButtonEnumMapper.cs" />
     <Compile Include="UI\ServiceSettingsView.cs">
       <SubType>UserControl</SubType>
@@ -163,6 +173,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\AddForm.resx">
       <DependentUpon>AddForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\AlbumView.resx">
+      <DependentUpon>AlbumView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\CredentialsForm.resx">
       <DependentUpon>CredentialsForm.cs</DependentUpon>
@@ -205,6 +218,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AthameIcon.ico" />
+    <None Include="Resources\plus.png" />
+    <None Include="Resources\unknown.png" />
     <None Include="Resources\control-270-small.png" />
     <None Include="Resources\information-white.png" />
     <None Include="Resources\bin.png" />

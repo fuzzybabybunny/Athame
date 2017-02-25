@@ -8,6 +8,7 @@ using Athame.PluginAPI.Service;
 
 namespace Athame.DownloadAndTag
 {
+    [Obsolete]
     public class DownloadProgressEventArgs : EventArgs
     {
         public int CurrentItemIndex { get; internal set; }
@@ -27,16 +28,17 @@ namespace Athame.DownloadAndTag
         public DownloadProgressChangedEventArgs CurrentProgress { get; internal set; }
     }
 
+    [Obsolete]
     public class TrackDownloader : IDisposable
     {
         private readonly WebClient mClient = new WebClient();
         private readonly List<DownloadableTrack> tracks;
         private readonly string pathFormat;
-        private readonly Service service;
+        private readonly MusicService service;
 
         private int currentTrack;
         
-        public TrackDownloader(Service service, List<DownloadableTrack> tracks, string pathFormat)
+        public TrackDownloader(MusicService service, List<DownloadableTrack> tracks, string pathFormat)
         {
             this.tracks = tracks;
             this.pathFormat = pathFormat;

@@ -49,7 +49,9 @@ namespace Athame.UI
         {
             var ss = ServiceCollection.Default[servicesListBox.SelectedIndex];
             serviceUiPanel.Controls.Clear();
-            serviceUiPanel.Controls.Add(ss.GetSettingsControl());
+            var ssv = new ServiceSettingsView(ss);
+            ssv.Dock = DockStyle.Fill;
+            serviceUiPanel.Controls.Add(ssv);
         }
     }
 }

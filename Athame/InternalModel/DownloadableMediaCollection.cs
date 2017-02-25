@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Athame.PluginAPI.Service;
 
 namespace Athame.InternalModel
 {
+    [Obsolete]
     public class DownloadableMediaCollection
     {
-        public Service Service { get; set; }
+        public MusicService Service { get; set; }
         public string Name { get; set; }
         public MediaType CollectionType { get; set; }
         public List<DownloadableTrack> Tracks { get; set; }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Athame.PluginAPI.Downloader;
 
 namespace Athame.PluginAPI.Service
 {
-    public abstract class Service
+    public abstract class MusicService
     {
         /// <summary>
         /// Authenticates for the first time against the service.
@@ -45,11 +46,19 @@ namespace Athame.PluginAPI.Service
         public abstract Task<Album> GetAlbumWithTracksAsync(string albumId);
 
         /// <summary>
-        /// Retrieves a URI for streaming or downloading a track.
+        /// Use <see cref="GetDownloadableTrackAsync"/>. Retrieves a URI for streaming or downloading a track.
         /// </summary>
         /// <param name="trackId">The service-specific track identifier.</param>
         /// <returns>A <see cref="System.Uri"/> on success, null otherwise.</returns>
+        [Obsolete]
         public abstract Task<Uri> GetTrackStreamUriAsync(string trackId);
+
+        /// <summary>
+        /// Retrieves a track's downloadable form.
+        /// </summary>
+        /// <param name="track">The track to download.</param>
+        /// <returns>A <see cref="DownloadTrack"/> containing file metadata and the URI of the track.</returns>
+        public abstract Task<DownloadTrack> GetDownloadableTrackAsync(Track track);
 
         /// <summary>
         /// Retrieves a playlist. Note that it is up to the implementation to differentiate
@@ -97,6 +106,7 @@ namespace Athame.PluginAPI.Service
         /// <summary>
         /// The hostname of the service's public website.
         /// </summary>
+        [Obsolete]
         public abstract string WebHost { get; }
 
         /// <summary>
@@ -127,5 +137,44 @@ namespace Athame.PluginAPI.Service
         /// "default" settings instance when there are no persisted settings available.
         /// </summary>
         public abstract StoredSettings Settings { get; set; }
+
+        /// <summary>
+        /// The base URI of the service. Entered URIs are compared on the Scheme and Host properties of each base URI, and if they match,
+        /// <see cref="ParseUrl"/> is called.
+        /// </summary>
+        public abstract Uri[] BaseUri { get; }
+
+        /// <summary>
+        /// Performs custom authentication. This is only called if the <see cref="AuthenticationMethod"/> is <see cref="AuthenticationMethod.Custom"/>.
+        /// You must implement this if you are using custom authentication.
+        /// <seealso cref="AuthenticationMethod"/>
+        /// </summary>
+        /// <param name="parent">The parent form. May be null.</param>
+        /// <returns>True if the user has authenticated successfully.</returns>
+        public virtual bool DoCustomAuthentication(Form parent)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Performs custom authentication asynchronously. This is only called if the <see cref="AuthenticationMethod"/> is <see cref="AuthenticationMethod.Custom"/>.
+        /// <seealso cref="DoCustomAuthentication"/>
+        /// </summary>
+        /// <param name="parent">The parent form. May be null.</param>
+        /// <returns>True if the user has authenticated successfully.</returns>
+        public virtual Task<bool> DoCustomAuthenticationAsync(Form parent)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns a downloader for this service. The default implementation is <see cref="HttpDownloader"/>,
+        /// but this method may be overridden with a custom downloader that implements <see cref="IDownloader"/>.
+        /// </summary>
+        /// <returns>A new concrete implementation of <see cref="IDownloader"/>.</returns>
+        public virtual IDownloader GetDownloader()
+        {
+            return new HttpDownloader();
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Athame.TidalApi
         {
             StreamQuality = SoundQuality.HIGH;
             AppendVersionToTrackTitle = true;
-            DontAppendAlbumVersion = false;
+            DontAppendAlbumVersion = true;
         }
     }
 }

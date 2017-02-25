@@ -20,7 +20,7 @@ namespace Athame.PluginAPI.Service
         Single
     }
 
-    public class Album
+    public class Album : IMediaCollection
     {
         /// <summary>
         /// Service-specific identifier for the album. Not null.
@@ -42,7 +42,7 @@ namespace Athame.PluginAPI.Service
         /// <summary>
         /// The album's tracks. May be null.
         /// </summary>
-        public List<Track> Tracks { get; set; }
+        public IEnumerable<Track> Tracks { get; set; }
 
         /// <summary>
         /// The album's type, if the service supports it. Defaults to <see cref="AlbumType.Album"/>.

@@ -9,9 +9,9 @@ namespace Athame.UI
 
     public partial class CredentialsForm : Form
     {
-        private readonly Service svc;
+        private readonly MusicService svc;
 
-        public CredentialsForm(Service service)
+        public CredentialsForm(MusicService service)
         {
             InitializeComponent();
             svc = service;

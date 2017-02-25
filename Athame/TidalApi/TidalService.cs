@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Athame.PluginAPI.Downloader;
 using Athame.PluginAPI.Service;
 using OpenTidl;
 using OpenTidl.Enums;
@@ -12,7 +13,7 @@ using OpenTidl.Transport;
 
 namespace Athame.TidalApi
 {
-    public class TidalService : Service
+    public class TidalService : MusicService
     {
         private OpenTidlClient client;
         private OpenTidlSession session;
@@ -88,11 +89,7 @@ namespace Athame.TidalApi
                     where artist.Type == EnglishArtistNameJoiner.ArtistMain
                     select artist.Name).ToArray()),
                 Id = tidalTrack.Id.ToString(),
-                IsDownloadable = tidalTrack.AllowStreaming,
-                FileExtension = settings.StreamQuality == SoundQuality.LOSSLESS || 
-                                    settings.StreamQuality == SoundQuality.LOSSLESS_HD
-                                    ? ".flac"
-                                    : ".m4a"
+                IsDownloadable = tidalTrack.AllowStreaming
 
             };
             if (!String.IsNullOrEmpty(tidalTrack.Version))
@@ -200,6 +197,37 @@ namespace Athame.TidalApi
             return new Uri((await session.GetTrackOfflineUrl(Int32.Parse(trackId), settings.StreamQuality)).Url);
         }
 
+        public override async Task<DownloadTrack> GetDownloadableTrackAsync(Track track)
+        {
+            var response = await session.GetTrackOfflineUrl(Int32.Parse(track.Id), settings.StreamQuality);
+            var result = new DownloadTrack {DownloadUri = new Uri(response.Url)};
+            // We can assume the MIME type and bitrate from the **returned** sound quality
+            // It is unwise to use the stream quality stored in settings as users with lossless
+            // subscriptions will get lossy streams simply because lossless streams are unavailable
+            switch (response.SoundQuality)
+            {
+                case SoundQuality.LOW:
+                    result.FileType = MediaFileTypes.Mpeg4Audio;
+                    result.BitRate = 96 * 1000;
+                    break;
+                case SoundQuality.HIGH:
+                    result.FileType = MediaFileTypes.Mpeg4Audio;
+                    result.BitRate = 320 * 1000;
+                    break;
+                case SoundQuality.LOSSLESS:
+                    result.FileType = MediaFileTypes.FreeLosslessAudioCodec;
+                    // Bitrate doesn't really matter since it's lossless
+                    result.BitRate = -1;
+                    break;
+                case SoundQuality.LOSSLESS_HD:
+                    // This seems to be obsolete so I'll just wait and see
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return result;
+        }
+
         public override async Task<Playlist> GetPlaylistAsync(string playlistId)
         {
             var playlist = await session.GetPlaylist(playlistId);
@@ -285,20 +313,14 @@ namespace Athame.TidalApi
             }
         }
 
-        public override AuthenticationFlow Flow
+        public override AuthenticationFlow Flow => new AuthenticationFlow
         {
-            get
+            SignInInformation = "Enter your Tidal username and password:",
+            LinksToDisplay = new SignInLink[]
             {
-                return new AuthenticationFlow
-                {
-                    SignInInformation = "Enter your Tidal username and password:",
-                    LinksToDisplay = new Dictionary<string, string>
-                    {
-                        {"Forgot password?", "https://listen.tidal.com/"}
-                    }
-                };
+                new SignInLink{ DisplayName = "Forgot password?", Link = new Uri("https://listen.tidal.com/")}
             }
-        }
+        };
 
         public override Control GetSettingsControl()
         {
@@ -310,5 +332,12 @@ namespace Athame.TidalApi
             get { return settings; }
             set { settings = (TidalServiceSettings)value ?? new TidalServiceSettings(); }
         }
+
+        public override Uri[] BaseUri
+            => new[]
+            {
+                new Uri("http://" + TidalWebDomain), new Uri("https://" + TidalWebDomain),
+                new Uri("http://tidal.com"), new Uri("https://tidal.com"),
+            };
     }
 }

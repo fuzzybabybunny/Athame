@@ -8,9 +8,9 @@ namespace Athame.UI
     {
 
         private readonly SplitStringParser sspSignInStatus, sspSignInButton;
-        private readonly Service service;
+        private readonly MusicService service;
 
-        public ServiceSettingsView(Service service)
+        public ServiceSettingsView(MusicService service)
         {
             this.service = service;
             InitializeComponent();

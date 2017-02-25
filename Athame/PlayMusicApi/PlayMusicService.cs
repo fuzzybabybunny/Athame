@@ -4,12 +4,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Athame.PluginAPI.Downloader;
 using Athame.PluginAPI.Service;
 using GoogleMusicApi.Common;
 
 namespace Athame.PlayMusicApi
 {
-    public class PlayMusicService : Service
+    public class PlayMusicService : MusicService
     {
         private const string GooglePlayHost = "play.google.com";
         private MobileClient client = new MobileClient();
@@ -55,8 +56,7 @@ namespace Athame.PlayMusicApi
                 TrackNumber = gpmTrack.TrackNumber,
                 Id = gpmTrack.StoreId,
                 // AFAIK tracks returned will always be downloadable or else the server will give a 404/403/400
-                IsDownloadable = true,
-                FileExtension = ".mp3"
+                IsDownloadable = true
             };
         }
 
@@ -75,7 +75,7 @@ namespace Athame.PlayMusicApi
                 {
                     var cmTrack = CreateTrack(track);
                     cmTrack.Album = a;
-                    a.Tracks.Add(cmTrack);
+                    ((List<Track>)a.Tracks).Add(cmTrack);
                 }
                 
             }
@@ -114,6 +114,25 @@ namespace Athame.PlayMusicApi
                 throw new InvalidSessionException("Play Music: Stream URL unavailable. Check your subscription is active then try again.");
             }
             return streamUrl;
+        }
+
+        public override async Task<DownloadTrack> GetDownloadableTrackAsync(Track track)
+        {
+            // Only property we need to set is Track.StoreId (see Google.Music/GoogleMusicApi.UWP/Requests/Data/StreamUrlGetRequest.cs:32)
+            var streamUrl = await client.GetStreamUrlAsync(new GoogleMusicApi.Structure.Track { StoreId = track.Id });
+            if (streamUrl == null)
+            {
+                throw new InvalidSessionException("Play Music: Stream URL unavailable. Check your subscription is active then try again.");
+            }
+            // Unfortunately I have forgotten the various stream qualities available on Play Music because my subscription ran out,
+            // so I will set the bitrate to -1, i.e. unknown
+            // What is known is that all streams are MP3, so this should work.
+            return new DownloadTrack
+            {
+                BitRate = -1,
+                DownloadUri = streamUrl,
+                FileType = MediaFileTypes.Mpeg3Audio
+            };
         }
 
         public override async Task<Playlist> GetPlaylistAsync(string playlistId)
@@ -195,16 +214,18 @@ namespace Athame.PlayMusicApi
             set { settings = (PlayMusicServiceSettings)value ?? new PlayMusicServiceSettings(); }
         }
 
+        public override Uri[] BaseUri => new[] { new Uri("http://" + GooglePlayHost), new Uri("https://" + GooglePlayHost) };
+
         public override AuthenticationMethod AuthenticationMethod => AuthenticationMethod.UsernameAndPassword;
 
         public override AuthenticationFlow Flow => new AuthenticationFlow
         {
             SignInInformation =
                 "Enter your Google account email and password. If you use two-factor authentication, you must set an app password:",
-            LinksToDisplay = new Dictionary<string, string>
+            LinksToDisplay = new SignInLink[]
             {
-                {"Set an app password", "https://security.google.com/settings/security/apppasswords"},
-                {"Forgot your password?", "https://accounts.google.com/signin/recovery"}
+                new SignInLink{ DisplayName = "Set an app password", Link = new Uri("https://security.google.com/settings/security/apppasswords")},
+                new SignInLink{DisplayName = "Forgot your password?", Link = new Uri("https://accounts.google.com/signin/recovery")}
             }
         };
     }

@@ -13,6 +13,7 @@ using Athame.DownloadAndTag;
 using Athame.InternalModel;
 using Athame.PluginAPI.Service;
 using Athame.Properties;
+using Athame.UI.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
@@ -33,7 +34,7 @@ namespace Athame.UI
         // Instance vars
         private Tuple<int, int> mSelectedItem;
         private UrlParseResult mResult;
-        private Service mService;
+        private MusicService mService;
         private int mGroupCounter = -1;
 
         // shitty hack
@@ -232,7 +233,7 @@ namespace Athame.UI
 
         }
 
-        private async Task DownloadTracks(Service svc, List<DownloadableTrack> tracks)
+        private async Task DownloadTracks(MusicService svc, List<DownloadableTrack> tracks)
         {
             var tagger = new TrackTagger();
             var downloader = new TrackDownloader(svc, tracks, mPathFormat);
@@ -532,7 +533,7 @@ namespace Athame.UI
 
         private void urlValidStateLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var svc = (Service) e.Link.LinkData;
+            var svc = (MusicService) e.Link.LinkData;
             using (var cf = new CredentialsForm(svc))
             {
                 var res = cf.ShowDialog(this);

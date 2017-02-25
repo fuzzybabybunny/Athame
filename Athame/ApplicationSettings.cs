@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Forms;
 using Athame.PluginAPI.Service;
 using Newtonsoft.Json;
 
@@ -46,9 +47,19 @@ namespace Athame
                     }
                     else
                     {
-                        // Assign settings path to deserialised settings instance
-                        _default = JsonConvert.DeserializeObject<ApplicationSettings>(File.ReadAllText(SettingsPath), SerializerSettings);
-                        _default.settingsPath = SettingsPath;
+                        try
+                        {
+                            // Assign settings path to deserialised settings instance
+                            _default = JsonConvert.DeserializeObject<ApplicationSettings>(
+                                File.ReadAllText(SettingsPath), SerializerSettings);
+                            _default.settingsPath = SettingsPath;
+                        }
+                        catch (JsonSerializationException)
+                        {
+                            MessageBox.Show("");
+                            _default = new ApplicationSettings(SettingsPath);
+                            _default.Save();
+                        }
                     }
                 }
                 return _default;

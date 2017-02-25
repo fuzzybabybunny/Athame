@@ -6,6 +6,12 @@ using OpenTidl.Models;
 
 namespace Athame.TidalApi
 {
+    /// <summary>
+    /// Because Tidal returns a list of main and featuring artists (rather than a standard concatenated string of main artists
+    /// and featuring artists), we need to join the artist names so they can be written as a single string.
+    /// This class attempts to join artist names in a 'standard' form. I believe that foreign songs also use this convention,
+    /// but there is definitely room to expand this class to other locales should the need arise.
+    /// </summary>
     internal class EnglishArtistNameJoiner
     {
         private const string LastTwoItemsJoin = " & ";

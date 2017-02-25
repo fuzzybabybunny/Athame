@@ -2,9 +2,18 @@
 
 namespace Athame.PluginAPI.Service
 {
-    public class Playlist
+    /// <summary>
+    /// Represents an ordered, arbitrary list of tracks.
+    /// </summary>
+    public class Playlist : IMediaCollection
     {
+        /// <summary>
+        /// The title of the playlist.
+        /// </summary>
         public string Title { get; set; }
-        public List<Track> Tracks { get; set; }
+        /// <summary>
+        /// The tracks contained within the playlist.
+        /// </summary>
+        public IEnumerable<Track> Tracks { get; set; }
     }
 }

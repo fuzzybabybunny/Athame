@@ -1,8 +1,10 @@
-﻿using Athame.PluginAPI.Service;
+﻿using System;
+using Athame.PluginAPI.Service;
 using SysIOPath = System.IO.Path;
 
 namespace Athame.InternalModel
 {
+    [Obsolete]
     public enum TrackState
     {
         Ready,
@@ -15,6 +17,7 @@ namespace Athame.InternalModel
     /// <summary>
     /// Represents a track that can be downloaded.
     /// </summary>
+    [Obsolete]
     public class DownloadableTrack
     {
         public const string ArtworkName = "cover.jpg";

@@ -8,15 +8,17 @@ namespace Athame.PluginAPI.Service
     public enum AuthenticationMethod
     {
         /// <summary>
-        /// The service does not require authentication
+        /// The service does not require authentication.
         /// </summary>
         None,
         /// <summary>
-        /// The service authenticates through username and password
+        /// The service authenticates through username and password.
         /// </summary>
         UsernameAndPassword,
         /// <summary>
-        /// Not yet implemented. The service provides custom logic (such as showing a custom window or signing in through an OAuth provider) in order to authenticate
+        /// The service provides custom logic (such as showing a custom window or signing in through an OAuth provider) in order to authenticate.
+        /// When authentication is requested, <see cref="MusicService.DoCustomAuthentication"/> is first called. If it is not implemented, then <see cref="MusicService.DoCustomAuthenticationAsync"/>
+        /// is called. You must implement one or the other to use this authentication type.
         /// </summary>
         Custom
     }
@@ -35,6 +37,6 @@ namespace Athame.PluginAPI.Service
         /// A dictionary of links displayed below the sign in information string. The key will be displayed as the link text, and the value
         /// will be a URL which is opened when the link is clicked.
         /// </summary>
-        public IReadOnlyDictionary<string, string> LinksToDisplay { get; set; }
+        public IEnumerable<SignInLink> LinksToDisplay { get; set; }
     }
 }
