@@ -35,7 +35,7 @@ namespace Athame.PluginAPI.Service
         /// </summary>
         public string Title { get; set; }
         /// <summary>
-        /// The album's cover artwork URL. Not null.
+        /// The album's cover artwork URL. May be null.
         /// </summary>
         public Uri CoverUri { get; set; }
 

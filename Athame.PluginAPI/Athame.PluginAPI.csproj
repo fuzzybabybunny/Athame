@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Downloader\DownloadTrack.cs" />
+    <Compile Include="Downloader\TrackFile.cs" />
     <Compile Include="Downloader\FileType.cs" />
     <Compile Include="Downloader\HttpDownloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />

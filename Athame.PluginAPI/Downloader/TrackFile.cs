@@ -7,7 +7,7 @@ using Athame.PluginAPI.Service;
 
 namespace Athame.PluginAPI.Downloader
 {
-    public class DownloadTrack
+    public class TrackFile
     {
         /// <summary>
         /// The URI to the track.

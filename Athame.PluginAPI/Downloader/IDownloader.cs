@@ -23,7 +23,7 @@ namespace Athame.PluginAPI.Downloader
         event EventHandler<DownloadEventArgs> Progress;
         event EventHandler Done;
 
-        Task DownloadAsyncTask(DownloadTrack track, string destination);
+        Task DownloadAsyncTask(TrackFile track, string destination);
 
     }
 }

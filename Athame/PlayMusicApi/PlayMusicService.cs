@@ -116,7 +116,7 @@ namespace Athame.PlayMusicApi
             return streamUrl;
         }
 
-        public override async Task<DownloadTrack> GetDownloadableTrackAsync(Track track)
+        public override async Task<TrackFile> GetDownloadableTrackAsync(Track track)
         {
             // Only property we need to set is Track.StoreId (see Google.Music/GoogleMusicApi.UWP/Requests/Data/StreamUrlGetRequest.cs:32)
             var streamUrl = await client.GetStreamUrlAsync(new GoogleMusicApi.Structure.Track { StoreId = track.Id });
@@ -127,7 +127,7 @@ namespace Athame.PlayMusicApi
             // Unfortunately I have forgotten the various stream qualities available on Play Music because my subscription ran out,
             // so I will set the bitrate to -1, i.e. unknown
             // What is known is that all streams are MP3, so this should work.
-            return new DownloadTrack
+            return new TrackFile
             {
                 BitRate = -1,
                 DownloadUri = streamUrl,

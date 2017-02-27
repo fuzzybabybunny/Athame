@@ -57,8 +57,8 @@ namespace Athame.PluginAPI.Service
         /// Retrieves a track's downloadable form.
         /// </summary>
         /// <param name="track">The track to download.</param>
-        /// <returns>A <see cref="DownloadTrack"/> containing file metadata and the URI of the track.</returns>
-        public abstract Task<DownloadTrack> GetDownloadableTrackAsync(Track track);
+        /// <returns>A <see cref="TrackFile"/> containing file metadata and the URI of the track.</returns>
+        public abstract Task<TrackFile> GetDownloadableTrackAsync(Track track);
 
         /// <summary>
         /// Retrieves a playlist. Note that it is up to the implementation to differentiate
@@ -172,7 +172,7 @@ namespace Athame.PluginAPI.Service
         /// but this method may be overridden with a custom downloader that implements <see cref="IDownloader"/>.
         /// </summary>
         /// <returns>A new concrete implementation of <see cref="IDownloader"/>.</returns>
-        public virtual IDownloader GetDownloader()
+        public virtual IDownloader GetDownloader(Track t)
         {
             return new HttpDownloader();
         }
