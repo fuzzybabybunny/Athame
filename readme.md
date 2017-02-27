@@ -8,6 +8,10 @@ It is intended for educational and private use only, and **not** as a tool for p
 Above all else, remember that the artists and studios put a lot of work into making music -- if you can, purchase
 music directly from the artist as more money goes to them.
 
+Latest release
+--------------
+The code in the current repo probably won't compile, so check out the releases tab to download a pre-built binary.
+
 Usage
 -----
 Enter a URL in the "URL" textbox, then click "Add". It will show up in the download queue. Click "Start" to begin downloading.
@@ -29,9 +33,10 @@ TODO
 * Properly implement cancellation and stopping on sign in and download.
 * Implement search.
 
-Building
---------
-Slowly migrating to C# 6.0, therefore requires Visual Studio 2015.
+Build/requirements
+------------------
+* .NET 4.6.2 (for other platforms see Mono compatibility section)
+* Visual Studio 2015 (Express will work fine) with NuGet
 
 Mono compatibility
 ------------------
