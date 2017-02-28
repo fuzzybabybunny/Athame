@@ -22,8 +22,8 @@ namespace Athame.PluginAPI.Downloader
         {
             // So we can use the same WebClient for download album artwork
             if (internalState != DownloadState.Downloading) return;
-            var percentage = (((decimal) downloadProgressChangedEventArgs.BytesReceived /
-                               downloadProgressChangedEventArgs.TotalBytesToReceive) * 100);
+            var percentage = (decimal) downloadProgressChangedEventArgs.BytesReceived /
+                               downloadProgressChangedEventArgs.TotalBytesToReceive;
             var eventArgs = new DownloadEventArgs
             {
                 State = internalState,

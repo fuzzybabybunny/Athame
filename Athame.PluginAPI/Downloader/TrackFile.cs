@@ -7,8 +7,16 @@ using Athame.PluginAPI.Service;
 
 namespace Athame.PluginAPI.Downloader
 {
+    /// <summary>
+    /// Represents the downloadable form of <see cref="Track"/>.
+    /// </summary>
     public class TrackFile
     {
+        /// <summary>
+        /// The track this file references.
+        /// </summary>
+        public Track Track { get; set; }
+
         /// <summary>
         /// The URI to the track.
         /// </summary>

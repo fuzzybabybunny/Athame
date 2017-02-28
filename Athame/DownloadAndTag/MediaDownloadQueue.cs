@@ -13,8 +13,23 @@ namespace Athame.DownloadAndTag
     public class TrackDownloadEventArgs : DownloadEventArgs
     {
         public TrackFile TrackFile { get; set; }
+
         public EnqueuedTrack Track { get; set; }
-        public decimal TotalProgress { get; set; }
+
+        public decimal TotalProgress
+        {
+            get {
+                if (TotalItems == 0)
+                {
+                    return 0;
+                }
+                return (CurrentItemIndex + PercentCompleted) / TotalItems;
+            }
+        }
+
+        public int TotalItems { get; set; }
+
+        public int CurrentItemIndex { get; set; }
     }
 
     public class MediaDownloadQueue
@@ -41,12 +56,15 @@ namespace Athame.DownloadAndTag
         {
             TrackDequeued?.Invoke(this, e);
         }
+
         public event EventHandler<TrackDownloadEventArgs> TrackDownloadCompleted;
 
         protected void OnTrackDownloadCompleted(TrackDownloadEventArgs e)
         {
+
             TrackDownloadCompleted?.Invoke(this, e);
         }
+
         public event EventHandler<TrackDownloadEventArgs> TrackDownloadProgress;
 
         protected void OnTrackDownloadProgress(TrackDownloadEventArgs e)
@@ -64,9 +82,10 @@ namespace Athame.DownloadAndTag
                 {
                     PercentCompleted = 0,
                     State = DownloadState.PreProcess,
-                    TotalProgress = (((decimal)mList.Count - queueView.Count) / mList.Count) * 100,
                     Track = currentItem,
-                    TrackFile = null
+                    TrackFile = null,
+                    CurrentItemIndex = mList.Count - queueView.Count,
+                    TotalItems = mList.Count
                 };
                 OnTrackDequeued(eventArgs);
 

@@ -27,14 +27,14 @@ namespace Athame.UI
             {
                 var button = new Button
                 {
-                    Text = linkPair.Key,
+                    Text = linkPair.DisplayName,
                     AutoSize = true,
                     AutoSizeMode = AutoSizeMode.GrowAndShrink,
                     UseVisualStyleBackColor = true
                 };
                 // "This will work" - Joe, 28/09/16
                 // ReSharper disable once AccessToForEachVariableInClosure
-                button.Click += (sender, args) => Process.Start(linkPair.Value);
+                button.Click += (sender, args) => Process.Start(linkPair.Link.ToString());
                 linksPanel.Controls.Add(button);
             }
         }
@@ -43,7 +43,7 @@ namespace Athame.UI
 
         private async void okButton_Click(object sender, EventArgs e)
         {
-            using (var waitForm = new WaitForm(this, String.Format("Signing into {0}...", svc.Name)))
+            using (var waitForm = new WaitForm(this, $"Signing into {svc.Name}..."))
             {
                 waitForm.Show(this);
                 Result = await svc.LoginAsync(emailTextBox.Text, passwordTextBox.Text);

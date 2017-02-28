@@ -1,5 +1,6 @@
 ﻿using System;
 using Athame.PluginAPI.Service;
+using Athame.Utils;
 using SysIOPath = System.IO.Path;
 
 namespace Athame.InternalModel
@@ -73,7 +74,7 @@ namespace Athame.InternalModel
 
         public static string FormatTrackPath(string pathFormat, Track track)
         {
-            return StringObjectFormatter.Format(pathFormat, track, o => PathHelpers.CleanFilename(o.ToString())) + track.FileExtension;
+            return null;
         }
     }
 }

@@ -131,7 +131,8 @@ namespace Athame.PlayMusicApi
             {
                 BitRate = -1,
                 DownloadUri = streamUrl,
-                FileType = MediaFileTypes.Mpeg3Audio
+                FileType = MediaFileTypes.Mpeg3Audio,
+                Track = track
             };
         }
 

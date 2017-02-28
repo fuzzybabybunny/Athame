@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Athame.Utils;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Athame.Tests
 {

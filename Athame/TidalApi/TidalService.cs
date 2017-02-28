@@ -200,7 +200,7 @@ namespace Athame.TidalApi
         public override async Task<TrackFile> GetDownloadableTrackAsync(Track track)
         {
             var response = await session.GetTrackOfflineUrl(Int32.Parse(track.Id), settings.StreamQuality);
-            var result = new TrackFile {DownloadUri = new Uri(response.Url)};
+            var result = new TrackFile {DownloadUri = new Uri(response.Url), Track = track};
             // We can assume the MIME type and bitrate from the **returned** sound quality
             // It is unwise to use the stream quality stored in settings as users with lossless
             // subscriptions will get lossy streams simply because lossless streams are unavailable

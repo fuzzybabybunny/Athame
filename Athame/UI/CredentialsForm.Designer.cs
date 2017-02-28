@@ -47,9 +47,9 @@
             // helpLabel
             // 
             this.helpLabel.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.helpLabel.Location = new System.Drawing.Point(15, 9);
+            this.helpLabel.Location = new System.Drawing.Point(15, 33);
             this.helpLabel.Name = "helpLabel";
-            this.helpLabel.Size = new System.Drawing.Size(465, 92);
+            this.helpLabel.Size = new System.Drawing.Size(465, 55);
             this.helpLabel.TabIndex = 0;
             this.helpLabel.Text = "{0} has not provided any help text.";
             this.helpLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -89,7 +89,7 @@
             // 
             // emailTextBox
             // 
-            this.emailTextBox.Location = new System.Drawing.Point(81, 164);
+            this.emailTextBox.Location = new System.Drawing.Point(81, 124);
             this.emailTextBox.Name = "emailTextBox";
             this.emailTextBox.Size = new System.Drawing.Size(394, 23);
             this.emailTextBox.TabIndex = 4;
@@ -97,7 +97,7 @@
             // emailLabel
             // 
             this.emailLabel.AutoSize = true;
-            this.emailLabel.Location = new System.Drawing.Point(12, 167);
+            this.emailLabel.Location = new System.Drawing.Point(12, 127);
             this.emailLabel.Name = "emailLabel";
             this.emailLabel.Size = new System.Drawing.Size(63, 15);
             this.emailLabel.TabIndex = 5;
@@ -107,7 +107,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 199);
+            this.label4.Location = new System.Drawing.Point(15, 159);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(60, 15);
             this.label4.TabIndex = 7;
@@ -115,7 +115,7 @@
             // 
             // passwordTextBox
             // 
-            this.passwordTextBox.Location = new System.Drawing.Point(81, 196);
+            this.passwordTextBox.Location = new System.Drawing.Point(81, 156);
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.Size = new System.Drawing.Size(394, 23);
             this.passwordTextBox.TabIndex = 6;
@@ -124,7 +124,7 @@
             // errorLabel
             // 
             this.errorLabel.ForeColor = System.Drawing.Color.Red;
-            this.errorLabel.Location = new System.Drawing.Point(81, 225);
+            this.errorLabel.Location = new System.Drawing.Point(84, 182);
             this.errorLabel.Name = "errorLabel";
             this.errorLabel.Size = new System.Drawing.Size(391, 33);
             this.errorLabel.TabIndex = 8;
@@ -132,7 +132,7 @@
             // 
             // linksPanel
             // 
-            this.linksPanel.Location = new System.Drawing.Point(12, 104);
+            this.linksPanel.Location = new System.Drawing.Point(12, 227);
             this.linksPanel.Name = "linksPanel";
             this.linksPanel.Size = new System.Drawing.Size(468, 37);
             this.linksPanel.TabIndex = 9;
