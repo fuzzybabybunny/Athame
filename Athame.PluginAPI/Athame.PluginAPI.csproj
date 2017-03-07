@@ -46,11 +46,14 @@
     <Compile Include="Downloader\HttpDownloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />
     <Compile Include="Service\Album.cs" />
+    <Compile Include="Service\Artist.cs" />
     <Compile Include="Service\AuthenticationFlow.cs" />
     <Compile Include="Service\AuthenticationResponse.cs" />
     <Compile Include="Service\IMediaCollection.cs" />
     <Compile Include="Service\InvalidSessionException.cs" />
     <Compile Include="Service\MediaType.cs" />
+    <Compile Include="Service\PageRequest.cs" />
+    <Compile Include="Service\PaginatedRecordSet.cs" />
     <Compile Include="Service\Playlist.cs" />
     <Compile Include="Service\ResourceNotFoundException.cs" />
     <Compile Include="Service\SearchResult.cs" />
