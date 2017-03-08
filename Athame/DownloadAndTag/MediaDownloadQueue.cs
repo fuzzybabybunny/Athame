@@ -14,7 +14,7 @@ namespace Athame.DownloadAndTag
     {
         public TrackFile TrackFile { get; set; }
 
-        public EnqueuedTrack Track { get; set; }
+        public EnqueuedCollection Collection { get; set; }
 
         public decimal TotalProgress
         {
@@ -34,20 +34,31 @@ namespace Athame.DownloadAndTag
 
     public class MediaDownloadQueue
     {
-        private readonly List<EnqueuedTrack> mList = new List<EnqueuedTrack>();
+
+        private class SingleTrackCollection : IMediaCollection
+        {
+            public SingleTrackCollection(Track t)
+            {
+                Tracks = new[] { t };
+                Title = t.Title;
+            }
+
+            public IEnumerable<Track> Tracks { get; set; }
+            public string Title { get; set; }
+        }
+
+        private readonly List<EnqueuedCollection> mList = new List<EnqueuedCollection>();
 
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
         public void Enqueue(MusicService service, Track track)
         {
-            mList.Add(new EnqueuedTrack { Service = service, Track = track});
+            mList.Add(new EnqueuedCollection {Collection = new SingleTrackCollection(track), Service = service});
         }
 
         public void EnqueueCollection(MusicService service, IMediaCollection collection)
         {
-            var enqueuedTracks = from item in collection.Tracks
-                select new EnqueuedTrack {Service = service, Track = item};
-            mList.AddRange(enqueuedTracks);
+            mList.Add(new EnqueuedCollection {Collection = collection, Service = service});
         }
 
         public event EventHandler<TrackDownloadEventArgs> TrackDequeued;
@@ -74,7 +85,7 @@ namespace Athame.DownloadAndTag
 
         public async Task StartDownloadAsync()
         {
-            var queueView = new Queue<EnqueuedTrack>(mList);
+            var queueView = new Queue<EnqueuedCollection>(mList);
             while (queueView.Count > 0)
             {
                 var currentItem = queueView.Dequeue();
@@ -82,7 +93,7 @@ namespace Athame.DownloadAndTag
                 {
                     PercentCompleted = 0,
                     State = DownloadState.PreProcess,
-                    Track = currentItem,
+                    Collection = currentItem,
                     TrackFile = null,
                     CurrentItemIndex = mList.Count - queueView.Count,
                     TotalItems = mList.Count
@@ -90,6 +101,11 @@ namespace Athame.DownloadAndTag
                 OnTrackDequeued(eventArgs);
 
             }
+        }
+
+        private async Task DownloadCollectionAsync(EnqueuedCollection collection)
+        {
+            
         }
     }
 }

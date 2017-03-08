@@ -81,7 +81,7 @@
   <ItemGroup>
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="DownloadAndTag\MediaDownloadQueue.cs" />
-    <Compile Include="DownloadAndTag\EnqueuedTrack.cs" />
+    <Compile Include="DownloadAndTag\EnqueuedCollection.cs" />
     <Compile Include="ServiceCollection.cs" />
     <Compile Include="DownloadAndTag\TrackDownloader.cs" />
     <Compile Include="InternalModel\DownloadableMediaCollection.cs" />

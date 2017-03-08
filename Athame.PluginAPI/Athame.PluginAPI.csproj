@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AthameApplication.cs" />
     <Compile Include="Downloader\TrackFile.cs" />
     <Compile Include="Downloader\FileType.cs" />
     <Compile Include="Downloader\HttpDownloader.cs" />

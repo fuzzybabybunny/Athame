@@ -8,14 +8,15 @@ using Athame.PluginAPI.Service;
 
 namespace Athame.DownloadAndTag
 {
-    public class EnqueuedTrack
-    {
-        internal EnqueuedTrack()
+    public class EnqueuedCollection
+    { 
+
+        internal EnqueuedCollection()
         {
             
         }
 
-        public Track Track { get; set; }
+        public IMediaCollection Collection { get; set; }
         public MusicService Service { get; set; }
     }
 }
