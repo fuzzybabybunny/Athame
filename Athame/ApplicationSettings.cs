@@ -7,6 +7,13 @@ using Newtonsoft.Json;
 
 namespace Athame
 {
+    public enum AlbumArtworkSaveFormat
+    {
+        DontSave,
+        AsCover,
+        AsArtistAlbum
+    }
+
     public class ApplicationSettings
     {
         private const string SettingsFilename = "settings.json";
@@ -84,11 +91,13 @@ namespace Athame
             ServiceSettings = new Dictionary<string, StoredSettings>();
             SaveLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             TrackFilenameFormat = "{AlbumArtistOrArtist} - {Album.Title}/{TrackNumber} {Title}";
+            AlbumArtworkSaveFormat = AlbumArtworkSaveFormat.AsCover;
         }
 
         public Dictionary<string, StoredSettings> ServiceSettings { get; set; }
         public string SaveLocation { get; set; }
         public string TrackFilenameFormat { get; set; }
+        public AlbumArtworkSaveFormat AlbumArtworkSaveFormat { get; set; }
         
     }
 }

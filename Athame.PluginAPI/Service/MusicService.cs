@@ -172,7 +172,7 @@ namespace Athame.PluginAPI.Service
         /// but this method may be overridden with a custom downloader that implements <see cref="IDownloader"/>.
         /// </summary>
         /// <returns>A new concrete implementation of <see cref="IDownloader"/>.</returns>
-        public virtual IDownloader GetDownloader(Track t)
+        public virtual IDownloader GetDownloader(TrackFile t)
         {
             return new HttpDownloader();
         }

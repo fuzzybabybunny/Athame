@@ -25,14 +25,12 @@ namespace Athame
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                     "Athame"),
                 CurrentWorkingDirectory = Directory.GetCurrentDirectory()
-        }
+            };
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
 
-        
-
-        public static bool IsRunningOnWindows => 
+        public static bool IsRunningOnWindows => DefaultApp.IsRunningOnWin32;
     }
 }

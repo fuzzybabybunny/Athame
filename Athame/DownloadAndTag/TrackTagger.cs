@@ -1,5 +1,7 @@
-﻿using Athame.PluginAPI.Service;
+﻿using System;
+using Athame.PluginAPI.Service;
 using TagLib;
+using SysFile = System.IO.File;
 
 namespace Athame.DownloadAndTag
 {
@@ -7,7 +9,13 @@ namespace Athame.DownloadAndTag
     {
         private const string CopyrightText = "Respect the artists! Pay for music when you can! Downloaded with Athame";
 
-        public void Write(string path, Track track, string albumArtPath)
+        private Picture CreatePictureFromCache(string url)
+        {
+            var data = AlbumArtCache.Instance.Get(url);
+            return new Picture(new ByteVector(data, data.Length));
+        }
+
+        public void Write(string path, Track track)
         {
             using (var file = File.Create(path))
             {
@@ -26,9 +34,24 @@ namespace Athame.DownloadAndTag
                 file.Tag.Year = (uint) track.Year;
                 file.Tag.Copyright = CopyrightText;
                 file.Tag.Comment = CopyrightText;
-                // ReSharper disable once CoVariantArrayConversion
-                file.Tag.Pictures = new[]{new Picture(albumArtPath)};
+                if (AlbumArtCache.Instance.HasItem(track.Album.CoverUri.ToString()))
+                {
+                    file.Tag.Pictures = new IPicture[] {CreatePictureFromCache(track.Album.CoverUri.ToString())};
+                }
                 file.Save();
+            }
+            string fileName;
+            switch (ApplicationSettings.Default.AlbumArtworkSaveFormat)
+            {
+                case AlbumArtworkSaveFormat.DontSave:
+                    break;
+                case AlbumArtworkSaveFormat.AsCover:
+                    
+                    break;
+                case AlbumArtworkSaveFormat.AsArtistAlbum:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

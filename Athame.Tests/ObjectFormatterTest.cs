@@ -41,7 +41,7 @@ namespace Athame.Tests
             const string formatString = "While this is always {AlwaysNullObject}, this should be {CircularValue.Number}";
             // Everything will be null
             var result = StringObjectFormatter.Format(formatString, new TestData());
-            Assert.AreEqual("While this is always null, this should be null", result);
+            Assert.AreEqual("While this is always null, this should be 0", result);
         }
 
         [TestMethod]
@@ -59,7 +59,7 @@ namespace Athame.Tests
             const string formatString = "While {Name} is comfortable, {{John}} is even more comfortable";
             var testObj = new TestData {Name = "James"};
             var result = StringObjectFormatter.Format(formatString, testObj);
-            Assert.AreEqual("While {Name} is comfortable, {John} is even more comfortable", result);
+            Assert.AreEqual("While James is comfortable, {John} is even more comfortable", result);
         }
 
         [TestMethod]

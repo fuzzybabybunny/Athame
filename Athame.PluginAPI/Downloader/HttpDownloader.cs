@@ -11,7 +11,6 @@ namespace Athame.PluginAPI.Downloader
     public class HttpDownloader : IDownloader, IDisposable
     {
         private readonly WebClient mClient = new WebClient();
-        private DownloadState internalState = DownloadState.PreProcess;
 
         public HttpDownloader()
         {
@@ -20,13 +19,11 @@ namespace Athame.PluginAPI.Downloader
 
         private void OnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs)
         {
-            // So we can use the same WebClient for download album artwork
-            if (internalState != DownloadState.Downloading) return;
             var percentage = (decimal) downloadProgressChangedEventArgs.BytesReceived /
                                downloadProgressChangedEventArgs.TotalBytesToReceive;
             var eventArgs = new DownloadEventArgs
             {
-                State = internalState,
+                State = DownloadState.Downloading,
                 PercentCompleted = percentage
             };
             Progress?.Invoke(this, eventArgs);

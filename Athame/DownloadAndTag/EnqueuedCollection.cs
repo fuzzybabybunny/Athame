@@ -16,6 +16,7 @@ namespace Athame.DownloadAndTag
             
         }
 
+        public string PathFormat { get; set; }
         public IMediaCollection Collection { get; set; }
         public MusicService Service { get; set; }
     }

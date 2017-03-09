@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace Athame
+namespace Athame.Utils
 {
 
     /// <summary>

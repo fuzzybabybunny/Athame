@@ -9,7 +9,8 @@ namespace Athame.PluginAPI.Downloader
         PreProcess,
         DownloadingAlbumArtwork,
         Downloading,
-        PostProcess
+        PostProcess,
+        WritingTags
     }
 
     public class DownloadEventArgs : EventArgs
