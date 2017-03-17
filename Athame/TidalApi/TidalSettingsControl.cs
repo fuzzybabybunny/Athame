@@ -28,6 +28,7 @@ namespace Athame.TidalApi
             appendVerCheckBox.Checked = settings.AppendVersionToTrackTitle;
             unlessAlbumVersionCheckBox.Enabled = appendVerCheckBox.Checked;
             unlessAlbumVersionCheckBox.Checked = settings.DontAppendAlbumVersion;
+            useOfflineUrlEndpointCheckbox.Checked = settings.UseOfflineUrl;
 
             rbem.ValueChanged += (sender, args) => settings.StreamQuality = (SoundQuality)rbem.Value;
 
@@ -42,6 +43,11 @@ namespace Athame.TidalApi
         private void unlessAlbumVersionCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             settings.DontAppendAlbumVersion = unlessAlbumVersionCheckBox.Checked;
+        }
+
+        private void useOfflineUrlEndpointCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            settings.UseOfflineUrl = useOfflineUrlEndpointCheckbox.Checked;
         }
     }
 }

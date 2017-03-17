@@ -35,6 +35,7 @@
             this.qLowRadioButton = new System.Windows.Forms.RadioButton();
             this.unlessAlbumVersionCheckBox = new System.Windows.Forms.CheckBox();
             this.appendVerCheckBox = new System.Windows.Forms.CheckBox();
+            this.useOfflineUrlEndpointCheckbox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -115,11 +116,23 @@
             this.appendVerCheckBox.UseVisualStyleBackColor = true;
             this.appendVerCheckBox.CheckedChanged += new System.EventHandler(this.appendVerCheckBox_CheckedChanged);
             // 
+            // useOfflineUrlEndpointCheckbox
+            // 
+            this.useOfflineUrlEndpointCheckbox.AutoSize = true;
+            this.useOfflineUrlEndpointCheckbox.Location = new System.Drawing.Point(59, 159);
+            this.useOfflineUrlEndpointCheckbox.Name = "useOfflineUrlEndpointCheckbox";
+            this.useOfflineUrlEndpointCheckbox.Size = new System.Drawing.Size(192, 19);
+            this.useOfflineUrlEndpointCheckbox.TabIndex = 11;
+            this.useOfflineUrlEndpointCheckbox.Text = "Use \'offlineUrl\' (recommended)";
+            this.useOfflineUrlEndpointCheckbox.UseVisualStyleBackColor = true;
+            this.useOfflineUrlEndpointCheckbox.CheckedChanged += new System.EventHandler(this.useOfflineUrlEndpointCheckbox_CheckedChanged);
+            // 
             // TidalSettingsControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.useOfflineUrlEndpointCheckbox);
             this.Controls.Add(this.unlessAlbumVersionCheckBox);
             this.Controls.Add(this.appendVerCheckBox);
             this.Controls.Add(this.label2);
@@ -143,6 +156,6 @@
         private System.Windows.Forms.RadioButton qLowRadioButton;
         private System.Windows.Forms.CheckBox unlessAlbumVersionCheckBox;
         private System.Windows.Forms.CheckBox appendVerCheckBox;
-
+        private System.Windows.Forms.CheckBox useOfflineUrlEndpointCheckbox;
     }
 }

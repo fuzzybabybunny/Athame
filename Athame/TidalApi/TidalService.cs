@@ -194,7 +194,8 @@ namespace Athame.TidalApi
 
         public override async Task<Uri> GetTrackStreamUriAsync(string trackId)
         {
-            return new Uri((await session.GetTrackOfflineUrl(Int32.Parse(trackId), settings.StreamQuality)).Url);
+            var url = new Uri((await session.GetTrackOfflineUrl(Int32.Parse(trackId), settings.StreamQuality)).Url);
+            return url;
         }
 
         public override async Task<TrackFile> GetDownloadableTrackAsync(Track track)
