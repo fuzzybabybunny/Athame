@@ -49,7 +49,7 @@ namespace Athame.TidalApi
 
         public static string JoinFeaturingArtists(string[] artistNames)
         {
-            return String.Format("({0} {1})", FeaturingWord, JoinArtistNames(artistNames));
+            return $"({FeaturingWord} {JoinArtistNames(artistNames)})";
         }
 
         public static bool DoesTitleContainArtistString(TrackModel track)
@@ -58,7 +58,7 @@ namespace Athame.TidalApi
                 where a.Type == ArtistFeatured
                 select a.Name).ToArray();
             var artistString = JoinFeaturingArtists(featuringArtists);
-            return track.Title.Contains(artistString);
+            return track.Title.IndexOf(artistString, StringComparison.OrdinalIgnoreCase) > -1;
         }
 
         public static string CreateArtistString(TrackModel track)
