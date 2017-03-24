@@ -9,14 +9,14 @@ namespace Athame.DownloadAndTag
     {
         private const string CopyrightText = "Respect the artists! Pay for music when you can! Downloaded with Athame";
 
-        private Picture CreatePictureFromCache(string url)
+        public static void Write(string path, Track track)
         {
-            var data = AlbumArtCache.Instance.Get(url);
-            return new Picture(new ByteVector(data, data.Length));
-        }
+            AlbumArtFile artworkFile = null;
+            if (AlbumArtCache.Instance.HasItem(track.Album.CoverUri.ToString()))
+            {
+                artworkFile = AlbumArtCache.Instance.Get(track.Album.CoverUri.ToString());
+            }
 
-        public void Write(string path, Track track)
-        {
             using (var file = File.Create(path))
             {
                 file.Tag.Title = track.Title;
@@ -34,24 +34,31 @@ namespace Athame.DownloadAndTag
                 file.Tag.Year = (uint) track.Year;
                 file.Tag.Copyright = CopyrightText;
                 file.Tag.Comment = CopyrightText;
-                if (AlbumArtCache.Instance.HasItem(track.Album.CoverUri.ToString()))
+                if (artworkFile != null)
                 {
-                    file.Tag.Pictures = new IPicture[] {CreatePictureFromCache(track.Album.CoverUri.ToString())};
+                    file.Tag.Pictures = new IPicture[] {new Picture(new ByteVector(artworkFile.Data))};
                 }
+
                 file.Save();
             }
-            string fileName;
+
+            string fileName = null;
             switch (ApplicationSettings.Default.AlbumArtworkSaveFormat)
             {
                 case AlbumArtworkSaveFormat.DontSave:
                     break;
                 case AlbumArtworkSaveFormat.AsCover:
-                    
+                    fileName = artworkFile?.FileType.Append("cover");
                     break;
                 case AlbumArtworkSaveFormat.AsArtistAlbum:
+                    fileName = artworkFile?.FileType.Append($"{track.Artist} - {track.Album}");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+            if (fileName != null && artworkFile != null)
+            {
+                SysFile.WriteAllBytes(fileName, artworkFile.Data);
             }
         }
     }

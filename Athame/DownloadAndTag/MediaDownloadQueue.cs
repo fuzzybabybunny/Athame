@@ -159,6 +159,10 @@ namespace Athame.DownloadAndTag
                     TrackFile = null
                 };
                 OnTrackDequeued(eventArgs);
+                if (!currentItem.IsDownloadable)
+                {
+                    continue;
+                }
                 // Download album artwork if it's not cached
                 if (currentItem.Album != null && !AlbumArtCache.Instance.HasItem(currentItem.Album.CoverUri.ToString()))
                 {
@@ -177,14 +181,14 @@ namespace Athame.DownloadAndTag
                 {
                     OnTrackDownloadCompleted(eventArgs);
                 };
-                await downloader.DownloadAsyncTask(eventArgs.TrackFile,
-                    eventArgs.TrackFile.GetPath(collection.PathFormat));
+                var path = eventArgs.TrackFile.GetPath(collection.PathFormat);
+                await downloader.DownloadAsyncTask(eventArgs.TrackFile, path);
                 // Attempt to dispose the downloader, since the most probable case will be that it will
                 // implement IDisposable if it uses sockets
                 var disposableDownloader = downloader as IDisposable;
                 disposableDownloader?.Dispose();
                 // Write the tag
-
+                TrackTagger.Write(path, currentItem);
             }
         }
     }

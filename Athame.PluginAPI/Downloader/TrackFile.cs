@@ -10,7 +10,7 @@ namespace Athame.PluginAPI.Downloader
     /// <summary>
     /// Represents the downloadable form of <see cref="Track"/>.
     /// </summary>
-    public class TrackFile : DownloadedFile
+    public class TrackFile : DownloadableFile
     {
         /// <summary>
         /// The track this file references.

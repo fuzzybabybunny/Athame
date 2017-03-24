@@ -7,7 +7,7 @@ using Athame.PluginAPI.Downloader;
 
 namespace Athame.DownloadAndTag
 {
-    internal class AlbumArtFile : TrackFile
+    internal class AlbumArtFile : DownloadableFile
     {
         public byte[] Data { get; set; }
 

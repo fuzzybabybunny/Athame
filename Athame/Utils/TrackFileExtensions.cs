@@ -13,7 +13,7 @@ namespace Athame.Utils
         {
             var cleanedFilePath = StringObjectFormatter.Format(pathFormat, trackFile.Track,
                 o => PathHelpers.CleanFilename(o.ToString()));
-            return $"{cleanedFilePath}.{trackFile.FileType.Extension}";
+            return trackFile.FileType.Append(cleanedFilePath);
         }
     }
 }

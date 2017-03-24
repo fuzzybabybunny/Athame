@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Athame.PluginAPI.Downloader;
 
 namespace Athame.DownloadAndTag
 {
@@ -12,7 +13,7 @@ namespace Athame.DownloadAndTag
     {
         public static readonly AlbumArtCache Instance = new AlbumArtCache();
 
-        private readonly Dictionary<string, byte[]> items = new Dictionary<string, byte[]>();
+        private readonly Dictionary<string, AlbumArtFile> items = new Dictionary<string, AlbumArtFile>();
         private readonly WebClient mClient = new WebClient();
 
         public async Task AddByDownload(string url)
@@ -20,17 +21,17 @@ namespace Athame.DownloadAndTag
             var data = await mClient.DownloadDataTaskAsync(url);
             var contentMimeType = mClient.ResponseHeaders[HttpResponseHeader.ContentType];
 
-            items.Add(url, data);
+            items.Add(url, new AlbumArtFile
+            {
+                Data = data,
+                DownloadUri = new Uri(url),
+                FileType = MediaFileTypes.ByMimeType(contentMimeType)
+            });
         }
 
-        public void AddByFilename(string url, string filePath)
+        public void Add(AlbumArtFile file)
         {
-            items.Add(url, File.ReadAllBytes(filePath));
-        }
-
-        public void Add(string url, byte[] data)
-        {
-            items.Add(url, data);
+            items[file.DownloadUri.ToString()] = file;
         }
 
         public bool HasItem(string url)
@@ -38,14 +39,15 @@ namespace Athame.DownloadAndTag
             return items.ContainsKey(url);
         }
 
-        public byte[] Get(string url)
+        public AlbumArtFile Get(string url)
         {
             return items[url];
         }
 
         public void WriteToFile(string url, string filePath)
         {
-            File.WriteAllBytes(filePath, items[url]);
+            var item = items[url];
+            File.WriteAllBytes(item.FileType.Append(filePath), item.Data);
         }
 
         public void Dispose()

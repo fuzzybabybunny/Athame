@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Athame.PluginAPI.Downloader
 {
-    public class DownloadedFile
+    public class DownloadableFile
     {
         /// <summary>
         /// The URI to the file.

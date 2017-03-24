@@ -19,6 +19,17 @@ namespace Athame.PluginAPI.Downloader
         /// </summary>
         public string MimeType { get; set; }
 
+        /// <summary>
+        /// Appends the extension to the specified path or URL. If this FileType is unknown, then returns the
+        /// passed string as-is.
+        /// </summary>
+        /// <param name="pathOrUrl">A path or URL to append to.</param>
+        /// <returns>The appended string.</returns>
+        public string Append(string pathOrUrl)
+        {
+            return ReferenceEquals(this, MediaFileTypes.Unknown) ? pathOrUrl : String.Concat(pathOrUrl, ".", Extension);
+        }
+
         protected bool Equals(FileType other)
         {
             return string.Equals(Extension, other.Extension, StringComparison.OrdinalIgnoreCase) 
@@ -87,41 +98,33 @@ namespace Athame.PluginAPI.Downloader
             MimeType = "image/webp"
         };
 
+        /// <summary>
+        /// Represents an unknown filetype.
+        /// </summary>
+        public static readonly FileType Unknown = new FileType();
+
         private static readonly HashSet<FileType> allTypes = new HashSet<FileType>
         {
             Mpeg3Audio, AdvancedAudioCoding, Mpeg4Audio, OggVorbis, FreeLosslessAudioCodec,
             JpegImage, PngImage, WebpImage
         };
 
-        /// <summary>
-        /// Retrieves an extension for the specified MIME type, or null if none exists.
-        /// Uses the static readonly members of this class to resolve the extension.
-        /// </summary>
-        /// <param name="mimeType">A MIME type.</param>
-        /// <returns>The preferred extension for the MIME type, or null.</returns>
-        public static string ExtensionByMimeType(string mimeType)
+        public static FileType ByMimeType(string mimeType)
         {
             return (from ft in allTypes
-                where ft.MimeType == mimeType
-                select ft.Extension).FirstOrDefault();
+                       where ft.MimeType == mimeType
+                       select ft).FirstOrDefault() ?? Unknown;
+        }
+
+        public static FileType ByExtension(string extension)
+        {
+            return (from ft in allTypes
+                       where ft.Extension == extension
+                       select ft).FirstOrDefault() ?? Unknown;
         }
 
         /// <summary>
-        /// Retrieves the MIME type for the specified extension type, or null if none exists.
-        /// Uses the static readonly members of this class to resolve the MIME type.
-        /// </summary>
-        /// <param name="extension">A file extension.</param>
-        /// <returns>The preferred MIME type for the extension, or null.</returns>
-        public static string MimeTypeByExtension(string extension)
-        {
-            return (from ft in allTypes
-                where ft.Extension == extension
-                select ft.MimeType).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Adds a file type to the registry. Do not add types with different extensions but the same MIME type
-        /// as this will cause the result of <see cref="ExtensionByMimeType"/> to become unpredictable.
+        /// Adds a file type to the registry. Do not add types with different extensions.
         /// </summary>
         /// <param name="type"></param>
         public static void AddType(FileType type)
