@@ -10,6 +10,9 @@ namespace Athame.Utils
     /// </summary>
     public static class PathHelpers
     {
+        /// <summary>
+        /// The character invalid path characters are replaced with.
+        /// </summary>
         public const string ReplacementChar = "-";
 
         /// <summary>

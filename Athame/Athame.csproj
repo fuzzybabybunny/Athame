@@ -35,6 +35,26 @@
   <PropertyGroup>
     <ApplicationIcon>AthameIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CLIDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\CLIDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CLIRelease|AnyCPU'">
+    <OutputPath>bin\CLIRelease\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GoogleMusicApi">
       <HintPath>..\packages\GoogleMusicApi.1.0.33\lib\net452\GoogleMusicApi.dll</HintPath>
@@ -79,15 +99,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationSettings.cs" />
     <Compile Include="DownloadAndTag\AlbumArtCache.cs" />
     <Compile Include="DownloadAndTag\AlbumArtFile.cs" />
     <Compile Include="DownloadAndTag\MediaDownloadQueue.cs" />
     <Compile Include="DownloadAndTag\EnqueuedCollection.cs" />
-    <Compile Include="ServiceCollection.cs" />
-    <Compile Include="DownloadAndTag\TrackDownloader.cs" />
-    <Compile Include="InternalModel\DownloadableMediaCollection.cs" />
-    <Compile Include="InternalModel\DownloadableTrack.cs" />
+    <Compile Include="PluginManager\ServiceRegistry.cs" />
     <Compile Include="PlayMusicApi\PlayMusicService.cs" />
     <Compile Include="PlayMusicApi\PlayMusicServiceSettings.cs" />
     <Compile Include="DownloadAndTag\TrackTagger.cs" />
@@ -97,6 +113,11 @@
     <Compile Include="PlayMusicApi\PlayMusicSettingsControl.Designer.cs">
       <DependentUpon>PlayMusicSettingsControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plugin\PluginAssembly.cs" />
+    <Compile Include="Plugin\PluginLoader.cs" />
+    <Compile Include="Plugin\PluginLoadException.cs" />
+    <Compile Include="Settings\ApplicationSettings.cs" />
+    <Compile Include="Settings\AthameSettings.cs" />
     <Compile Include="UI\PathFormatHelpForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,18 +139,6 @@
     </Compile>
     <Compile Include="UI\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\AddForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\AddForm.Designer.cs">
-      <DependentUpon>AddForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\AlbumView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\AlbumView.Designer.cs">
-      <DependentUpon>AlbumView.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\CredentialsForm.cs">
       <SubType>Form</SubType>
@@ -163,12 +172,6 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\SplitStringParser.cs" />
-    <Compile Include="UI\WaitForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\WaitForm.Designer.cs">
-      <DependentUpon>WaitForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\CommonTaskDialogs.cs" />
     <Compile Include="Utils\TrackFileExtensions.cs" />
     <EmbeddedResource Include="PlayMusicApi\PlayMusicSettingsControl.resx">
@@ -179,12 +182,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\AddForm.resx">
-      <DependentUpon>AddForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\AlbumView.resx">
-      <DependentUpon>AlbumView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\CredentialsForm.resx">
       <DependentUpon>CredentialsForm.cs</DependentUpon>
@@ -210,9 +207,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UI\WaitForm.resx">
-      <DependentUpon>WaitForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

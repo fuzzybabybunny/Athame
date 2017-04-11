@@ -72,3 +72,12 @@ footer p {
 	margin: 0 auto;
 	padding: 10px 0;
 }
+
+table {
+	width: 100%;
+}
+
+th {
+	text-align: left;
+	border-bottom: 1px solid #eee;
+}

@@ -15,7 +15,7 @@ namespace Athame.TidalApi
 {
     public class TidalService : MusicService
     {
-        private OpenTidlClient client;
+        private readonly OpenTidlClient client;
         private OpenTidlSession session;
         private TidalServiceSettings settings = new TidalServiceSettings();
         private const string TidalWebDomain = "listen.tidal.com";
@@ -35,11 +35,13 @@ namespace Athame.TidalApi
             {
                 return null;
             }
+            var user = await session.GetUser();
             return new AuthenticationResponse
             {
                 Token = session.SessionId,
-                UserIdentity = session.CountryCode,
-                UserName = username
+                UserIdentity = null,
+                UserName = String.IsNullOrEmpty(user.FirstName) && String.IsNullOrEmpty(user.LastName) ? 
+                            user.Email : $"{user.FirstName} {user.LastName} ({user.Email})"
             };
         }
 
@@ -143,7 +145,7 @@ namespace Athame.TidalApi
         private const string AlbumArtUrlFormat = "https://resources.tidal.com/images/{0}/{1}x{1}.jpg";
         
 
-        private Album CreateAlbum(AlbumModel album)
+        private static  Album CreateAlbum(AlbumModel album)
         {
             var coverUrl = String.Format(AlbumArtUrlFormat, album.Cover.Replace('-', '/'), AlbumArtSize);
             var cmAlbum = new Album
@@ -162,40 +164,6 @@ namespace Athame.TidalApi
                     select artist.Name).ToArray());
             }
             return cmAlbum;
-        }
-
-        public override async Task<Album> GetAlbumWithTracksAsync(string albumId)
-        {
-//            try
-//            {
-                var tidalAlbum = await client.GetAlbum(Int32.Parse(albumId));
-                var tidalTracks = await client.GetAlbumTracks(Int32.Parse(albumId));
-                var cmAlbum = CreateAlbum(tidalAlbum);
-                var cmTracks = new List<Track>();
-                foreach (var track in tidalTracks.Items)
-                {
-                    var cmTrack = CreateTrack(track);
-                    cmTrack.Album = cmAlbum;
-                    if (tidalAlbum.ReleaseDate != null) cmTrack.Year = tidalAlbum.ReleaseDate.Value.Year;
-                    cmTracks.Add(cmTrack);
-                }
-                cmAlbum.Tracks = cmTracks;
-                return cmAlbum;
-//            }
-//            catch (OpenTidlException ex)
-//            {
-//                if (ex.OpenTidlError.Status == 404)
-//                {
-//                    throw new ResourceNotFoundException(String.Format("The album {0} was not found on Tidal.", albumId));
-//                }
-//                throw;
-//            }
-        }
-
-        public override async Task<Uri> GetTrackStreamUriAsync(string trackId)
-        {
-            var url = new Uri((await session.GetTrackOfflineUrl(Int32.Parse(trackId), settings.StreamQuality)).Url);
-            return url;
         }
 
         public override async Task<TrackFile> GetDownloadableTrackAsync(Track track)
@@ -281,43 +249,44 @@ namespace Athame.TidalApi
             throw new NotImplementedException();
         }
 
-        public override Task<Album> GetAlbumAsync(string albumId, bool withTracks)
+        public override async Task<Album> GetAlbumAsync(string albumId, bool withTracks)
         {
-            throw new NotImplementedException();
-        }
-
-        public override Task<Track> GetTrackAsync(string trackId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override string Name
-        {
-            get { return "Tidal"; }
-        }
-
-        public override string WebHost
-        {
-            get { return TidalWebDomain; }
-        }
-
-        public override bool IsAuthenticated
-        {
-            get { return session != null; }
-        }
-
-        public override AuthenticationMethod AuthenticationMethod
-        {
-            get
+            var tidalAlbum = await client.GetAlbum(Int32.Parse(albumId));
+            if (!withTracks)
             {
-                return AuthenticationMethod.UsernameAndPassword;
+                return CreateAlbum(tidalAlbum);
             }
+            var tidalTracks = await client.GetAlbumTracks(Int32.Parse(albumId));
+            var cmAlbum = CreateAlbum(tidalAlbum);
+            var cmTracks = new List<Track>();
+            foreach (var track in tidalTracks.Items)
+            {
+                var cmTrack = CreateTrack(track);
+                cmTrack.Album = cmAlbum;
+                if (tidalAlbum.ReleaseDate != null) cmTrack.Year = tidalAlbum.ReleaseDate.Value.Year;
+                cmTracks.Add(cmTrack);
+            }
+            cmAlbum.Tracks = cmTracks;
+            return cmAlbum;
         }
+
+        public override async Task<Track> GetTrackAsync(string trackId)
+        {
+            var track = await client.GetTrack(Int32.Parse(trackId));
+            var album = await client.GetAlbum(track.Album.Id);
+            return CreateTrack(album, track);
+        }
+
+        public override string Name => "Tidal";
+
+        public override bool IsAuthenticated => session != null;
+
+        public override AuthenticationMethod AuthenticationMethod => AuthenticationMethod.UsernameAndPassword;
 
         public override AuthenticationFlow Flow => new AuthenticationFlow
         {
             SignInInformation = "Enter your Tidal username and password:",
-            LinksToDisplay = new SignInLink[]
+            LinksToDisplay = new[]
             {
                 new SignInLink{ DisplayName = "Forgot password?", Link = new Uri("https://listen.tidal.com/")}
             }

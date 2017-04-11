@@ -12,25 +12,25 @@ namespace Athame.PluginAPI
     public interface IPlugin
     {
         /// <summary>
-        /// The plugin's name.
+        /// The plugin's name. Required.
         /// </summary>
         string Name { get; }
         /// <summary>
-        /// The plugin's description.
+        /// The plugin's description. Optional.
         /// </summary>
         string Description { get; }
         /// <summary>
-        /// The plugin's author.
+        /// The plugin's author. Optional.
         /// </summary>
         string Author { get; }
         /// <summary>
-        /// The plugin's homepage.
+        /// The plugin's homepage. Optional.
         /// </summary>
         Uri Website { get; }
         /// <summary>
-        /// Initialises the plugin with the specified application context.
+        /// Called when the plugin is initialized.
         /// </summary>
-        /// <param name="application">The application context to use.</param>
+        /// <param name="application">Info and methods for interacting with the host application</param>
         void Init(AthameApplication application);
     }
 }

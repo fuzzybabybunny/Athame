@@ -10,14 +10,8 @@ namespace Athame.DownloadAndTag
 {
     public class EnqueuedCollection
     { 
-
-        internal EnqueuedCollection()
-        {
-            
-        }
-
         public string PathFormat { get; set; }
-        public IMediaCollection Collection { get; set; }
         public MusicService Service { get; set; }
+        public IMediaCollection MediaCollection { get; set; }
     }
 }

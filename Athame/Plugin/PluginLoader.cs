@@ -6,14 +6,15 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Athame.PluginAPI;
-using Athame.PluginAPI.MusicService;
+using Athame.PluginAPI.Service;
+using Athame.PluginManager;
 
 namespace Athame.Plugin
 {
     public class PluginLoader
     {
         private const string PluginDir = "Plugins";
-        private const string PluginDllPrefix = "Athame.Plugin.";
+        private const string PluginDllPrefix = "AthamePlugin.";
 
         private readonly string pluginDir;
 
@@ -25,17 +26,17 @@ namespace Athame.Plugin
 
         public List<IPlugin> Plugins { get; }
 
-        public ServiceCollection Services { get; }
+        public ServiceRegistry Services { get; }
 
         private static PluginLoader _default;
 
         public static PluginLoader Default => _default ?? (_default = new PluginLoader(PluginDir));
 
-        private Type[] LoadAssemblies()
-        {
-            var directories = Directory.GetDirectories(pluginDir, PluginDllPrefix + "*");
-
-        }
+//        private Type[] LoadAssemblies()
+//        {
+//            var directories = Directory.GetDirectories(pluginDir, PluginDllPrefix + "*");
+//
+//        }
 
         public void LoadAll()
         {
@@ -69,8 +70,8 @@ namespace Athame.Plugin
                 // If it's a service plugin, add it to main service collection
                 var servicePlugin = plugin as IServicePlugin;
                 if (servicePlugin == null) return;
-                var service = servicePlugin.GetService();
-                Services.Add(service);
+                var service = servicePlugin.CreateMusicService();
+                Services.Register(service);
             }
         }
     }

@@ -32,6 +32,7 @@ namespace Athame.UI
                     AutoSizeMode = AutoSizeMode.GrowAndShrink,
                     UseVisualStyleBackColor = true
                 };
+                urlToolTip.SetToolTip(button, linkPair.Link.ToString());
                 // "This will work" - Joe, 28/09/16
                 // ReSharper disable once AccessToForEachVariableInClosure
                 button.Click += (sender, args) => Process.Start(linkPair.Link.ToString());
@@ -41,17 +42,16 @@ namespace Athame.UI
 
         public AuthenticationResponse Result;
 
-        private async void okButton_Click(object sender, EventArgs e)
+        private void okButton_Click(object sender, EventArgs e)
         {
-            using (var waitForm = new WaitForm(this, $"Signing into {svc.Name}..."))
-            {
-                waitForm.Show(this);
+            var waitForm = CommonTaskDialogs.Wait(this, $"Signing into {svc.Name}...");
+            waitForm.Opened += async (o, args) => {
                 Result = await svc.LoginAsync(emailTextBox.Text, passwordTextBox.Text);
                 waitForm.Close();
                 if (Result != null)
                 {
                     svc.Settings.Response = Result;
-                    ApplicationSettings.Default.Save();
+                    Program.DefaultSettings.Save();
                     DialogResult = DialogResult.OK;
                 }
                 else
@@ -59,7 +59,8 @@ namespace Athame.UI
                     errorLabel.Text = "An error occurred while signing in. Please check your credentials and try again.";
                     SystemSounds.Hand.Play();
                 }
-            }
+            };
+            waitForm.Show();
         }
 
         private void cancelButton_Click(object sender, EventArgs e)

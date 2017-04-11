@@ -52,5 +52,10 @@
         /// If the track can be downloaded or streamed.
         /// </summary>
         public bool IsDownloadable { get; set; }
+
+        public SingleTrackCollection AsCollection()
+        {
+            return new SingleTrackCollection(this);
+        }
     }
 }

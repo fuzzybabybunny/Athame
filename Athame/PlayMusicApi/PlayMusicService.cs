@@ -77,7 +77,7 @@ namespace Athame.PlayMusicApi
                     cmTrack.Album = a;
                     ((List<Track>)a.Tracks).Add(cmTrack);
                 }
-                
+
             }
             return a;
         }
@@ -87,33 +87,6 @@ namespace Athame.PlayMusicApi
             var a = CreateAlbum(album);
             a.Tracks = new List<Track>(from t in tracks select CreateTrack(t));
             return a;
-        }
-
-        public override async Task<Album> GetAlbumWithTracksAsync(string albumId)
-        {
-            GoogleMusicApi.Structure.Album album;
-            try
-            {
-                // Album should always have tracks
-                album = await client.GetAlbumAsync(albumId, includeDescription: false);
-                return CreateAlbum(album);
-            }
-            catch (HttpRequestException ex)
-            {
-                // Just uhhhh
-                throw new ResourceNotFoundException(ex.Message);
-            }
-        }
-
-        public override async Task<Uri> GetTrackStreamUriAsync(string trackId)
-        {
-            // Only property we need to set is Track.StoreId (see Google.Music/GoogleMusicApi.UWP/Requests/Data/StreamUrlGetRequest.cs:32)
-            var streamUrl = await client.GetStreamUrlAsync(new GoogleMusicApi.Structure.Track {StoreId = trackId});
-            if (streamUrl == null)
-            {
-                throw new InvalidSessionException("Play Music: Stream URL unavailable. Check your subscription is active then try again.");
-            }
-            return streamUrl;
         }
 
         public override async Task<TrackFile> GetDownloadableTrackAsync(Track track)
@@ -136,7 +109,7 @@ namespace Athame.PlayMusicApi
             };
         }
 
-        public override async Task<Playlist> GetPlaylistAsync(string playlistId)
+        public override Task<Playlist> GetPlaylistAsync(string playlistId)
         {
             throw new NotImplementedException();
         }
@@ -148,25 +121,25 @@ namespace Athame.PlayMusicApi
                 return null;
             }
             var hashParts = url.Fragment.Split('/');
-            
+
             if (hashParts.Length <= 2)
             {
                 return null;
             }
             var type = hashParts[1];
             var id = hashParts[2];
-            var result = new UrlParseResult {Id = id, Type = MediaType.Unknown, OriginalUri = url};
+            var result = new UrlParseResult { Id = id, Type = MediaType.Unknown, OriginalUri = url };
             switch (type)
             {
                 case "album":
                     result.Type = MediaType.Album;
                     break;
-                
+
                 case "artist":
                     result.Type = MediaType.Artist;
                     break;
 
-                    // Will auto-playlists actually be interchangeable with user-generated playlists?
+                // Will auto-playlists actually be interchangeable with user-generated playlists?
                 case "pl":
                 case "ap":
                     result.Type = MediaType.Playlist;
@@ -179,25 +152,34 @@ namespace Athame.PlayMusicApi
             return result;
         }
 
-        public override async Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve)
+        public override Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve)
         {
             throw new NotImplementedException();
-            
+
         }
 
-        public override Task<Album> GetAlbumAsync(string albumId, bool withTracks)
+        public override async Task<Album> GetAlbumAsync(string albumId, bool withTracks)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Album should always have tracks
+                var album = await client.GetAlbumAsync(albumId, includeDescription: false);
+                return CreateAlbum(album);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Just uhhhh
+                throw new ResourceNotFoundException(ex.Message);
+            }
         }
 
-        public override Task<Track> GetTrackAsync(string trackId)
+        public override async Task<Track> GetTrackAsync(string trackId)
         {
-            throw new NotImplementedException();
+            var track = await client.GetTrackAsync(trackId);
+            return CreateTrack(track);
         }
 
         public override string Name => "Google Play Music";
-
-        public override string WebHost => GooglePlayHost;
 
         public override bool IsAuthenticated => client.Session != null && client.Session.IsAuthenticated;
 
@@ -223,9 +205,9 @@ namespace Athame.PlayMusicApi
         {
             SignInInformation =
                 "Enter your Google account email and password. If you use two-factor authentication, you must set an app password:",
-            LinksToDisplay = new SignInLink[]
+            LinksToDisplay = new[]
             {
-                new SignInLink{ DisplayName = "Set an app password", Link = new Uri("https://security.google.com/settings/security/apppasswords")},
+                new SignInLink{DisplayName = "Set an app password", Link = new Uri("https://security.google.com/settings/security/apppasswords")},
                 new SignInLink{DisplayName = "Forgot your password?", Link = new Uri("https://accounts.google.com/signin/recovery")}
             }
         };

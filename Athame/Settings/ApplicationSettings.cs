@@ -10,20 +10,14 @@ namespace Athame.Settings
 {
     public class SettingsManager<T> where T : new()
     {
-        private const string SettingsFilename = "settings.json";
-
-        private static readonly string SettingsDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Athame");
-
-        private static readonly string SettingsPath = Path.Combine(SettingsDirectory, SettingsFilename);
-
+        private readonly string settingsPath;
         private readonly JsonSerializerSettings SerializerSettings;
 
         public T Settings { get; private set; }
 
-        public SettingsManager()
+        public SettingsManager(string settingsPath)
         {
+            this.settingsPath = settingsPath;
             SerializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
@@ -33,22 +27,31 @@ namespace Athame.Settings
 
         public void Load()
         {
-            Directory.CreateDirectory(SettingsDirectory);
-            if (!File.Exists(SettingsPath))
+            if (!File.Exists(settingsPath))
             {
                 Settings = new T();
             }
             else
             {
-                // Assign settings path to deserialised settings instance
-                Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(SettingsPath),
-                    SerializerSettings);
+                try
+                {
+                    // Assign settings path to deserialised settings instance
+                    Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(settingsPath),
+                        SerializerSettings);
+                }
+                catch (JsonSerializationException)
+                {
+                    Settings = new T();
+                    Save();
+                    Settings = JsonConvert.DeserializeObject<T>(File.ReadAllText(settingsPath),
+                        SerializerSettings);
+                }
             }
         }
 
         public void Save()
         {
-            File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(Settings, SerializerSettings));
+            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(Settings, SerializerSettings));
         }
     }
 }

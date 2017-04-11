@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CLIDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\CLIDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'CLIRelease|AnyCPU'">
+    <OutputPath>bin\CLIRelease\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,6 +65,7 @@
     <Compile Include="Downloader\FileType.cs" />
     <Compile Include="Downloader\HttpDownloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />
+    <Compile Include="PluginContext.cs" />
     <Compile Include="Service\Album.cs" />
     <Compile Include="Service\Artist.cs" />
     <Compile Include="Service\AuthenticationFlow.cs" />
@@ -61,6 +80,7 @@
     <Compile Include="Service\SearchResult.cs" />
     <Compile Include="Service\MusicService.cs" />
     <Compile Include="Service\SignInLink.cs" />
+    <Compile Include="Service\SingleTrackCollection.cs" />
     <Compile Include="Service\StoredSettings.cs" />
     <Compile Include="Service\Track.cs" />
     <Compile Include="Service\UrlParseResult.cs" />

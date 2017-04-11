@@ -15,6 +15,7 @@ namespace Athame.PluginAPI.Downloader
         public HttpDownloader()
         {
             mClient.DownloadProgressChanged += OnDownloadProgressChanged;
+            
         }
 
         private void OnDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs downloadProgressChangedEventArgs)

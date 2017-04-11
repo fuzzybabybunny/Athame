@@ -42,7 +42,7 @@ namespace Athame.PluginAPI.Service
         /// <summary>
         /// The album's tracks. May be null.
         /// </summary>
-        public IEnumerable<Track> Tracks { get; set; }
+        public IList<Track> Tracks { get; set; }
 
         /// <summary>
         /// The album's type, if the service supports it. Defaults to <see cref="AlbumType.Album"/>.

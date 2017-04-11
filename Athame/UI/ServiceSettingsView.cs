@@ -26,7 +26,9 @@ namespace Athame.UI
                 sspSignInStatus.Update(false);
             }
             sspSignInButton.Update(service.IsAuthenticated);
-            mLayout.Controls.Add(service.GetSettingsControl(), 0, 1);
+            var control = service.GetSettingsControl();
+            control.Dock = DockStyle.Fill;
+            servicePanel.Controls.Add(control);
         }
 
         private void signInButton_Click(object sender, EventArgs e)

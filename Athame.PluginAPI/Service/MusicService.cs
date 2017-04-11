@@ -39,21 +39,6 @@ namespace Athame.PluginAPI.Service
         public abstract void ClearSession();
 
         /// <summary>
-        /// Retrieves an album, with tracks.
-        /// </summary>
-        /// <param name="albumId">The service-specific album identifier.</param>
-        /// <returns>An album on success, null otherwise.</returns>
-        public abstract Task<Album> GetAlbumWithTracksAsync(string albumId);
-
-        /// <summary>
-        /// Use <see cref="GetDownloadableTrackAsync"/>. Retrieves a URI for streaming or downloading a track.
-        /// </summary>
-        /// <param name="trackId">The service-specific track identifier.</param>
-        /// <returns>A <see cref="System.Uri"/> on success, null otherwise.</returns>
-        [Obsolete]
-        public abstract Task<Uri> GetTrackStreamUriAsync(string trackId);
-
-        /// <summary>
         /// Retrieves a track's downloadable form.
         /// </summary>
         /// <param name="track">The track to download.</param>
@@ -87,7 +72,8 @@ namespace Athame.PluginAPI.Service
         /// Retrieves an album.
         /// </summary>
         /// <param name="albumId">The album's identifier.</param>
-        /// <param name="withTracks">Whether to return tracks or not. On some services, this may involve an extra API call.</param>
+        /// <param name="withTracks">Whether to return tracks or not. On some services, this may involve an extra API call. 
+        /// Implementations are also allowed to return an object with tracks even if this is false.</param>
         /// <returns>An album, with or without tracks.</returns>
         public abstract Task<Album> GetAlbumAsync(string albumId, bool withTracks);
 
@@ -102,12 +88,6 @@ namespace Athame.PluginAPI.Service
         /// The service's name.
         /// </summary>
         public abstract string Name { get; }
-
-        /// <summary>
-        /// The hostname of the service's public website.
-        /// </summary>
-        [Obsolete]
-        public abstract string WebHost { get; }
 
         /// <summary>
         /// If a user is authenticated with the service.

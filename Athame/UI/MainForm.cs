@@ -10,10 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Athame.DownloadAndTag;
-using Athame.InternalModel;
+using Athame.PluginAPI.Downloader;
 using Athame.PluginAPI.Service;
+using Athame.PluginManager;
 using Athame.Properties;
+using Athame.Settings;
 using Athame.UI.Win32;
+using Athame.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.WindowsAPICodePack.Taskbar;
 
@@ -21,108 +24,179 @@ namespace Athame.UI
 {
     public partial class MainForm : Form
     {
+        /// <summary>
+        /// Internal class for keeping track of an individual listitem's relation
+        /// </summary>
+        private class MediaItemTag
+        {
+            public EnqueuedCollection Collection { get; set; }
+            public Track Track { get; set; }
+            public int IndexInCollection { get; set; }
+            public int GroupIndex { get; set; }
+            public int GlobalItemIndex { get; set; }
+        }
+
         // Constants
         private const string GroupHeaderFormat = "{0}: {1} ({2})";
 
         // Read-only instance vars
-        private readonly List<DownloadableMediaCollection> mDownloadItems = new List<DownloadableMediaCollection>();
-        private readonly TaskbarManager mTaskbarManager;
-        private readonly Dictionary<int, List<int>> mGroupAndQueueIndices = new Dictionary<int, List<int>>();
-        private readonly string mPathFormat;
-        
+        private readonly TaskbarManager mTaskbarManager = TaskbarManager.Instance;
+        private readonly MediaDownloadQueue mediaDownloadQueue = new MediaDownloadQueue();
 
         // Instance vars
-        private Tuple<int, int> mSelectedItem;
         private UrlParseResult mResult;
         private MusicService mService;
-        private int mGroupCounter = -1;
-
-        // shitty hack
-        private int currentCollection;
+        private ListViewItem mCurrentlySelectedQueueItem;
+        private List<TrackFile> downloadedTracks = new List<TrackFile>();
 
         public MainForm()
         {
             InitializeComponent();
-            if (TaskbarManager.IsPlatformSupported) mTaskbarManager = TaskbarManager.Instance;
-            mPathFormat = Path.Combine(
-                            ApplicationSettings.Default.SaveLocation,
-                            ApplicationSettings.Default.TrackFilenameFormat);
-            queueImageList.Images.Add("warning", Resources.warning);
-            queueImageList.Images.Add("error", Resources.error);
-            queueImageList.Images.Add("done", Resources.done);
+            UnlockUi();
+            // The formula (1 / x) * 1000 where x = FPS will give us our timer interval in regards
+            // to how fast we want the animation to show in FPS
+            queueImageAnimationTimer.Interval = (int)(((double)1 / 12) * 1000);
+
+            // Add event handlers for MDQ
+            mediaDownloadQueue.Exception += MediaDownloadQueue_Exception;
+            mediaDownloadQueue.CollectionDequeued += MediaDownloadQueue_CollectionDequeued;
+            mediaDownloadQueue.TrackDequeued += MediaDownloadQueue_TrackDequeued;
+            mediaDownloadQueue.TrackDownloadCompleted += MediaDownloadQueue_TrackDownloadCompleted;
+            mediaDownloadQueue.TrackDownloadProgress += MediaDownloadQueue_TrackDownloadProgress;
         }
 
-        #region Download queue manipulation
-        private void AddToQueue(DownloadableMediaCollection item)
+        private void MediaDownloadQueue_TrackDownloadProgress(object sender, TrackDownloadEventArgs e)
         {
-            mDownloadItems.Add(item);
-            var header = String.Format(GroupHeaderFormat, item.CollectionType, item.Name, item.Service.Name);
-
-            var group = Program.IsRunningOnWindows ? new ListViewGroup(header) : null;
-            var groupIndex = Program.IsRunningOnWindows ? queueListView.Groups.Add(group) : ++mGroupCounter;
-            if (!mGroupAndQueueIndices.ContainsKey(groupIndex)) 
-                mGroupAndQueueIndices[groupIndex] = new List<int>(item.Tracks.Count);
-            foreach (var t in item.Tracks)
+            totalProgressBar.Value = (int) ((e.TotalProgress / 100) * (decimal)100);
+            switch (e.State)
             {
-                var lvItem = new ListViewItem { Group = group };
-                if (t.CommonTrack.IsDownloadable)
-                {
-                    lvItem.Checked = true;
-                }
-                else
-                {
-                    lvItem.BackColor = SystemColors.Control;
-                    lvItem.ForeColor = SystemColors.GrayText;
-                    lvItem.ImageKey = "error";
-                }
-                if (File.Exists(t.Path))
-                {
-                    t.WillDownload = false;
-                    // We are assuming it is already downloaded
-                    t.State = TrackState.Complete;
-                    lvItem.Checked = false;
-                    lvItem.ImageKey = "warning";
-                }
-                lvItem.SubItems.Add(t.CommonTrack.TrackNumber + "/" + t.CommonTrack.DiscNumber);
-                lvItem.SubItems.Add(t.CommonTrack.Title);
-                lvItem.SubItems.Add(t.CommonTrack.Artist);
-                lvItem.SubItems.Add(t.CommonTrack.Album.Title);
-                if (Program.IsRunningOnWindows) group.Items.Add(lvItem);
-                var newItem = queueListView.Items.Add(lvItem);
-                mGroupAndQueueIndices[groupIndex].Add(newItem.Index);
+                case DownloadState.PreProcess:
+                    totalProgressStatus.Text = "Pre-processing...";
+                    break;
+                case DownloadState.DownloadingAlbumArtwork:
+                    totalProgressStatus.Text = "Downloading album artwork...";
+                    break;
+                case DownloadState.Downloading:
+                    totalProgressStatus.Text = "Downloading track...";
+                    break;
+                case DownloadState.PostProcess:
+                    totalProgressStatus.Text = "Post-processing...";
+                    break;
+                case DownloadState.WritingTags:
+                    totalProgressStatus.Text = "Writing tags...";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        private void RemoveSelectedGroup()
+        private void MediaDownloadQueue_TrackDownloadCompleted(object sender, TrackDownloadEventArgs e)
         {
-            if (queueListView.SelectedIndices.Count < 1) return;
-            var gIndex = mSelectedItem.Item1;
-            var groupItemCount = mDownloadItems[gIndex].Tracks.Count;
-            // TODO: replace with mDownloadItems[gIndex] = null
-            mDownloadItems.RemoveAt(gIndex);
-            // Remove all listview items
-            var offset = mGroupAndQueueIndices[gIndex][0] - 1;
-            for (var i = groupItemCount + offset; i > offset; i--)
-            {
-                queueListView.Items.RemoveAt(i);
-            }
-            if (Program.IsRunningOnWindows) queueListView.Groups.RemoveAt(gIndex);
             
         }
 
-        private Tuple<int, int> GetIndicesOfCollectionAndTrack(int listViewIndex)
+        private void MediaDownloadQueue_TrackDequeued(object sender, TrackDownloadEventArgs e)
         {
-            foreach (var index in mGroupAndQueueIndices)
-            {
-                int itemIndex;
-                if ((itemIndex = index.Value.IndexOf(listViewIndex)) <= -1) continue;
-                mSelectedItem = new Tuple<int, int>(index.Key, itemIndex);
-                return mSelectedItem;
-            }
-            mSelectedItem = null;
-            return null;
+            PrepareForNextTrack(e.TrackFile.Track, e.CurrentItemIndex, e.TotalItems);
         }
-#endregion
+
+        private void MediaDownloadQueue_CollectionDequeued(object sender, CollectionDownloadEventArgs e)
+        {
+            
+        }
+
+        private void MediaDownloadQueue_Exception(object sender, ExceptionEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Download queue manipulation
+        private void AddToQueue(MusicService service, IMediaCollection item, string pathFormat)
+        {
+            var enqueuedItem = mediaDownloadQueue.Enqueue(service, item, pathFormat);
+            var mediaType = MediaCollectionAsType(item);
+            var header = String.Format(GroupHeaderFormat, mediaType, item.Title, service.Name);
+            var group = new ListViewGroup(header);
+            var groupIndex = queueListView.Groups.Add(group);
+            for (var i = 0; i < item.Tracks.Count; i++)
+            {
+                var t = item.Tracks[i];
+                var lvItem = new ListViewItem
+                {
+                    Group = group,
+                    Tag = new MediaItemTag
+                    {
+                        Track = t,
+                        Collection = enqueuedItem,
+                        GroupIndex = groupIndex,
+                        IndexInCollection = i
+                    }
+                };
+                if (!t.IsDownloadable)
+                {
+                    lvItem.BackColor = SystemColors.Control;
+                    lvItem.ForeColor = SystemColors.GrayText;
+                    lvItem.ImageKey = "not_downloadable";
+                    lvItem.Text = "Unavailable";
+                }
+                else
+                {
+                    lvItem.ImageKey = "ready";
+                    lvItem.Text = "Ready to download";
+                }
+                lvItem.SubItems.Add(t.DiscNumber + " / " + t.TrackNumber);
+                lvItem.SubItems.Add(t.Title);
+                lvItem.SubItems.Add(t.Artist);
+                lvItem.SubItems.Add(t.Album.Title);
+                lvItem.SubItems.Add(t.GetBasicPath(enqueuedItem.PathFormat));
+                group.Items.Add(lvItem);
+                queueListView.Items.Add(lvItem);
+            }
+        }
+
+        private void RemoveCurrentlySelectedTrack()
+        {
+            if (mCurrentlySelectedQueueItem == null) return;
+            var item = (MediaItemTag) mCurrentlySelectedQueueItem.Tag;
+            item.Collection.MediaCollection.Tracks.Remove(item.Track);
+            queueListView.Items.Remove(mCurrentlySelectedQueueItem);
+            mCurrentlySelectedQueueItem = null;
+        }
+
+        private void RemoveCurrentlySelectedGroup()
+        {
+            if (mCurrentlySelectedQueueItem == null) return;
+            // Remove internal queue item
+            var item = (MediaItemTag)mCurrentlySelectedQueueItem.Tag;
+            mediaDownloadQueue.Remove(item.Collection);
+            // We have to remove the group from the ListView first...
+            var group = mCurrentlySelectedQueueItem.Group;
+            queueListView.Groups.Remove(group);
+            // ...then remove all the items
+            foreach (var groupItem in group.Items)
+            {
+                queueListView.Items.Remove((ListViewItem)groupItem);
+            }
+            mCurrentlySelectedQueueItem = null;
+        }
+        #endregion
+
+        private MediaType MediaCollectionAsType(IMediaCollection collection)
+        {
+            if (collection is Album)
+            {
+                return MediaType.Album;
+            }
+            if (collection is Playlist)
+            {
+                return MediaType.Playlist;
+            }
+            if (collection is SingleTrackCollection)
+            {
+                return MediaType.Track;
+            }
+            return MediaType.Unknown;
+        }
 
         private void LockUi()
         {
@@ -142,7 +216,7 @@ namespace Athame.UI
             settingsButton.Enabled = true;
             pasteButton.Enabled = true;
             clearButton.Enabled = true;
-            startDownloadButton.Enabled = true;
+            startDownloadButton.Enabled = mediaDownloadQueue.Count > 0;
             queueListView.Enabled = true;
         }
 
@@ -157,6 +231,10 @@ namespace Athame.UI
         private void SetGlobalProgress(int value)
         {
             totalProgressBar.Value = value;
+            if (value == 0)
+            {
+                mTaskbarManager.SetProgressState(TaskbarProgressBarState.NoProgress);
+            }
             mTaskbarManager?.SetProgressValue(value, totalProgressBar.Maximum);
         }
 
@@ -181,6 +259,9 @@ namespace Athame.UI
 
         private void PresentException(Exception ex)
         {
+#if DEBUG
+            throw ex;
+#else
             SetGlobalProgressState(ProgressBarState.Error);
             var th = "An unknown error occurred";
             if (ex is ResourceNotFoundException)
@@ -192,32 +273,21 @@ namespace Athame.UI
                 th = "Invalid session/subscription expired";
             }
             CommonTaskDialogs.Error(ex, th).Show();
+#endif
         }
 
-        private void OpenInExplorerAndSelect(string file)
+        private void OpenInExplorer(string directory)
         {
-            const string explorer = "explorer";
-            var args = $"/select, \"{file}\"";
-            Process.Start(explorer, args);
+            Process.Start($"\"{directory}\"");
         }
 
         private async Task DownloadQueue()
         {
-#if !DEBUG
             try
             {
-#endif  
                 LockUi();
                 currTrackLabel.Text = "Warming up...";
-                currentCollection = 0;
-                var downloadQueue = new Queue<DownloadableMediaCollection>(mDownloadItems);
-                while (downloadQueue.Count > 0)
-                {
-                    var item = downloadQueue.Dequeue();
-                    await DownloadTracks(item.Service, (from track in item.Tracks where track.WillDownload select track).ToList());
-                    currentCollection++;
-                }
-#if !DEBUG
+                await mediaDownloadQueue.StartDownloadAsync();
             }
             catch (Exception ex)
             {
@@ -225,52 +295,109 @@ namespace Athame.UI
             }
             finally
             {
-#endif
                 UnlockUi();
-#if !DEBUG
             }
-#endif
-
         }
 
-        private async Task DownloadTracks(MusicService svc, List<DownloadableTrack> tracks)
+        private MediaTypeSavePreference PreferenceForType(MediaType type)
         {
-            var tagger = new TrackTagger();
-            var downloader = new TrackDownloader(svc, tracks, mPathFormat);
-            totalProgressBar.Value = 0;
-            PrepareForNextTrack(tracks[0].CommonTrack, 0, tracks.Count);
-            downloader.ItemProgressChanged += (o, args) =>
+            if (type == MediaType.Playlist && !Program.DefaultSettings.Settings.PlaylistSavePreferenceUsesGeneral)
             {
-                switch (args.CurrentTrack.State)
-                {
-                    case TrackState.DownloadingArtwork:
-                        totalProgressStatus.Text = "Getting artwork...";
-                        break;
-                    case TrackState.DownloadingTrack:
-                        totalProgressStatus.Text = "Getting track...";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                SetGlobalProgress(args.OverallCompletionPercentage);
-            };
-            downloader.ItemDownloadCompleted += (o, args) =>
+                return Program.DefaultSettings.Settings.PlaylistSavePreference;
+            }
+            return Program.DefaultSettings.Settings.GeneralSavePreference;
+        }
+
+        //        private async Task DownloadTracks(MusicService svc, List<DownloadableTrack> tracks)
+        //        {
+        //            var tagger = new TrackTagger();
+        //            var downloader = new TrackDownloader(svc, tracks, mPathFormat);
+        //            totalProgressBar.Value = 0;
+        //            PrepareForNextTrack(tracks[0].CommonTrack, 0, tracks.Count);
+        //            downloader.ItemProgressChanged += (o, args) =>
+        //            {
+        //                switch (args.CurrentTrack.State)
+        //                {
+        //                    case TrackState.DownloadingArtwork:
+        //                        totalProgressStatus.Text = "Getting artwork...";
+        //                        break;
+        //                    case TrackState.DownloadingTrack:
+        //                        totalProgressStatus.Text = "Getting track...";
+        //                        break;
+        //                    default:
+        //                        throw new ArgumentOutOfRangeException();
+        //                }
+        //                SetGlobalProgress(args.OverallCompletionPercentage);
+        //            };
+        //            downloader.ItemDownloadCompleted += (o, args) =>
+        //            {
+        //                totalProgressStatus.Text = "Tagging...";
+        //                tagger.Write(args.CurrentTrack.Path, tracks[args.CurrentItemIndex].CommonTrack, args.CurrentTrack.ArtworkPath);
+        //                var lvItemIndex = mGroupAndQueueIndices[currentCollection][args.CurrentItemIndex];
+        //                var lvItem = queueListView.Items[lvItemIndex];
+        //                lvItem.Checked = false;
+        //                lvItem.ImageKey = "done";
+        //                var nextIndex = args.CurrentItemIndex + 1;
+        //                if (nextIndex < args.TotalItems)
+        //                {
+        //                    PrepareForNextTrack(tracks[nextIndex].CommonTrack, nextIndex, args.TotalItems);
+        //                }
+        //            };
+        //            await downloader.DownloadAsync();
+        //            currTrackLabel.Text = GetCompletionMessage();
+        //            totalProgressStatus.Text = "Downloaded album successfully";
+        //        }
+
+        private static bool IsWithinVisibleBounds(Point topLeft)
+        {
+            var screens = Screen.AllScreens;
+            return (from screen in screens
+                    where screen.WorkingArea.Contains(topLeft)
+                    select screen).Any();
+        }
+
+        private void ShowStartupTaskDialog()
+        {
+            var td = CommonTaskDialogs.Wait(this, null);
+            var openCt = new CancellationTokenSource();
+            td.Opened += async (o, args) =>
             {
-                totalProgressStatus.Text = "Tagging...";
-                tagger.Write(args.CurrentTrack.Path, tracks[args.CurrentItemIndex].CommonTrack, args.CurrentTrack.ArtworkPath);
-                var lvItemIndex = mGroupAndQueueIndices[currentCollection][args.CurrentItemIndex];
-                var lvItem = queueListView.Items[lvItemIndex];
-                lvItem.Checked = false;
-                lvItem.ImageKey = "done";
-                var nextIndex = args.CurrentItemIndex + 1;
-                if (nextIndex < args.TotalItems)
+                await Task.Factory.StartNew(async () =>
                 {
-                    PrepareForNextTrack(tracks[nextIndex].CommonTrack, nextIndex, args.TotalItems);
-                }
+                    foreach (var service in ServiceRegistry.Default)
+                    {
+                        if (service.Settings.Response == null) continue;
+                        var result = false;
+                        td.InstructionText = $"Signing into {service.Name}...";
+                        td.Text = $"Signing in as {service.Settings.Response.UserName}";
+                        try
+                        {
+                            openCt.Token.ThrowIfCancellationRequested();
+                            result = await service.RestoreSessionAsync(service.Settings.Response);
+                        }
+                        catch (NotImplementedException)
+                        {
+                            result = service.RestoreSession(service.Settings.Response);
+                        }
+                        finally
+                        {
+                            if (result)
+                            {
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                    td.Close();
+                }, openCt.Token);
+
             };
-            await downloader.DownloadAsync();
-            currTrackLabel.Text = GetCompletionMessage();
-            totalProgressStatus.Text = "Downloaded album successfully";
+            if (td.Show() == TaskDialogResult.Cancel)
+            {
+                openCt.Cancel(true);
+            }
         }
 
         #region Validation for URL
@@ -303,7 +430,7 @@ namespace Athame.UI
                 urlValidStateLabel.Text = UrlInvalid;
                 return false;
             }
-            var service = ServiceCollection.Default.GetByHost(url.Host);
+            var service = ServiceRegistry.Default.GetByBaseUri(url);
             // No service associated with host
             if (service == null)
             {
@@ -335,79 +462,9 @@ namespace Athame.UI
         }
         #endregion
 
-        private async void button1_Click(object sender, EventArgs e)
-        {
-            SetGlobalProgress(0);
-            SetGlobalProgressState(ProgressBarState.Normal);
-#if !DEBUG
-            try
-            {
-#endif
-                var isAlreadyInQueue = (from item in mDownloadItems.ToArray()
-                                           where item.Id == mResult.Id
-                                           select item.Id).Any();
-                if (isAlreadyInQueue)
-                {
-                    MessageBox.Show("This item is already in the download queue.", "Cannot add to queue", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    return;
-                }
-                
-                switch (mResult.Type)
-                {
-                    case MediaType.Album:
-                        LockUi();
-                        // Get album and display it in listview
-                        currTrackLabel.Text = "Getting album...";
-                        var album = await mService.GetAlbumWithTracksAsync(mResult.Id);
-                        AddToQueue(new DownloadableMediaCollection(mPathFormat, album.Tracks)
-                        {
-                            Service = mService, 
-                            Id = mResult.Id,
-                            CollectionType = mResult.Type,
-                            Name = album.Title
-                        });
-                        break;
-
-                    case MediaType.Playlist:
-                        LockUi();
-                        // Get playlist and display it in listview
-                        currTrackLabel.Text = "Getting playlist...";
-                        var playlist = await mService.GetPlaylistAsync(mResult.Id);
-                        AddToQueue(new DownloadableMediaCollection(mPathFormat, playlist.Tracks)
-                        {
-                            Service = mService,
-                            Id = mResult.Id,
-                            CollectionType = mResult.Type,
-                            Name = playlist.Title
-                        });
-                        break;
-
-                    default:
-                        MessageBox.Show($"{mResult.Type}s are not supported yet.", "URL Error",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                }
-                idTextBox.Clear();
-#if !DEBUG
-            }
-            catch (Exception ex)
-            {
-                PresentException(ex);
-            }
-            finally
-            {
-#endif
-                currTrackLabel.Text = "Ready";
-                UnlockUi();
-#if !DEBUG
-            }
-#endif
-        }
-
         #region Easter egg
 
-        private readonly string[] messages = {"Woo-hoo!", "We did it!", "Yusssss", "Alright!", "Sweet!", "Nice...."};
+        private readonly string[] messages = { "Woo-hoo!", "We did it!", "Yusssss", "Alright!", "Sweet!", "Nice...." };
         private readonly Random random = new Random();
 
         private string GetCompletionMessage()
@@ -422,87 +479,129 @@ namespace Athame.UI
 
         #endregion
 
+        #region MainForm event handlers and control event handlers
+        
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SetGlobalProgress(0);
+            SetGlobalProgressState(ProgressBarState.Normal);
+
+            try
+            {
+                // Don't add if the item is already enqueued.
+                var isAlreadyInQueue = mediaDownloadQueue.ItemById(mResult.Id) != null;
+                if (isAlreadyInQueue)
+                {
+                    using (
+                        var td = CommonTaskDialogs.Message(this, TaskDialogStandardIcon.Error, "Athame",
+                            "Cannot add to download queue", "This item already exists in the download queue.",
+                            TaskDialogStandardButtons.Ok))
+                    {
+                        td.Show();
+                        return;
+                    }
+                }
+
+                // Ask for the location if required before we begin retrieval
+                var prefType = PreferenceForType(mResult.Type);
+                var saveDir = prefType.SaveDirectory;
+                if (prefType.AskForLocation)
+                {
+                    using (var folderSelectionDialog = new FolderBrowserDialog { Description = "Select a destionation for this media:" })
+                    {
+                        if (folderSelectionDialog.ShowDialog(this) == DialogResult.OK)
+                        {
+                            saveDir = folderSelectionDialog.SelectedPath;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                // Filter out types we can't process right now
+                if (mResult.Type != MediaType.Album && mResult.Type != MediaType.Playlist &&
+                    mResult.Type != MediaType.Track)
+                {
+                    using (var noTypeTd = CommonTaskDialogs.Message(this, TaskDialogStandardIcon.Warning,
+                        "Athame", $"'{mResult.Type}' is not supported yet.",
+                        "You may be able to download it in a later release.", TaskDialogStandardButtons.Ok))
+                    {
+                        noTypeTd.Show();
+                        return;
+                    }
+                }
+
+                // Build wait dialog
+                var retrievalWaitTaskDialog = new TaskDialog
+                {
+                    Cancelable = false,
+                    Caption = "Athame",
+                    InstructionText = $"Getting {mResult.Type.ToString().ToLower()} details...",
+                    Text = $"{mService.Name}: {mResult.Id}",
+                    StandardButtons = TaskDialogStandardButtons.Cancel,
+                    OwnerWindowHandle = Handle,
+                    ProgressBar = new TaskDialogProgressBar { State = TaskDialogProgressBarState.Marquee }
+                };
+                // Open handler
+                retrievalWaitTaskDialog.Opened += async (o, args) =>
+                {
+                    LockUi();
+                    var pathFormat = Path.Combine(saveDir, prefType.GetPlatformSaveFormat());
+                    switch (mResult.Type)
+                    {
+                        case MediaType.Album:
+                            // Get album and display it in listview
+                            var album = await mService.GetAlbumAsync(mResult.Id, true);
+                            AddToQueue(mService, album, pathFormat);
+                            break;
+
+                        case MediaType.Playlist:
+                            // Get playlist and display it in listview
+                            var playlist = await mService.GetPlaylistAsync(mResult.Id);
+                            AddToQueue(mService, playlist, pathFormat);
+                            break;
+
+                        case MediaType.Track:
+                            var track = await mService.GetTrackAsync(mResult.Id);
+                            AddToQueue(mService, track.AsCollection(), pathFormat);
+                            break;
+                    }
+                    idTextBox.Clear();
+                    UnlockUi();
+                    retrievalWaitTaskDialog.Close();
+                };
+                // Show dialog
+                retrievalWaitTaskDialog.Show();
+            }
+            catch (Exception ex)
+            {
+                PresentException(ex);
+            }
+        }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (TaskDialog.IsPlatformSupported)
+            if (!IsWithinVisibleBounds(Program.DefaultSettings.Settings.MainWindowPreference.Location) ||
+                Program.DefaultSettings.Settings.MainWindowPreference.Location == new Point(0, 0))
             {
-                ShowStartupTaskDialog();
+                CenterToScreen();
             }
             else
             {
-                ShowStartupWaitDialog();
+                Location = Program.DefaultSettings.Settings.MainWindowPreference.Location;
             }
+
+            var savedSize = Program.DefaultSettings.Settings.MainWindowPreference.Size;
+            if (savedSize.Width < MinimumSize.Width && savedSize.Height < MinimumSize.Height)
+            {
+                Program.DefaultSettings.Settings.MainWindowPreference.Size = savedSize = MinimumSize;
+            }
+            Size = savedSize;
         }
 
-        private async Task ShowStartupWaitDialog()
-        {
-            foreach (var service in ServiceCollection.Default)
-            {
-                if (service.Settings.Response == null) continue;
-                var waitForm = new WaitForm(this);
-                waitForm.TopMost = true;
-                waitForm.Show();
-                waitForm.Message = $"Signing into {service.Name}...";
-                var result = false;
-                try
-                {
-                    result = await service.RestoreSessionAsync(service.Settings.Response);
-                }
-                catch (NotImplementedException)
-                {
-                    result = service.RestoreSession(service.Settings.Response);
-                }
-                if (!result)
-                {
-                    MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-                waitForm.Close();
-            }
-        }
 
-        private void ShowStartupTaskDialog()
-        {
-            var td = CommonTaskDialogs.Wait(this, null);
-            var openCt = new CancellationTokenSource();
-            td.Opened += async (o, args) =>
-            {
-                await Task.Factory.StartNew(async () =>
-                {
-                    foreach (var service in ServiceCollection.Default)
-                    {
-                        if (service.Settings.Response == null) continue;
-                        var result = false;
-                        td.InstructionText = $"Signing into {service.Name}...";
-                        try
-                        {
-                            openCt.Token.ThrowIfCancellationRequested();
-                            result = await service.RestoreSessionAsync(service.Settings.Response);
-                        }
-                        catch (NotImplementedException)
-                        {
-                            result = service.RestoreSession(service.Settings.Response);
-                        }
-                        finally
-                        {
-                            if (result)
-                            {
-                            }
-                            else
-                            {
-                                MessageBox.Show($"Failed to sign in to {service.Name}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                    }
-                    td.Close();
-                }, openCt.Token);
-
-            };
-            if (td.Show() == TaskDialogResult.Cancel)
-            {
-                openCt.Cancel(true);
-            }
-        }
 
         private void settingsButton_Click(object sender, EventArgs e)
         {
@@ -512,7 +611,7 @@ namespace Athame.UI
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ApplicationSettings.Default.Save();
+            Program.DefaultSettings.Save();
         }
 
         private void idTextBox_TextChanged(object sender, EventArgs e)
@@ -533,7 +632,7 @@ namespace Athame.UI
 
         private void urlValidStateLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var svc = (MusicService) e.Link.LinkData;
+            var svc = (MusicService)e.Link.LinkData;
             using (var cf = new CredentialsForm(svc))
             {
                 var res = cf.ShowDialog(this);
@@ -545,56 +644,41 @@ namespace Athame.UI
 
         private async void startDownloadButton_Click(object sender, EventArgs e)
         {
+            if (mediaDownloadQueue.Count == 0)
+            {
+                using (
+                    var td = CommonTaskDialogs.Message(this, TaskDialogStandardIcon.Error, "Athame",
+                        "No tracks are in the queue.",
+                        "You can add tracks by copying the URL to an album, artist, track, or playlist and pasting it into Athame.",
+                        TaskDialogStandardButtons.Ok))
+                {
+                    td.Show();
+                }
+                return;
+            }
             await DownloadQueue();
-        }
-
-        private void queueListView_ItemCheck(object sender, ItemCheckEventArgs e)
-        {
-            var indices = GetIndicesOfCollectionAndTrack(e.Index);
-            if (indices == null) return;
-            var item = mDownloadItems[indices.Item1].Tracks[indices.Item2];
-            if (!item.CommonTrack.IsDownloadable)
-            {
-                e.NewValue = CheckState.Unchecked;
-                SystemSounds.Beep.Play();
-            }
-            else
-            {
-                item.WillDownload = e.NewValue == CheckState.Checked;
-                // If user checks a downloaded track for whatever reason
-                item.State = TrackState.Ready;
-            }
         }
 
         private void queueListView_MouseClick(object sender, MouseEventArgs e)
         {
             if (!queueListView.FocusedItem.Bounds.Contains(e.Location)) return;
-
-            var indices = GetIndicesOfCollectionAndTrack(queueListView.Items.IndexOf(queueListView.FocusedItem));
-            if (indices == null) return;
+            mCurrentlySelectedQueueItem = queueListView.FocusedItem;
             // Only show context menu on right click
             if (e.Button != MouseButtons.Right) return;
-            var group = mDownloadItems[indices.Item1];
-            var track = group.Tracks[indices.Item2];
-            showInExplorerToolStripMenuItem.Enabled = track.State == TrackState.Complete;
             queueMenu.Show(Cursor.Position);
         }
 
+
+
         private void removeGroupToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RemoveSelectedGroup();
-        }
-
-        private void showInExplorerToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var path = mDownloadItems[mSelectedItem.Item1].Tracks[mSelectedItem.Item2].Path;
-            OpenInExplorerAndSelect(path);
+            RemoveCurrentlySelectedGroup();
         }
 
         private void queueListView_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (queueListView.SelectedIndices.Count == 0) return;
-            GetIndicesOfCollectionAndTrack(queueListView.SelectedIndices[0]);
+            mCurrentlySelectedQueueItem = queueListView.SelectedItems[0];
         }
 
         private void queueListView_MouseHover(object sender, EventArgs e)
@@ -610,6 +694,70 @@ namespace Athame.UI
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new SettingsForm().ShowDialog(this);
+        }
+
+
+
+        private void removeTrackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveCurrentlySelectedTrack();
+        }
+
+        private void MainForm_Move(object sender, EventArgs e)
+        {
+            Program.DefaultSettings.Settings.MainWindowPreference.Location = Location;
+        }
+
+        private void MainForm_ResizeEnd(object sender, EventArgs e)
+        {
+            Program.DefaultSettings.Settings.MainWindowPreference.Size = Size;
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            LockUi();
+            ShowStartupTaskDialog();
+            UnlockUi();
+        }
+
+        private void queueListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (e.Shift)
+                {
+                    RemoveCurrentlySelectedGroup();
+                }
+                else
+                {
+                    RemoveCurrentlySelectedTrack();
+                }
+
+            }
+        }
+        #endregion
+
+        private const int ImageListAnimStartIndex = 4;
+        private const int ImageListAnimEndIndex = 15;
+        private int currentFrame = ImageListAnimStartIndex;
+        private ListViewItem currentAnimatingItem;
+
+        private void queueImageAnimationTimer_Tick(object sender, EventArgs e)
+        {
+            currentFrame = ++currentFrame > ImageListAnimEndIndex ? ImageListAnimStartIndex : currentFrame;
+            currentAnimatingItem.ImageIndex = currentFrame;
+        }
+
+        private void StartAnimation(ListViewItem item)
+        {
+            currentAnimatingItem = item;
+            queueImageAnimationTimer.Start();
+        }
+
+        private void StopAnimation()
+        {
+            currentAnimatingItem = null;
+            queueImageAnimationTimer.Stop();
         }
     }
 }

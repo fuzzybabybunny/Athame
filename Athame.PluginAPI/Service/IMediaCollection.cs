@@ -14,10 +14,14 @@ namespace Athame.PluginAPI.Service
         /// <summary>
         /// The tracks this collection contains.
         /// </summary>
-        IEnumerable<Track> Tracks { get; set; }
+        IList<Track> Tracks { get; set; }
         /// <summary>
         /// The human-readable title of this collection.
         /// </summary>
         string Title { get; set; }
+        /// <summary>
+        /// The collection's ID
+        /// </summary>
+        string Id { get; set; }
     }
 }

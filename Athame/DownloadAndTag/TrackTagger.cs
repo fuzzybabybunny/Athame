@@ -1,5 +1,6 @@
 ﻿using System;
 using Athame.PluginAPI.Service;
+using Athame.Settings;
 using TagLib;
 using SysFile = System.IO.File;
 
@@ -43,7 +44,7 @@ namespace Athame.DownloadAndTag
             }
 
             string fileName = null;
-            switch (ApplicationSettings.Default.AlbumArtworkSaveFormat)
+            switch (Program.DefaultSettings.Settings.AlbumArtworkSaveFormat)
             {
                 case AlbumArtworkSaveFormat.DontSave:
                     break;

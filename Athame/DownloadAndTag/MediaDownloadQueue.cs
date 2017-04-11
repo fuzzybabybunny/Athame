@@ -23,7 +23,8 @@ namespace Athame.DownloadAndTag
 
         public decimal TotalProgress
         {
-            get {
+            get
+            {
                 if (TotalItems == 0)
                 {
                     return 0;
@@ -43,45 +44,58 @@ namespace Athame.DownloadAndTag
         }
     }
 
-    public class MediaDownloadQueue
+    /// <summary>
+    /// Defines what to skip to next when an exception is encountered.
+    /// </summary>
+    public enum ExceptionSkip
     {
+        /// <summary>
+        /// The downloader should advance to the next item.
+        /// </summary>
+        Item,
+        /// <summary>
+        /// The downloader should advance to the next collection.
+        /// </summary>
+        Collection,
+        /// <summary>
+        /// The downloader should stop and return immediately.
+        /// </summary>
+        Fail
+    }
 
-        private class SingleTrackCollection : IMediaCollection
-        {
-            public SingleTrackCollection(Track t)
-            {
-                Tracks = new[] { t };
-                Title = t.Title;
-            }
+    /// <summary>
+    /// Event args used when an exception occurs while downloading a track.
+    /// </summary>
+    public class ExceptionEventArgs : EventArgs
+    {
+        /// <summary>
+        /// The exception that occurred
+        /// </summary>
+        public Exception Exception { get; set; }
+        /// <summary>
+        /// The current state of the item being downloaded.
+        /// </summary>
+        public TrackDownloadEventArgs CurrentState { get; set; }
+        /// <summary>
+        /// What the downloader should advance to when the event handler returns.
+        /// </summary>
+        public ExceptionSkip SkipTo { get; set; }
+    }
 
-            public IEnumerable<Track> Tracks { get; set; }
-            public string Title { get; set; }
-        }
-
-        private readonly WebClient mAlbumArtworkClient = new WebClient();
-        private readonly TrackTagger mTagger = new TrackTagger();
-        private readonly List<EnqueuedCollection> mList = new List<EnqueuedCollection>();
-
+    public class MediaDownloadQueue : List<EnqueuedCollection>
+    {
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public void Enqueue(MusicService service, Track track, string pathFormat)
+        public EnqueuedCollection Enqueue(MusicService service, IMediaCollection collection, string pathFormat)
         {
-            mList.Add(new EnqueuedCollection
+            var item = new EnqueuedCollection
             {
-                Collection = new SingleTrackCollection(track),
                 Service = service,
-                PathFormat = pathFormat
-            });
-        }
-
-        public void EnqueueCollection(MusicService service, IMediaCollection collection, string pathFormat)
-        {
-            mList.Add(new EnqueuedCollection
-            {
-                Collection = collection,
-                Service = service,
-                PathFormat = pathFormat
-            });
+                PathFormat = pathFormat,
+                MediaCollection = collection
+            };
+            Add(item);
+            return item;
         }
 
         #region Events
@@ -125,11 +139,21 @@ namespace Athame.DownloadAndTag
         {
             TrackDownloadProgress?.Invoke(this, e);
         }
-#endregion
+
+        public event EventHandler<ExceptionEventArgs> Exception;
+
+        protected void OnException(ExceptionEventArgs e)
+        {
+            Exception?.Invoke(this, e);
+
+        }
+        #endregion
+
+        private ExceptionSkip skip;
 
         public async Task StartDownloadAsync()
         {
-            var queueView = new Queue<EnqueuedCollection>(mList);
+            var queueView = new Queue<EnqueuedCollection>(this);
             while (queueView.Count > 0)
             {
                 var currentItem = queueView.Dequeue();
@@ -137,16 +161,28 @@ namespace Athame.DownloadAndTag
                 {
                     Collection = currentItem
                 });
-                await DownloadCollectionAsync(currentItem);
+                if (await DownloadCollectionAsync(currentItem)) continue;
+                if (skip == ExceptionSkip.Fail)
+                {
+                    return;
+                }
             }
         }
 
-        private async Task DownloadCollectionAsync(EnqueuedCollection collection)
+        public EnqueuedCollection ItemById(string id)
+        {
+            return (from item in this
+                    where item.MediaCollection.Id == id
+                    select item).FirstOrDefault();
+
+        }
+
+        private async Task<bool> DownloadCollectionAsync(EnqueuedCollection collection)
         {
             // If Tracks is an ICollection, Count() will just return ICollection.Count property,
             // otherwise it'll enumerate, hence why we only want to call it once
-            var tracksCollectionLength = collection.Collection.Tracks.Count();
-            var tracksQueue = new Queue<Track>(collection.Collection.Tracks);
+            var tracksCollectionLength = collection.MediaCollection.Tracks.Count;
+            var tracksQueue = new Queue<Track>(collection.MediaCollection.Tracks);
             while (tracksQueue.Count > 0)
             {
                 var currentItem = tracksQueue.Dequeue();
@@ -159,37 +195,63 @@ namespace Athame.DownloadAndTag
                     TrackFile = null
                 };
                 OnTrackDequeued(eventArgs);
-                if (!currentItem.IsDownloadable)
+
+                try
                 {
-                    continue;
+                    if (!currentItem.IsDownloadable)
+                    {
+                        continue;
+                    }
+                    // Download album artwork if it's not cached
+                    if (currentItem.Album != null && !AlbumArtCache.Instance.HasItem(currentItem.Album.CoverUri.ToString()))
+                    {
+                        eventArgs.State = DownloadState.DownloadingAlbumArtwork;
+                        OnTrackDownloadProgress(eventArgs);
+
+                        await AlbumArtCache.Instance.AddByDownload(currentItem.Album.CoverUri.ToString());
+
+                    }
+                    eventArgs.TrackFile = await collection.Service.GetDownloadableTrackAsync(currentItem);
+                    var downloader = collection.Service.GetDownloader(eventArgs.TrackFile);
+                    downloader.Progress += (sender, args) =>
+                    {
+                        eventArgs.Update(args);
+                        OnTrackDownloadProgress(eventArgs);
+                    };
+                    downloader.Done += (sender, args) =>
+                    {
+                        OnTrackDownloadCompleted(eventArgs);
+                    };
+                    var path = eventArgs.TrackFile.GetPath(collection.PathFormat);
+                    await downloader.DownloadAsyncTask(eventArgs.TrackFile, path);
+                    // Attempt to dispose the downloader, since the most probable case will be that it will
+                    // implement IDisposable if it uses sockets
+                    var disposableDownloader = downloader as IDisposable;
+                    disposableDownloader?.Dispose();
+                    // Write the tag
+                    TrackTagger.Write(path, currentItem);
                 }
-                // Download album artwork if it's not cached
-                if (currentItem.Album != null && !AlbumArtCache.Instance.HasItem(currentItem.Album.CoverUri.ToString()))
+                catch (Exception ex)
                 {
-                    eventArgs.State = DownloadState.DownloadingAlbumArtwork;
-                    OnTrackDownloadProgress(eventArgs);
-                    await AlbumArtCache.Instance.AddByDownload(currentItem.Album.CoverUri.ToString());
+                    var exEventArgs = new ExceptionEventArgs { CurrentState = eventArgs, Exception = ex };
+                    OnException(exEventArgs);
+                    switch (exEventArgs.SkipTo)
+                    {
+                        case ExceptionSkip.Item:
+                            continue;
+
+                        case ExceptionSkip.Collection:
+                        case ExceptionSkip.Fail:
+                            skip = exEventArgs.SkipTo;
+                            return false;
+
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
-                eventArgs.TrackFile = await collection.Service.GetDownloadableTrackAsync(currentItem);
-                var downloader = collection.Service.GetDownloader(eventArgs.TrackFile);
-                downloader.Progress += (sender, args) =>
-                {
-                    eventArgs.Update(args);
-                    OnTrackDownloadProgress(eventArgs);
-                };
-                downloader.Done += (sender, args) =>
-                {
-                    OnTrackDownloadCompleted(eventArgs);
-                };
-                var path = eventArgs.TrackFile.GetPath(collection.PathFormat);
-                await downloader.DownloadAsyncTask(eventArgs.TrackFile, path);
-                // Attempt to dispose the downloader, since the most probable case will be that it will
-                // implement IDisposable if it uses sockets
-                var disposableDownloader = downloader as IDisposable;
-                disposableDownloader?.Dispose();
-                // Write the tag
-                TrackTagger.Write(path, currentItem);
+                
             }
+            return true;
         }
     }
 }

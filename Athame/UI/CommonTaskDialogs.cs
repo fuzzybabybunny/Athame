@@ -12,7 +12,7 @@ namespace Athame.UI
             var dialog = new TaskDialog
             {
                 Cancelable = false,
-                Caption = "Please wait...",
+                Caption = "Athame",
                 InstructionText = message ?? "Please wait...",
                 StandardButtons = TaskDialogStandardButtons.Cancel,
                 OwnerWindowHandle = owner?.Handle ?? IntPtr.Zero
@@ -51,6 +51,43 @@ namespace Athame.UI
         {
             var td = Error(exception, errorText);
             td.OwnerWindowHandle = owner.Handle;
+            return td;
+        }
+
+        public static TaskDialog Message(IWin32Window owner, TaskDialogStandardIcon icon, string title, string caption,
+            string message, TaskDialogStandardButtons buttons)
+        {
+            var td = new TaskDialog
+            {
+                Icon = icon,
+                Caption = title,
+                InstructionText = caption,
+                Text = message,
+                StandardButtons = buttons,
+                OwnerWindowHandle = owner.Handle
+            };
+            td.Opened += (sender, args) =>
+            {
+                td.Icon = icon;
+                switch (icon)
+                {
+                    case TaskDialogStandardIcon.None:
+                        break;
+                    case TaskDialogStandardIcon.Warning:
+                        SystemSounds.Exclamation.Play();
+                        break;
+                    case TaskDialogStandardIcon.Error:
+                        SystemSounds.Hand.Play();
+                        break;
+                    case TaskDialogStandardIcon.Information:
+                        SystemSounds.Asterisk.Play();
+                        break;
+                    case TaskDialogStandardIcon.Shield:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(icon), icon, null);
+                }
+            };
             return td;
         }
 

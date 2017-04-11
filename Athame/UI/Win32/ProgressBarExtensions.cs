@@ -27,11 +27,11 @@ namespace Athame.UI.Win32
 
     public static class ProgressBarExtensions
     {
-        private const int WM_USER = 0x400;
+        
 
         // CommCtrl.h
-        private const int PBM_SETSTATE = WM_USER + 16;
-        private const int PBM_GETSTATE = WM_USER + 17;
+        private const int PBM_SETSTATE = Native.WM_USER + 16;
+        private const int PBM_GETSTATE = Native.WM_USER + 17;
 
         public static ProgressBarState GetState(this ProgressBar progressBar)
         {
