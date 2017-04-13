@@ -47,7 +47,9 @@ namespace Athame.UI
         private UrlParseResult mResult;
         private MusicService mService;
         private ListViewItem mCurrentlySelectedQueueItem;
-        private List<TrackFile> downloadedTracks = new List<TrackFile>();
+        private ListViewItem currentlyDownloadingItem;
+        private CollectionDownloadEventArgs currentCollection;
+        
 
         public MainForm()
         {
@@ -65,25 +67,42 @@ namespace Athame.UI
             mediaDownloadQueue.TrackDownloadProgress += MediaDownloadQueue_TrackDownloadProgress;
         }
 
+        /// <summary>
+        /// Rounds a decimal less than 1 up then multiplies it by 100. If the result is greater than 100, returns 100, otherwise returns the result.
+        /// </summary>
+        /// <param name="percent">The percent value to convert.</param>
+        /// <returns>An integer that is not greater than 100.</returns>
+        private int PercentToInt(decimal percent)
+        {
+            var rounded = (int) (Decimal.Round(percent, 2, MidpointRounding.ToEven) * (decimal) 100);
+            return rounded > 100 ? 100 : rounded;
+        }
+
         private void MediaDownloadQueue_TrackDownloadProgress(object sender, TrackDownloadEventArgs e)
         {
-            totalProgressBar.Value = (int) ((e.TotalProgress / 100) * (decimal)100);
+            collectionProgressBar.Value = PercentToInt(e.TotalProgress);
+            totalProgressBar.Value +=
+                PercentToInt(((decimal) (e.TotalProgress + currentCollection.CurrentCollectionIndex) /
+                              currentCollection.TotalNumberOfCollections)) - totalProgressBar.Value;
+            SetGlobalProgress(totalProgressBar.Value);
             switch (e.State)
             {
                 case DownloadState.PreProcess:
-                    totalProgressStatus.Text = "Pre-processing...";
+                    StartAnimation(currentlyDownloadingItem);
+                    currentlyDownloadingItem.Text = "Downloading...";
+                    collectionStatusLabel.Text = "Pre-processing...";
                     break;
                 case DownloadState.DownloadingAlbumArtwork:
-                    totalProgressStatus.Text = "Downloading album artwork...";
+                    collectionStatusLabel.Text = "Downloading album artwork...";
                     break;
                 case DownloadState.Downloading:
-                    totalProgressStatus.Text = "Downloading track...";
+                    collectionStatusLabel.Text = "Downloading track...";
                     break;
                 case DownloadState.PostProcess:
-                    totalProgressStatus.Text = "Post-processing...";
+                    collectionStatusLabel.Text = "Post-processing...";
                     break;
                 case DownloadState.WritingTags:
-                    totalProgressStatus.Text = "Writing tags...";
+                    collectionStatusLabel.Text = "Writing tags...";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -92,22 +111,27 @@ namespace Athame.UI
 
         private void MediaDownloadQueue_TrackDownloadCompleted(object sender, TrackDownloadEventArgs e)
         {
-            
+            collectionStatusLabel.Text = "Completed";
+            StopAnimation();
+            currentlyDownloadingItem.ImageKey = "done";
+            currentlyDownloadingItem.Text = "Completed";
         }
 
         private void MediaDownloadQueue_TrackDequeued(object sender, TrackDownloadEventArgs e)
         {
-            PrepareForNextTrack(e.TrackFile.Track, e.CurrentItemIndex, e.TotalItems);
+            // this'll bite me in the ass someday
+            currentlyDownloadingItem = queueListView.Groups[currentCollection.CurrentCollectionIndex].Items[e.CurrentItemIndex * 2];
         }
 
         private void MediaDownloadQueue_CollectionDequeued(object sender, CollectionDownloadEventArgs e)
         {
-            
+            currentCollection = e;
+            totalStatusLabel.Text = $"{e.CurrentCollectionIndex + 1}/{e.TotalNumberOfCollections}: {MediaCollectionAsType(e.Collection.MediaCollection)} \"{e.Collection.MediaCollection.Title}\"";
         }
 
         private void MediaDownloadQueue_Exception(object sender, ExceptionEventArgs e)
         {
-            throw new NotImplementedException();
+            throw e.Exception;
         }
 
         #region Download queue manipulation
@@ -154,12 +178,20 @@ namespace Athame.UI
             }
         }
 
-        private void RemoveCurrentlySelectedTrack()
+        private void RemoveCurrentlySelectedTracks()
         {
             if (mCurrentlySelectedQueueItem == null) return;
-            var item = (MediaItemTag) mCurrentlySelectedQueueItem.Tag;
-            item.Collection.MediaCollection.Tracks.Remove(item.Track);
-            queueListView.Items.Remove(mCurrentlySelectedQueueItem);
+            var selectedItemsList = queueListView.SelectedItems.Cast<ListViewItem>().ToList();
+            foreach (var listViewItem in selectedItemsList)
+            {
+                var item = (MediaItemTag)listViewItem.Tag;
+                item.Collection.MediaCollection.Tracks.Remove(item.Track);
+                queueListView.Items.Remove(listViewItem);
+                if (item.Collection.MediaCollection.Tracks.Count == 0)
+                {
+                    mediaDownloadQueue.Remove(item.Collection);
+                }
+            }
             mCurrentlySelectedQueueItem = null;
         }
 
@@ -220,17 +252,8 @@ namespace Athame.UI
             queueListView.Enabled = true;
         }
 
-        private void PrepareForNextTrack(Track track, int current, int count)
-        {
-            // Put leading zero in front of track number
-            var fmt =
-                $"[{current + 1}/{count}] {track.TrackNumber:D2}: {track.Title} - {track.Artist} - {track.Album.Title}";
-            currTrackLabel.Text = fmt;
-        }
-
         private void SetGlobalProgress(int value)
         {
-            totalProgressBar.Value = value;
             if (value == 0)
             {
                 mTaskbarManager.SetProgressState(TaskbarProgressBarState.NoProgress);
@@ -240,7 +263,6 @@ namespace Athame.UI
 
         private void SetGlobalProgressState(ProgressBarState state)
         {
-            totalProgressBar.SetState(state);
             switch (state)
             {
                 case ProgressBarState.Normal:
@@ -285,13 +307,19 @@ namespace Athame.UI
         {
             try
             {
+
                 LockUi();
-                currTrackLabel.Text = "Warming up...";
+                totalStatusLabel.Text = "Warming up...";
                 await mediaDownloadQueue.StartDownloadAsync();
+                currentlyDownloadingItem = null;
+                SetGlobalProgress(0);
+                SetGlobalProgressState(ProgressBarState.Normal);
+
             }
             catch (Exception ex)
             {
                 PresentException(ex);
+
             }
             finally
             {
@@ -305,7 +333,7 @@ namespace Athame.UI
             {
                 return Program.DefaultSettings.Settings.PlaylistSavePreference;
             }
-            return Program.DefaultSettings.Settings.GeneralSavePreference;
+            return Program.DefaultSettings.Settings.GeneralSavePreference.Clone();
         }
 
         //        private async Task DownloadTracks(MusicService svc, List<DownloadableTrack> tracks)
@@ -400,7 +428,7 @@ namespace Athame.UI
             }
         }
 
-        #region Validation for URL
+#region Validation for URL
         private const string UrlInvalid = "Invalid URL. Check that the URL begins with \"http://\" or \"https://\".";
         private const string UrlNoService = "Can't download this URL.";
         private const string UrlNeedsAuthentication = "You need to sign in to {0} first. " + UrlNeedsAuthenticationLink1;
@@ -460,9 +488,9 @@ namespace Athame.UI
             mService = service;
             return true;
         }
-        #endregion
+#endregion
 
-        #region Easter egg
+#region Easter egg
 
         private readonly string[] messages = { "Woo-hoo!", "We did it!", "Yusssss", "Alright!", "Sweet!", "Nice...." };
         private readonly Random random = new Random();
@@ -477,15 +505,12 @@ namespace Athame.UI
             return messagesList[random.Next(messagesList.Count)];
         }
 
-        #endregion
+#endregion
 
-        #region MainForm event handlers and control event handlers
+#region MainForm event handlers and control event handlers
         
         private void button1_Click(object sender, EventArgs e)
         {
-            SetGlobalProgress(0);
-            SetGlobalProgressState(ProgressBarState.Normal);
-
             try
             {
                 // Don't add if the item is already enqueued.
@@ -656,7 +681,28 @@ namespace Athame.UI
                 }
                 return;
             }
-            await DownloadQueue();
+
+            try
+            {
+
+                LockUi();
+                totalStatusLabel.Text = "Warming up...";
+                await mediaDownloadQueue.StartDownloadAsync();
+                currentlyDownloadingItem = null;
+                SetGlobalProgress(0);
+                SystemSounds.Beep.Play();
+                this.Flash(FlashMethod.All | FlashMethod.TimerNoForeground, Int32.MaxValue, 0);
+            }
+            catch (Exception ex)
+            {
+                PresentException(ex);
+
+            }
+            finally
+            {
+                UnlockUi();
+            }
+
         }
 
         private void queueListView_MouseClick(object sender, MouseEventArgs e)
@@ -665,6 +711,8 @@ namespace Athame.UI
             mCurrentlySelectedQueueItem = queueListView.FocusedItem;
             // Only show context menu on right click
             if (e.Button != MouseButtons.Right) return;
+            showCollectionInFileBrowserToolStripMenuItem.Enabled = GetCurrentlySelectedItemDir() != null;
+            removeTrackToolStripMenuItem.Text = queueListView.SelectedItems.Count == 1 ? "Remove item" : "Remove items";
             queueMenu.Show(Cursor.Position);
         }
 
@@ -700,7 +748,7 @@ namespace Athame.UI
 
         private void removeTrackToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            RemoveCurrentlySelectedTrack();
+            RemoveCurrentlySelectedTracks();
         }
 
         private void MainForm_Move(object sender, EventArgs e)
@@ -730,12 +778,12 @@ namespace Athame.UI
                 }
                 else
                 {
-                    RemoveCurrentlySelectedTrack();
+                    RemoveCurrentlySelectedTracks();
                 }
 
             }
         }
-        #endregion
+#endregion
 
         private const int ImageListAnimStartIndex = 4;
         private const int ImageListAnimEndIndex = 15;
@@ -758,6 +806,21 @@ namespace Athame.UI
         {
             currentAnimatingItem = null;
             queueImageAnimationTimer.Stop();
+        }
+
+        private string GetCurrentlySelectedItemDir()
+        {
+            if (mCurrentlySelectedQueueItem == null) return null;
+            var tag = (MediaItemTag)mCurrentlySelectedQueueItem.Tag;
+            var parentDir = Path.GetDirectoryName(tag.Track.GetBasicPath(tag.Collection.PathFormat));
+            return Directory.Exists(parentDir) ? parentDir : null;
+        }
+
+        private void showCollectionInFileBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dir = GetCurrentlySelectedItemDir();
+            if (dir == null) return;
+            Process.Start($"\"{dir}\"");
         }
     }
 }

@@ -44,8 +44,9 @@ namespace Athame.UI
             this.locCol = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.queueImageList = new System.Windows.Forms.ImageList(this.components);
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.currTrackLabel = new System.Windows.Forms.Label();
-            this.totalProgressStatus = new System.Windows.Forms.Label();
+            this.collectionProgressBar = new System.Windows.Forms.ProgressBar();
+            this.collectionStatusLabel = new System.Windows.Forms.Label();
+            this.totalStatusLabel = new System.Windows.Forms.Label();
             this.totalProgressBar = new System.Windows.Forms.ProgressBar();
             this.settingsButton = new System.Windows.Forms.Button();
             this.queueMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -178,8 +179,9 @@ namespace Athame.UI
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.currTrackLabel);
-            this.groupBox2.Controls.Add(this.totalProgressStatus);
+            this.groupBox2.Controls.Add(this.collectionProgressBar);
+            this.groupBox2.Controls.Add(this.collectionStatusLabel);
+            this.groupBox2.Controls.Add(this.totalStatusLabel);
             this.groupBox2.Controls.Add(this.totalProgressBar);
             this.groupBox2.Location = new System.Drawing.Point(14, 127);
             this.groupBox2.Name = "groupBox2";
@@ -188,33 +190,43 @@ namespace Athame.UI
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Status";
             // 
-            // currTrackLabel
+            // collectionProgressBar
             // 
-            this.currTrackLabel.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.currTrackLabel.Location = new System.Drawing.Point(7, 27);
-            this.currTrackLabel.Name = "currTrackLabel";
-            this.currTrackLabel.Size = new System.Drawing.Size(764, 40);
-            this.currTrackLabel.TabIndex = 2;
-            this.currTrackLabel.Text = "Ready";
-            this.currTrackLabel.UseMnemonic = false;
+            this.collectionProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.collectionProgressBar.Location = new System.Drawing.Point(6, 106);
+            this.collectionProgressBar.Name = "collectionProgressBar";
+            this.collectionProgressBar.Size = new System.Drawing.Size(767, 16);
+            this.collectionProgressBar.TabIndex = 3;
             // 
-            // totalProgressStatus
+            // collectionStatusLabel
             // 
-            this.totalProgressStatus.AutoSize = true;
-            this.totalProgressStatus.Location = new System.Drawing.Point(7, 75);
-            this.totalProgressStatus.Name = "totalProgressStatus";
-            this.totalProgressStatus.Size = new System.Drawing.Size(89, 15);
-            this.totalProgressStatus.TabIndex = 1;
-            this.totalProgressStatus.Text = "Ready to begin.";
-            this.totalProgressStatus.UseMnemonic = false;
+            this.collectionStatusLabel.AutoSize = true;
+            this.collectionStatusLabel.Location = new System.Drawing.Point(7, 87);
+            this.collectionStatusLabel.Name = "collectionStatusLabel";
+            this.collectionStatusLabel.Size = new System.Drawing.Size(89, 15);
+            this.collectionStatusLabel.TabIndex = 1;
+            this.collectionStatusLabel.Text = "Ready to begin.";
+            this.collectionStatusLabel.UseMnemonic = false;
+            // 
+            // totalStatusLabel
+            // 
+            this.totalStatusLabel.AutoSize = true;
+            this.totalStatusLabel.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.totalStatusLabel.Location = new System.Drawing.Point(7, 31);
+            this.totalStatusLabel.Name = "totalStatusLabel";
+            this.totalStatusLabel.Size = new System.Drawing.Size(45, 17);
+            this.totalStatusLabel.TabIndex = 2;
+            this.totalStatusLabel.Text = "Ready";
+            this.totalStatusLabel.UseMnemonic = false;
             // 
             // totalProgressBar
             // 
             this.totalProgressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.totalProgressBar.Location = new System.Drawing.Point(7, 113);
+            this.totalProgressBar.Location = new System.Drawing.Point(6, 52);
             this.totalProgressBar.Name = "totalProgressBar";
-            this.totalProgressBar.Size = new System.Drawing.Size(763, 27);
+            this.totalProgressBar.Size = new System.Drawing.Size(767, 16);
             this.totalProgressBar.TabIndex = 0;
             // 
             // settingsButton
@@ -237,7 +249,7 @@ namespace Athame.UI
             this.toolStripSeparator2,
             this.showCollectionInFileBrowserToolStripMenuItem});
             this.queueMenu.Name = "queueMenu";
-            this.queueMenu.Size = new System.Drawing.Size(236, 76);
+            this.queueMenu.Size = new System.Drawing.Size(236, 98);
             // 
             // removeTrackToolStripMenuItem
             // 
@@ -262,9 +274,11 @@ namespace Athame.UI
             // 
             // showCollectionInFileBrowserToolStripMenuItem
             // 
+            this.showCollectionInFileBrowserToolStripMenuItem.Enabled = false;
             this.showCollectionInFileBrowserToolStripMenuItem.Name = "showCollectionInFileBrowserToolStripMenuItem";
             this.showCollectionInFileBrowserToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.showCollectionInFileBrowserToolStripMenuItem.Text = "Show collection in file browser";
+            this.showCollectionInFileBrowserToolStripMenuItem.Click += new System.EventHandler(this.showCollectionInFileBrowserToolStripMenuItem_Click);
             // 
             // clearButton
             // 
@@ -393,8 +407,8 @@ namespace Athame.UI
         private System.Windows.Forms.ColumnHeader trackNumberCol;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ProgressBar totalProgressBar;
-        private System.Windows.Forms.Label totalProgressStatus;
-        private System.Windows.Forms.Label currTrackLabel;
+        private System.Windows.Forms.Label collectionStatusLabel;
+        private System.Windows.Forms.Label totalStatusLabel;
         private System.Windows.Forms.Button settingsButton;
         private System.Windows.Forms.ContextMenuStrip queueMenu;
         private System.Windows.Forms.LinkLabel clearButton;
@@ -413,6 +427,7 @@ namespace Athame.UI
         private System.Windows.Forms.ToolStripMenuItem showCollectionInFileBrowserToolStripMenuItem;
         private System.Windows.Forms.Timer queueImageAnimationTimer;
         private System.Windows.Forms.ColumnHeader locCol;
+        private System.Windows.Forms.ProgressBar collectionProgressBar;
     }
 }
 

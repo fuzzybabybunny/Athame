@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -15,6 +16,10 @@ namespace Athame.DownloadAndTag
     public class CollectionDownloadEventArgs : EventArgs
     {
         public EnqueuedCollection Collection { get; set; }
+
+        public int CurrentCollectionIndex { get; set; }
+
+        public int TotalNumberOfCollections { get; set; }
     }
 
     public class TrackDownloadEventArgs : DownloadEventArgs
@@ -159,7 +164,9 @@ namespace Athame.DownloadAndTag
                 var currentItem = queueView.Dequeue();
                 OnCollectionDequeued(new CollectionDownloadEventArgs
                 {
-                    Collection = currentItem
+                    Collection = currentItem,
+                    CurrentCollectionIndex = (Count - queueView.Count) - 1,
+                    TotalNumberOfCollections = Count
                 });
                 if (await DownloadCollectionAsync(currentItem)) continue;
                 if (skip == ExceptionSkip.Fail)
@@ -177,10 +184,15 @@ namespace Athame.DownloadAndTag
 
         }
 
+        private void EnsureParentDirectories(string path)
+        {
+            var parentPath = Path.GetDirectoryName(path);
+            if (parentPath == null) return;
+            Directory.CreateDirectory(parentPath);
+        }
+
         private async Task<bool> DownloadCollectionAsync(EnqueuedCollection collection)
         {
-            // If Tracks is an ICollection, Count() will just return ICollection.Count property,
-            // otherwise it'll enumerate, hence why we only want to call it once
             var tracksCollectionLength = collection.MediaCollection.Tracks.Count;
             var tracksQueue = new Queue<Track>(collection.MediaCollection.Tracks);
             while (tracksQueue.Count > 0)
@@ -188,7 +200,7 @@ namespace Athame.DownloadAndTag
                 var currentItem = tracksQueue.Dequeue();
                 var eventArgs = new TrackDownloadEventArgs
                 {
-                    CurrentItemIndex = tracksCollectionLength - tracksQueue.Count,
+                    CurrentItemIndex = (tracksCollectionLength - tracksQueue.Count) - 1,
                     PercentCompleted = 0M,
                     State = DownloadState.PreProcess,
                     TotalItems = tracksCollectionLength,
@@ -202,6 +214,7 @@ namespace Athame.DownloadAndTag
                     {
                         continue;
                     }
+                    OnTrackDownloadProgress(eventArgs);
                     // Download album artwork if it's not cached
                     if (currentItem.Album != null && !AlbumArtCache.Instance.HasItem(currentItem.Album.CoverUri.ToString()))
                     {
@@ -220,19 +233,29 @@ namespace Athame.DownloadAndTag
                     };
                     downloader.Done += (sender, args) =>
                     {
-                        OnTrackDownloadCompleted(eventArgs);
+                        eventArgs.State = DownloadState.PostProcess;
+                        OnTrackDownloadProgress(eventArgs);
                     };
                     var path = eventArgs.TrackFile.GetPath(collection.PathFormat);
+                    EnsureParentDirectories(path);
+                    eventArgs.State = DownloadState.Downloading;
                     await downloader.DownloadAsyncTask(eventArgs.TrackFile, path);
                     // Attempt to dispose the downloader, since the most probable case will be that it will
                     // implement IDisposable if it uses sockets
                     var disposableDownloader = downloader as IDisposable;
                     disposableDownloader?.Dispose();
                     // Write the tag
+                    eventArgs.State = DownloadState.WritingTags;
+                    OnTrackDownloadProgress(eventArgs);
                     TrackTagger.Write(path, currentItem);
+                    OnTrackDownloadCompleted(eventArgs);
+
                 }
                 catch (Exception ex)
                 {
+#if DEBUG
+                    throw ex;
+#else
                     var exEventArgs = new ExceptionEventArgs { CurrentState = eventArgs, Exception = ex };
                     OnException(exEventArgs);
                     switch (exEventArgs.SkipTo)
@@ -248,6 +271,7 @@ namespace Athame.DownloadAndTag
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+#endif
                 }
                 
             }

@@ -84,17 +84,17 @@ namespace Athame.UI
 
         private void pldSaveToRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            defaults.PlaylistSavePreference.AskForLocation = !saveToRadioButton.Checked;
+            defaults.PlaylistSavePreference.AskForLocation = !pldSaveToRadioButton.Checked;
         }
 
         private void pldAskWhereToSaveRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            defaults.PlaylistSavePreference.AskForLocation = askWhereToSaveRadioButton.Checked;
+            defaults.PlaylistSavePreference.AskForLocation = pldAskWhereToSaveRadioButton.Checked;
         }
 
         private void pldPathFormatTextBox_TextChanged(object sender, EventArgs e)
         {
-            defaults.PlaylistSavePreference.SaveFormat = pathFormatTextBox.Text;
+            defaults.PlaylistSavePreference.SaveFormat = pldPathFormatTextBox.Text;
         }
 
         private void pldSaveLocBrowseButton_Click(object sender, EventArgs e)
@@ -129,13 +129,12 @@ namespace Athame.UI
 
         private void formatHelpButton_Click(object sender, EventArgs e)
         {
-            using (var formatForm = new PathFormatHelpForm())
-            {
-                var rightTopCorner = new Point(Location.X + Width, Location.Y);
-                formatForm.StartPosition = FormStartPosition.Manual;
-                formatForm.Location = rightTopCorner;
-                formatForm.Show(this);
-            }
+            var formatForm = new PathFormatHelpForm();
+            var rightTopCorner = new Point(Location.X + Width, Location.Y);
+            formatForm.StartPosition = FormStartPosition.Manual;
+            formatForm.Location = rightTopCorner;
+            formatForm.Show(this);
+            
         }
         private void pldSameAsAlbumTrack_CheckedChanged(object sender, EventArgs e)
         {

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.IO;
 using Athame.PluginAPI.Service;
 using Athame.Settings;
 using TagLib;
+using File = TagLib.File;
 using SysFile = System.IO.File;
 
 namespace Athame.DownloadAndTag
@@ -52,14 +54,15 @@ namespace Athame.DownloadAndTag
                     fileName = artworkFile?.FileType.Append("cover");
                     break;
                 case AlbumArtworkSaveFormat.AsArtistAlbum:
-                    fileName = artworkFile?.FileType.Append($"{track.Artist} - {track.Album}");
+                    fileName = artworkFile?.FileType.Append($"{track.Artist} - {track.Album.Title}");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             if (fileName != null && artworkFile != null)
             {
-                SysFile.WriteAllBytes(fileName, artworkFile.Data);
+                var parentDir = Path.GetDirectoryName(path);
+                SysFile.WriteAllBytes(Path.Combine(parentDir, fileName), artworkFile.Data);
             }
         }
     }

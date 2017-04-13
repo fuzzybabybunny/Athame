@@ -34,8 +34,7 @@ namespace Athame.PluginAPI.Downloader
         public event EventHandler Done;
         public async Task DownloadAsyncTask(TrackFile track, string destination)
         {
-            var pathWithExtension = $"{destination}.{track.FileType.Extension}";
-            await mClient.DownloadFileTaskAsync(track.DownloadUri, pathWithExtension);
+            await mClient.DownloadFileTaskAsync(track.DownloadUri, destination);
             Done?.Invoke(this, EventArgs.Empty);
         }
 

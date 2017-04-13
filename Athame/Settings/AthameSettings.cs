@@ -27,6 +27,16 @@ namespace Athame.Settings
         {
             return Path.DirectorySeparatorChar == '/' ? SaveFormat : SaveFormat.Replace('/', Path.DirectorySeparatorChar);
         }
+
+        public MediaTypeSavePreference Clone()
+        {
+            return new MediaTypeSavePreference
+            {
+                AskForLocation = AskForLocation,
+                SaveDirectory = SaveDirectory,
+                SaveFormat = SaveFormat
+            };
+        }
     }
 
     public class WindowPreference
@@ -64,7 +74,7 @@ namespace Athame.Settings
             {
                 AskForLocation = false,
                 SaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                SaveFormat = "{Playlist}/{AlbumArtistOrArtist} - {Title}"
+                SaveFormat = "Playlist Name/{AlbumArtistOrArtist} - {Title}"
             };
             PlaylistSavePreferenceUsesGeneral = true;
             MainWindowPreference = new WindowPreference();
