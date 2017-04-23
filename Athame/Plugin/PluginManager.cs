@@ -7,30 +7,27 @@ using System.Text;
 using System.Threading.Tasks;
 using Athame.PluginAPI;
 using Athame.PluginAPI.Service;
-using Athame.PluginManager;
 
 namespace Athame.Plugin
 {
-    public class PluginLoader
+    public class PluginManager
     {
-        private const string PluginDir = "Plugins";
-        private const string PluginDllPrefix = "AthamePlugin.";
+        public const string PluginDir = "Plugins";
+        public const string PluginDllPrefix = "AthamePlugin.";
 
         private readonly string pluginDir;
 
-        public PluginLoader(string pluginDir)
+        public PluginManager(string pluginDir)
         {
             this.pluginDir = pluginDir;
             Directory.CreateDirectory(pluginDir);
+            Plugins = new List<IPlugin>();
+            Services = new ServiceRegistry();
         }
 
         public List<IPlugin> Plugins { get; }
 
         public ServiceRegistry Services { get; }
-
-        private static PluginLoader _default;
-
-        public static PluginLoader Default => _default ?? (_default = new PluginLoader(PluginDir));
 
 //        private Type[] LoadAssemblies()
 //        {
@@ -66,6 +63,7 @@ namespace Athame.Plugin
                 }
                 // Activate base plugin
                 var plugin = (IPlugin) Activator.CreateInstance(implementingType);
+                plugin.Init(Program.DefaultApp);
                 Plugins.Add(plugin);
                 // If it's a service plugin, add it to main service collection
                 var servicePlugin = plugin as IServicePlugin;

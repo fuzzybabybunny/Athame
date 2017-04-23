@@ -5,7 +5,7 @@ using Athame.PlayMusicApi;
 using Athame.PluginAPI.Service;
 using Athame.TidalApi;
 
-namespace Athame.PluginManager
+namespace Athame.Plugin
 {
     /// <summary>
     /// Represents a collection of services and provides methods to retrieve services by name or host.

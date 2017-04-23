@@ -12,7 +12,7 @@
         /// <summary>
         /// The name of the artist. Cannot be null.
         /// </summary>
-        public string Artist { get; set; }
+        public Artist Artist { get; set; }
         /// <summary>
         /// The album this specific track is featured on. Cannot be null.
         /// </summary>
@@ -46,7 +46,7 @@
         /// If the Artist property of the <see cref="Album"/> property is null, returns the track's <see cref="Artist"/> artist property,
         /// otherwise returning the <see cref="Album"/>'s Artist property. 
         /// </summary>
-        public string AlbumArtistOrArtist => Album?.Artist ?? Artist;
+        public Artist AlbumArtistOrArtist => Album?.Artist ?? Artist;
 
         /// <summary>
         /// If the track can be downloaded or streamed.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Athame.PluginAPI.Service
 {
@@ -19,5 +20,15 @@ namespace Athame.PluginAPI.Service
         /// The tracks contained within the playlist.
         /// </summary>
         public IList<Track> Tracks { get; set; }
+
+        /// <summary>
+        /// The date of when the playlist was initially published. May be null.
+        /// </summary>
+        public DateTime? PublishDate { get; set; }
+
+        /// <summary>
+        /// The date of when the playlist was last modified. May be null.
+        /// </summary>
+        public DateTime? LastModifiedDate { get; set; }
     }
 }

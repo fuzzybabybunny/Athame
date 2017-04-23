@@ -44,11 +44,29 @@ namespace Athame.PlayMusicApi
             settings.Response = null;
         }
 
+        private Artist CreateArtist(GoogleMusicApi.Structure.Track track)
+        {
+            return new Artist
+            {
+                Id = track.ArtistIds[0],
+                Name = track.Artist
+            };
+        }
+
+        private Artist CreateArtist(GoogleMusicApi.Structure.Album album)
+        {
+            return new Artist
+            {
+                Id = album.ArtistId[0],
+                Name = album.AlbumArtist
+            };
+        }
+
         private Track CreateTrack(GoogleMusicApi.Structure.Track gpmTrack)
         {
             return new Track
             {
-                Artist = gpmTrack.Artist,
+                Artist = CreateArtist(gpmTrack),
                 DiscNumber = gpmTrack.DiscNumber,
                 Genre = gpmTrack.Genre,
                 Title = gpmTrack.Title,
@@ -64,7 +82,7 @@ namespace Athame.PlayMusicApi
         {
             var a = new Album
             {
-                Artist = gpmAlbum.AlbumArtist,
+                Artist = CreateArtist(gpmAlbum),
                 CoverUri = new Uri(gpmAlbum.AlbumArtRef),
                 Title = gpmAlbum.Name,
                 Tracks = new List<Track>()

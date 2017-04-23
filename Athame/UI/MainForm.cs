@@ -10,9 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Athame.DownloadAndTag;
+using Athame.Plugin;
 using Athame.PluginAPI.Downloader;
 using Athame.PluginAPI.Service;
-using Athame.PluginManager;
 using Athame.Properties;
 using Athame.Settings;
 using Athame.UI.Win32;
@@ -170,7 +170,7 @@ namespace Athame.UI
                 }
                 lvItem.SubItems.Add(t.DiscNumber + " / " + t.TrackNumber);
                 lvItem.SubItems.Add(t.Title);
-                lvItem.SubItems.Add(t.Artist);
+                lvItem.SubItems.Add(t.Artist.Name);
                 lvItem.SubItems.Add(t.Album.Title);
                 lvItem.SubItems.Add(t.GetBasicPath(enqueuedItem.PathFormat));
                 group.Items.Add(lvItem);

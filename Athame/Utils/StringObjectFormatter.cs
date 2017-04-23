@@ -52,7 +52,7 @@ namespace Athame.Utils
         /// <summary>
         /// Returns the string representation of an object, or "null" if the object is null.
         /// </summary>
-        public static Func<object, string> DefaultFormatter = o => o == null ? "null" : o.ToString();
+        public static readonly Func<object, string> DefaultFormatter = o => o?.ToString() ?? "null";
 
         public static string Format(string formatString, object value, Func<object, string> stringFormatter)
         {

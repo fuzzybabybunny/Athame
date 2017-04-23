@@ -87,13 +87,12 @@ namespace Athame.TidalApi
                 DiscNumber = tidalTrack.VolumeNumber,
                 TrackNumber = tidalTrack.TrackNumber,
                 Title = tidalTrack.Title,
-                Artist = EnglishArtistNameJoiner.JoinArtistNames((from artist in tidalTrack.Artists
-                    where artist.Type == EnglishArtistNameJoiner.ArtistMain
-                    select artist.Name).ToArray()),
                 Id = tidalTrack.Id.ToString(),
                 IsDownloadable = tidalTrack.AllowStreaming
 
             };
+            // Only use first artist name and picture for now
+            t.Artist = CreateArtist(tidalTrack.Artists, tidalTrack.Artist);
             if (!String.IsNullOrEmpty(tidalTrack.Version))
             {
                 if (settings.AppendVersionToTrackTitle)
@@ -143,9 +142,20 @@ namespace Athame.TidalApi
 
         private const int AlbumArtSize = 1280;
         private const string AlbumArtUrlFormat = "https://resources.tidal.com/images/{0}/{1}x{1}.jpg";
-        
 
-        private static  Album CreateAlbum(AlbumModel album)
+        private Artist CreateArtist(ArtistModel[] artists, ArtistModel defaultArtist)
+        {
+            return new Artist
+            {
+                Id = defaultArtist.Id.ToString(),
+                Name = EnglishArtistNameJoiner.JoinArtistNames((from artist in artists
+                                                                where artist.Type == EnglishArtistNameJoiner.ArtistMain
+                                                                select artist.Name).ToArray()),
+                PictureUrl = new Uri(defaultArtist.Picture)
+            };
+        }
+
+        private Album CreateAlbum(AlbumModel album)
         {
             var coverUrl = String.Format(AlbumArtUrlFormat, album.Cover.Replace('-', '/'), AlbumArtSize);
             var cmAlbum = new Album
@@ -159,9 +169,7 @@ namespace Athame.TidalApi
             if (album.Artist != null)
             {
                 // Need only main artists
-                cmAlbum.Artist = EnglishArtistNameJoiner.JoinArtistNames((from artist in album.Artists
-                    where artist.Type == EnglishArtistNameJoiner.ArtistMain
-                    select artist.Name).ToArray());
+                cmAlbum.Artist = CreateArtist(album.Artists, album.Artist);
             }
             return cmAlbum;
         }
@@ -246,6 +254,7 @@ namespace Athame.TidalApi
 
         public override Task<SearchResult> SearchAsync(string searchText, MediaType typesToRetrieve)
         {
+            
             throw new NotImplementedException();
         }
 

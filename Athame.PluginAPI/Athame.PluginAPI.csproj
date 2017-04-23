@@ -66,6 +66,7 @@
     <Compile Include="Downloader\HttpDownloader.cs" />
     <Compile Include="Downloader\IDownloader.cs" />
     <Compile Include="PluginContext.cs" />
+    <Compile Include="PluginVersion.cs" />
     <Compile Include="Service\Album.cs" />
     <Compile Include="Service\Artist.cs" />
     <Compile Include="Service\AuthenticationFlow.cs" />

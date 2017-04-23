@@ -23,10 +23,10 @@ namespace Athame.DownloadAndTag
             using (var file = File.Create(path))
             {
                 file.Tag.Title = track.Title;
-                file.Tag.Performers = new[] {track.Artist};
+                file.Tag.Performers = new[] {track.Artist.Name};
                 if (track.Album.Artist != null)
                 {
-                    file.Tag.AlbumArtists = new[] {track.Album.Artist};
+                    file.Tag.AlbumArtists = new[] {track.Album.Artist.Name};
                 }
                 file.Tag.Genres = new[] {track.Genre};
                 file.Tag.Album = track.Album.Title;

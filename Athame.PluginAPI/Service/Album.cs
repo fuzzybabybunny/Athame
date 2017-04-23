@@ -29,7 +29,7 @@ namespace Athame.PluginAPI.Service
         /// <summary>
         /// The album artist. May be null.
         /// </summary>
-        public string Artist { get; set; }
+        public Artist Artist { get; set; }
         /// <summary>
         /// The album's title. Not null.
         /// </summary>
@@ -48,6 +48,11 @@ namespace Athame.PluginAPI.Service
         /// The album's type, if the service supports it. Defaults to <see cref="AlbumType.Album"/>.
         /// </summary>
         public AlbumType Type { get; set; }
+
+        /// <summary>
+        /// The year the album was released.
+        /// </summary>
+        public int? Year { get; set; }
 
         public int? GetNumberOfTracksOnDisc(int disc)
         {
@@ -71,5 +76,9 @@ namespace Athame.PluginAPI.Service
             return totalDiscs;
         }
 
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 }

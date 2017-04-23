@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Athame.PluginManager;
+using Athame.Plugin;
 using Athame.Properties;
 using Athame.Settings;
 

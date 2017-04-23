@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using Athame.Plugin;
 using Athame.PluginAPI;
 using Athame.Settings;
 using Athame.UI;
@@ -14,6 +15,7 @@ namespace Athame
         private static string SettingsPath;
 
         public static AthameApplication DefaultApp;
+        public static PluginManager DefaultPluginManager;
         public static SettingsManager<AthameSettings> DefaultSettings;
 
         /// <summary>
@@ -42,6 +44,8 @@ namespace Athame
             SettingsPath = DefaultApp.UserDataPathOf(SettingsFilename);
             DefaultSettings = new SettingsManager<AthameSettings>(SettingsPath);
             DefaultSettings.Load();
+
+            DefaultPluginManager = new PluginManager(Path.Combine(Directory.GetCurrentDirectory(), PluginManager.PluginDir));
 
             // Begin main form
             Application.EnableVisualStyles();
