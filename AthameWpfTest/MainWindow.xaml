@@ -1,0 +1,136 @@
+﻿<Window x:Class="AthameWpfTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AthameWpfTest"
+        mc:Ignorable="d"
+        Title="Athame" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="MainSwitcherRadioButtonTemplate" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{x:Null}" />
+            <Setter Property="Margin" Value="10,0"/>
+            <EventSetter Event="Checked" Handler="SwitcherButtonOnChecked" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <ContentPresenter x:Name="SwitcherContent">
+                            <ContentPresenter.Content>
+                                <StackPanel Orientation="Horizontal">
+                                    
+                                    <Viewbox
+                                        Height="36" Width="36"
+                                        VerticalAlignment="Center"
+                                        Margin="10,0,5,0">
+                                        <Canvas Width="24" Height="24">
+                                            <Path VerticalAlignment="Center" 
+                                                  HorizontalAlignment="Center" 
+                                                  Style="{Binding Path=(local:SecSwitcherButtonExtensions.PathStyle), RelativeSource={RelativeSource TemplatedParent}}"
+                                                  Fill="{StaticResource SecondaryNavForegroundBrush}" />
+                                        </Canvas>
+                                    </Viewbox>
+                                    <TextBlock
+                                        x:Name="ButtonText"
+                                        
+                                        Foreground="{StaticResource MainNavForegroundBrush}" 
+                                        VerticalAlignment="Center" 
+                                        HorizontalAlignment="Center"
+                                        FontSize="18" 
+                                        FontWeight="Bold" 
+                                        Text="{Binding Path=(local:SecSwitcherButtonExtensions.Text), RelativeSource={RelativeSource TemplatedParent}}" />
+                                </StackPanel>
+                            </ContentPresenter.Content>
+                        </ContentPresenter>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                                <Setter TargetName="ButtonText" Property="FontWeight" Value="Bold" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                                <Setter TargetName="ButtonText" Property="FontWeight" Value="Regular" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetName="SwitcherContent"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0.75"
+                                                Duration="0:0:.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation 
+                                                Storyboard.TargetName="SwitcherContent"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1"
+                                                Duration="0:0:.2"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Main switcher -->
+        <Grid Grid.Row="0" Background="{StaticResource MainNavBackgroundBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="4" />
+            </Grid.RowDefinitions>
+            <DockPanel Grid.Row="0">
+                <RadioButton x:Name="MainSwitcherSearchButton" 
+                             Style="{DynamicResource MainSwitcherRadioButtonTemplate}"
+                             IsChecked="True"
+                             HorizontalAlignment="Left"
+                             Checked="MainSwitcherSearchButton_OnChecked"
+                             local:SecSwitcherButtonExtensions.Text="Add"
+                             local:SecSwitcherButtonExtensions.PathStyle="{StaticResource AddIcon}" />
+                
+                <RadioButton x:Name="MainSwitcherQueueButton" 
+                             Style="{DynamicResource MainSwitcherRadioButtonTemplate}" 
+                             HorizontalAlignment="Left"
+                             Checked="MainSwitcherQueueButton_OnChecked"
+                             local:SecSwitcherButtonExtensions.Text="Download Queue"
+                             local:SecSwitcherButtonExtensions.PathStyle="{StaticResource DownloadIcon}" />
+                
+                <RadioButton x:Name="MainSwitcherSettingsButton"
+                             HorizontalAlignment="Right"
+                             Checked="MainSwitcherSettingsButton_OnChecked"
+                             Style="{DynamicResource MainSwitcherRadioButtonTemplate}" 
+                             local:SecSwitcherButtonExtensions.Text="Settings"
+                             local:SecSwitcherButtonExtensions.PathStyle="{StaticResource SettingsIcon}" />
+            </DockPanel>
+            <Canvas Grid.Row="1" 
+                    Background="{StaticResource MainNavIndicatorBrush}" 
+                    x:Name="MainSwitcherSelectionIndicator" 
+                    Width="1"
+                    HorizontalAlignment="Left" Loaded="MainSwitcherSelectionIndicator_Loaded"/>
+        </Grid>
+
+        <!-- Content frame -->
+        <Frame Grid.Row="1" 
+               x:Name="MainContentFrame" 
+               HorizontalAlignment="Stretch" 
+               VerticalAlignment="Stretch" 
+               
+               Loaded="MainContentFrame_OnLoaded" NavigationUIVisibility="Hidden" />
+    </Grid>
+</Window>
+

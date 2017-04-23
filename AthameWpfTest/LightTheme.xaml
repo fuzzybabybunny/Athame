@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AthameWpfTest">
+    <Color x:Key="MainNavBackground">#ff64b5f6</Color>
+    <Color x:Key="MainNavForeground">White</Color>
+    <Color x:Key="MainNavIndicator">White</Color>
+
+    <Color x:Key="SecondaryNavBackground">#ff3475aa</Color>
+    <Color x:Key="SecondaryNavForeground">White</Color>
+   
+    <Color x:Key="PageBackground">White</Color>
+    <Color x:Key="PageForeground">#ff333333</Color>
+
+    <Color x:Key="AlternatingRowsBackground">#3f64b5f6</Color>
+
+    
+</ResourceDictionary>
