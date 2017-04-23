@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:AthameWpfTest">
+                    xmlns:local="clr-namespace:AthameWPF">
     <Color x:Key="MainNavBackground">#ff64b5f6</Color>
     <Color x:Key="MainNavForeground">White</Color>
     <Color x:Key="MainNavIndicator">White</Color>

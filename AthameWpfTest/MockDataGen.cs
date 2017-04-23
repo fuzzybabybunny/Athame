@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Athame.PluginAPI.Service;
 
-namespace AthameWpfTest
+namespace AthameWPF
 {
     public struct Limit
     {
@@ -74,7 +74,7 @@ namespace AthameWpfTest
 
             var album = new Album
             {
-                Artist = artistName,
+                Artist = new Artist { Name = artistName },
                 Id = Guid.NewGuid().ToString(),
                 Title = ToTitleCase(String.Join(" ", wordsInAlbumTitle.RandomSet(AlbumWords))),
                 Tracks = new List<Track>(),
@@ -86,7 +86,7 @@ namespace AthameWpfTest
                 album.Tracks.Add(new Track
                 {
                     Album = album,
-                    Artist = artistName,
+                    Artist = new Artist { Name = artistName },
                     DiscNumber = 1,
                     TrackNumber = i + 1,
                     Id = Guid.NewGuid().ToString(),

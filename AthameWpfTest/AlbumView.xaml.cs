@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Athame.PluginAPI.Service;
 
-namespace AthameWpfTest
+namespace AthameWPF
 {
     /// <summary>
     /// Interaction logic for AlbumView.xaml

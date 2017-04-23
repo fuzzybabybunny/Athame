@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AthameWpfTest
+namespace AthameWPF
 {
     /// <summary>
     /// Interaction logic for SettingsPage.xaml

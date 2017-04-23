@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Athame.PluginAPI.Service;
-using AthameWpfTest.Annotations;
+using AthameWPF.Annotations;
 
-namespace AthameWpfTest
+namespace AthameWPF
 {
     public class EnqueuedTrack : Track, INotifyPropertyChanged
     {

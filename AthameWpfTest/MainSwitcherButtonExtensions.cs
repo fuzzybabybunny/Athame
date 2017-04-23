@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace AthameWpfTest
+namespace AthameWPF
 {
     public class MainSwitcherButtonExtensions : DependencyObject
     {
