@@ -151,7 +151,7 @@ namespace Athame.TidalApi
                 Name = EnglishArtistNameJoiner.JoinArtistNames((from artist in artists
                                                                 where artist.Type == EnglishArtistNameJoiner.ArtistMain
                                                                 select artist.Name).ToArray()),
-                PictureUrl = new Uri(defaultArtist.Picture)
+                PictureUrl = defaultArtist.Picture != null ? new Uri(defaultArtist.Picture) : null
             };
         }
 
