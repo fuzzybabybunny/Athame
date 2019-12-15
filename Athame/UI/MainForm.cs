@@ -119,8 +119,7 @@ namespace Athame.UI
 
         private void MediaDownloadQueue_TrackDequeued(object sender, TrackDownloadEventArgs e)
         {
-            // this'll bite me in the ass someday
-            currentlyDownloadingItem = queueListView.Groups[currentCollection.CurrentCollectionIndex].Items[e.CurrentItemIndex * 2];
+            currentlyDownloadingItem = queueListView.Groups[currentCollection.CurrentCollectionIndex].Items[e.CurrentItemIndex];
         }
 
         private void MediaDownloadQueue_CollectionDequeued(object sender, CollectionDownloadEventArgs e)
@@ -173,7 +172,6 @@ namespace Athame.UI
                 lvItem.SubItems.Add(t.Artist.Name);
                 lvItem.SubItems.Add(t.Album.Title);
                 lvItem.SubItems.Add(t.GetBasicPath(enqueuedItem.PathFormat));
-                group.Items.Add(lvItem);
                 queueListView.Items.Add(lvItem);
             }
         }
@@ -192,6 +190,9 @@ namespace Athame.UI
                     mediaDownloadQueue.Remove(item.Collection);
                 }
             }
+            var groupsToRemove = queueListView.Groups.OfType<ListViewGroup>().Where(x => x.Items.Count == 0).ToList();
+            foreach (var removeGroup in groupsToRemove)
+                queueListView.Groups.Remove(removeGroup);
             mCurrentlySelectedQueueItem = null;
         }
 
